@@ -12,7 +12,7 @@ const h = site.demo.handoff;
 ---
 
 <dialog class="hand" id="handoff" aria-labelledby="handoff-title">
-  <div class="hand__inner on-dark">
+  <div class="hand__inner on-ink">
 
     <header class="hand__head">
       <span class="tech hand__boundary">{h.boundary}</span>
@@ -66,7 +66,7 @@ const h = site.demo.handoff;
   .hand::backdrop { background: rgba(10, 18, 36, 0.72); backdrop-filter: blur(3px); }
 
   .hand__inner {
-    border: var(--hairline) solid var(--line);
+    border: var(--hairline) solid var(--stone);
     border-radius: var(--radius-structural);
     padding: clamp(var(--s-6), 4vw, var(--s-12));
     display: grid;
@@ -79,7 +79,7 @@ const h = site.demo.handoff;
     justify-content: space-between;
     gap: var(--s-4);
     padding-bottom: var(--s-4);
-    border-bottom: var(--hairline) solid var(--line);
+    border-bottom: var(--hairline) solid var(--stone);
   }
 
   /* Sınır beyanı — tuğla çerçeveli, kaçınılmaz */
@@ -94,10 +94,10 @@ const h = site.demo.handoff;
     flex: none;
     width: 34px;
     height: 34px;
-    border: var(--hairline) solid var(--line);
+    border: var(--hairline) solid var(--stone);
     border-radius: var(--radius-control);
     background: none;
-    color: var(--chalk);
+    color: var(--paper);
     font-size: 20px;
     line-height: 1;
     cursor: pointer;
@@ -112,7 +112,7 @@ const h = site.demo.handoff;
     gap: var(--s-4) var(--s-6);
     margin: 0;
     padding-block: var(--s-4);
-    border-block: var(--hairline) solid var(--line);
+    border-block: var(--hairline) solid var(--stone);
   }
   .hand__spec { display: grid; gap: var(--s-1); }
   .hand__spec dt { color: var(--text-3); }

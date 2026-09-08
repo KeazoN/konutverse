@@ -1,107 +1,108 @@
 /* ============================================================
    Konutverse — Tasarım Token'ları
    TEK KAYNAK. Bu dosya ve signature.css dışında ham değer yok.
-   Palet tamamen mevcut konutverse.com token'larından türetildi;
-   hiçbir renk atılmadı, roller yeniden dağıtıldı.
+
+   AÇIK ZEMİN varsayılandır. Palet ürünün kendi daire
+   fotoğraflarından türetildi: sıcak sıva duvar, ahşap zemin,
+   terrakota deri. Tuğla vurgusu (#C23616) fotoğraflardaki
+   deri pufların rengiyle birebir aynı — marka ile görsel
+   birbirini doğruluyor.
    ============================================================ */
 
 :root {
-  /* ── Renk ─────────────────────────────────────────────────── */
-  --ink:        #0F1B33;   /* blueprint laciverti  (eski --surface-3) */
-  --ink-deep:   #0A1222;   /* hero zemini          (eski --glass-bg-strong tabanı) */
-  --ink-raised: #182A4A;   /* yükseltilmiş yüzey   (eski --navy-raised) */
-  --chalk:      #F7F8FA;   /* çizgi & kâğıt        (eski --bg) */
-  --paper:      #FFFFFF;
-  --plaster:    #E6E1D6;   /* "gerçek" tarafın sıcaklığı (eski --rail-empty) */
+  /* ── Zeminler ─────────────────────────────────────────────── */
+  --paper:  #FCFBF9;   /* sıcak beyaz — sıva duvar */
+  --sand:   #F2EDE6;   /* bölüm tonu — ritim için */
+  --linen:  #E8E1D7;   /* daha koyu sıcak ton */
+  --stone:  #DED6CA;   /* kural / kenarlık */
 
-  /* Vurgu — İKİ TONLU, kontrast politikası gereği.
-     ölçüm: brick/ink 3.13 · brick/chalk 5.16
-            brick-lit/ink 4.99 · brick-lit/chalk 3.23          */
-  --brick:      #C23616;   /* AÇIK zeminde metin ✓ · KOYU zeminde yalnız ≥24px ve grafik */
-  --brick-lit:  #ED5A34;   /* KOYU zeminde küçük metin ✓ · açık zeminde metin YASAK */
+  /* ── Metin ────────────────────────────────────────────────── */
+  --ink:    #201C18;   /* sıcak siyah — paper 16.37 · sand 14.53 */
+  --ink-2:  #5C554D;   /* ikincil     — paper  7.10 · sand  6.30 */
+  --ink-3:  #6B6257;   /* üçüncül     — paper  5.40 · sand  4.80 */
 
-  /* İkincil / üçüncül metin RENKLERİ — opaklık DEĞİL.
-     Opaklıkla soldurmak birikimlidir: vurgu rengini de soldurup
-     zaten sınırda olan tuğlayı AA'nın altına düşürüyordu.
-     Değerler ölçüldü; --text-* zemine göre otomatik değişir.   */
-  --ink-2:   #4A5468;   /* açık zeminde ikincil — 7.16 / 7.61 */
-  --ink-3:   #5A6478;   /* açık zeminde üçüncül — 5.60 / 5.95 */
-  --chalk-2: #B6BCC8;   /* koyu zeminde ikincil — en düşük 7.50 */
-  --chalk-3: #9AA2B2;   /* koyu zeminde üçüncül — en düşük 5.57 */
+  /* ── Vurgu ────────────────────────────────────────────────── */
+  --brick:     #C23616;  /* paper 5.30 · sand 4.70 — açık zeminde metin ✓ */
+  --brick-ink: #9E2A11;  /* daha koyu — hover / basılı */
+  --brick-lit: #E8613D;  /* YALNIZ koyu zeminde — ink 5.00 ✓ */
+  --brick-wash:#FBEDE8;  /* çok açık tuğla yıkama — vurgulu yüzey */
 
+  /* ── Koyu yüzey (az kullanılır: footer, künye, fotoğraf scrim) ── */
+  --ink-surface: #201C18;
+  --ink-raised:  #2E2823;
+  --scrim:       rgba(26, 22, 19, 0.55);
+  --on-ink:      #FCFBF9;
+  --on-ink-2:    #C9C1B6;   /* ink üstünde 9.50 ✓ */
+
+  /* Zemin-duyarlı metin: koyu yüzeylerde otomatik devralınır */
   --text-2: var(--ink-2);
   --text-3: var(--ink-3);
 
-  --line:       rgba(255, 255, 255, 0.14);
-  --line-dark:  rgba(22, 32, 58, 0.12);
-
-  /* Müsaitlik — metin taşıyan yüzeyler (beyaz metin, hepsi AA ✓)
-     ölçüm: free 6.68 · sold 6.38 · reserved 6.37                */
+  /* ── Müsaitlik (beyaz metinle AA güvenli) ─────────────────── */
   --avail-free:     #3F5D8A;
   --avail-sold:     #A8392F;
   --avail-reserved: #8A5210;
 
-  /* Müsaitlik — YALNIZCA grafik dolgu, üstünde metin bulunamaz */
-  --avail-free-tint:     #5B7DB1;
-  --avail-sold-tint:     #C6443A;
-  --avail-reserved-tint: #CE7C1B;
-
   /* ── Tipografi ────────────────────────────────────────────── */
   --font-display: "Archivo Variable", "Archivo", system-ui, sans-serif;
   --font-tech:    "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-body:    "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-body:    "Archivo Variable", "Archivo", system-ui, sans-serif;
 
-  /* Hero: kesit çiziminin yanında 2 satırda kalması gereken başlık.
-     19 karakterlik satır ~990px'lik alana sığmak zorunda. */
-  --t-hero:       clamp(38px, 6.6vw, 104px);
-  /* Tam genişlik tipografik anlar (3 satıra sarabilen kısa cümleler) */
-  --t-display-xl: clamp(48px, 9vw, 148px);
-  --t-display:    clamp(38px, 5.5vw, 84px);
-  --t-h1:         clamp(30px, 3.6vw, 54px);
-  --t-h2:         clamp(23px, 2.4vw, 34px);
+  /* Sert sıçramalı ölçek — hiyerarşi boyuttan gelir, griden değil */
+  /* Hero başlığı sol kolona (~636px) 2 satırda sığmak zorunda.
+     17 karakterlik satır x ~0.54em -> tavan 64px. */
+  --t-hero:       clamp(38px, 4.8vw, 64px);
+  --t-display-xl: clamp(44px, 8vw, 132px);
+  --t-display:    clamp(32px, 4.6vw, 68px);
+  --t-h1:         clamp(28px, 3.2vw, 46px);
+  --t-h2:         clamp(22px, 2.2vw, 32px);
   --t-h3:         19px;
+  --t-lead:       clamp(17px, 1.35vw, 21px);
   --t-body:       17px;
   --t-small:      15px;
   --t-tech:       12px;
 
-  --lh-display:   0.98;
-  --lh-tight:     1.06;
-  --lh-body:      1.65;
+  --lh-display: 1.0;
+  --lh-tight:   1.14;
+  --lh-body:    1.62;
 
-  /* Harf aralığı boyuta göre ayrışır: 148px ve 19px aynı tracking'i kaldırmaz */
-  --ls-display:   -0.035em;   /* display-xl, display */
-  --ls-h:         -0.022em;   /* h1, h2 */
-  --ls-h3:        -0.008em;
-  --ls-tech:      0.08em;
+  --ls-display: -0.032em;
+  --ls-h:       -0.02em;
+  --ls-h3:      -0.008em;
+  --ls-tech:    0.1em;
 
-  /* font-stretch yüzdesi — Archivo wdth ekseni 62%–125% arası.
-     font-variation-settings yerine yüksek seviye özellik kullanılır. */
   --wdth-display: 112%;
 
   /* ── Form ─────────────────────────────────────────────────── */
-  --radius-structural: 0;      /* çizimin yuvarlak köşesi yoktur */
+  --radius-structural: 0;
   --radius-control:    2px;
-  --radius-pill:       999px;  /* yalnızca durum çipleri */
+  --radius-pill:       999px;
   --hairline:          1px;
 
   /* ── Uzay ─────────────────────────────────────────────────── */
   --s-1:  4px;   --s-2:  8px;   --s-3:  12px;  --s-4:  16px;
-  --s-6:  24px;  --s-8:  32px;  --s-12: 48px;  --s-16: 64px;
-  --s-24: 96px;  --s-32: 128px; --s-48: 192px;
+  --s-5:  20px;  --s-10: 40px;  --s-6:  24px;  --s-8:  32px;  --s-12: 48px;
+  --s-16: 64px;  --s-20: 80px;  --s-24: 96px;  --s-32: 128px;
+  --s-40: 160px; --s-48: 192px;
 
-  --max-w:  1440px;
-  --gutter: 24px;
-  --rail-w: 72px;
+  --max-w:  1400px;
+  --gutter: 28px;
 
   /* ── Hareket ──────────────────────────────────────────────── */
   --ease:     cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 220ms;
-  --dur-base: 400ms;
+  --dur-fast: 200ms;
+  --dur-base: 420ms;
   --dur-draw: 900ms;
+
+  /* ── Gölge — sıcak, çok yumuşak ───────────────────────────── */
+  --shadow-soft: 0 1px 2px rgba(32, 28, 24, 0.05),
+                 0 12px 32px rgba(32, 28, 24, 0.06);
+  --shadow-lift: 0 2px 6px rgba(32, 28, 24, 0.07),
+                 0 24px 60px rgba(32, 28, 24, 0.10);
 }
 
 @media (max-width: 768px) {
-  :root { --gutter: 16px; }
+  :root { --gutter: 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

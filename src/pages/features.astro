@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/sections/PageHead.astro';
-import SheetRule from '../components/ui/SheetRule.astro';
 import Cta from '../components/sections/Cta.astro';
 import { site } from '../content/site';
 
@@ -18,7 +17,7 @@ const groups = [
   {groups.map((group) => (
     <section class="sheet">
       <div class="shell shell--railed">
-        <SheetRule no={`. ${group.no}`} kicker={group.kicker} />
+        <p class="tech eyebrow">{group.kicker}</p>
         <h2 class="sheet__title">{group.title}</h2>
 
         <div class="sheet__grid">
@@ -50,7 +49,7 @@ const groups = [
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
     gap: 0;
-    border-top: var(--hairline) solid var(--line-dark);
+    border-top: var(--hairline) solid var(--stone);
   }
 
   .sheet__item {
@@ -58,7 +57,7 @@ const groups = [
     gap: var(--s-3);
     align-content: start;
     padding: var(--s-8) var(--s-8) var(--s-12) 0;
-    border-bottom: var(--hairline) solid var(--line-dark);
+    border-bottom: var(--hairline) solid var(--stone);
   }
   .sheet__no { color: var(--brick); }
   .sheet__itemTitle { font-size: var(--t-h3); }

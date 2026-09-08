@@ -8,7 +8,7 @@ interface Props { current: string; }
 const { current } = Astro.props;
 ---
 
-<header class="head on-dark-deep">
+<header class="head">
   <div class="shell head__inner">
     <a class="head__brand" href="/" aria-label={site.brand.name}>
       <Wordmark />
@@ -17,7 +17,7 @@ const { current } = Astro.props;
     <Nav current={current} />
 
     <div class="head__actions">
-      <Button href={site.ctaPrimary.href} variant="ghost" arrow={false}>
+      <Button href={site.ctaPrimary.href} variant="primary" arrow={false}>
         {site.ctaPrimary.label}
       </Button>
 
@@ -42,7 +42,6 @@ const { current } = Astro.props;
       </details>
     </div>
   </div>
-  <hr class="rule" />
 </header>
 
 <style>
@@ -50,24 +49,23 @@ const { current } = Astro.props;
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--ink-deep) 88%, transparent);
-    backdrop-filter: blur(14px);
-    color: var(--chalk);
+    background: color-mix(in srgb, var(--paper) 90%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: var(--hairline) solid var(--stone);
   }
-  .head .rule { border-top-color: var(--line); }
 
   .head__inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--s-6);
-    min-height: 68px;
+    gap: var(--s-8);
+    min-height: 72px;
   }
 
-  .head__brand { text-decoration: none; color: var(--chalk); }
+  .head__brand { text-decoration: none; color: var(--ink); }
   .head__actions { display: flex; align-items: center; gap: var(--s-4); }
 
-  /* ── Mobil menü — native <details>, sıfır JS ───────────── */
+  /* ── Mobil menü — native <details>, sıfır JS ─────────────── */
   .menu { display: none; position: relative; }
   @media (max-width: 900px) { .menu { display: block; } }
 
@@ -79,23 +77,28 @@ const { current } = Astro.props;
     place-content: center;
     cursor: pointer;
     list-style: none;
-    border: var(--hairline) solid var(--line);
+    border: var(--hairline) solid var(--stone);
     border-radius: var(--radius-control);
   }
   .menu__toggle::-webkit-details-marker { display: none; }
-  .menu__bar { display: block; width: 18px; height: var(--hairline); background: var(--chalk); }
+  .menu__bar {
+    display: block;
+    width: 18px;
+    height: var(--hairline);
+    background: var(--ink);
+    transition: transform var(--dur-fast) var(--ease);
+  }
   .menu[open] .menu__bar:first-child { transform: translateY(3px) rotate(45deg); }
   .menu[open] .menu__bar:last-child { transform: translateY(-3px) rotate(-45deg); }
-  .menu__bar { transition: transform var(--dur-fast) var(--ease); }
 
   .menu__panel {
     position: absolute;
     right: 0;
     top: calc(100% + var(--s-3));
     min-width: 220px;
-    background: var(--ink);
-    border: var(--hairline) solid var(--line);
-    border-radius: var(--radius-structural);
+    background: var(--paper);
+    border: var(--hairline) solid var(--stone);
+    box-shadow: var(--shadow-lift);
     padding: var(--s-3);
   }
   .menu__list { list-style: none; margin: 0; padding: 0; display: grid; }
@@ -107,8 +110,8 @@ const { current } = Astro.props;
     font-size: var(--t-tech);
     text-transform: uppercase;
     letter-spacing: var(--ls-tech);
-    color: var(--chalk-3);
+    color: var(--ink-2);
   }
-  .menu__link:hover { color: var(--chalk); }
-  .menu__link[aria-current='page'] { color: var(--chalk); }
+  .menu__link:hover { color: var(--ink); }
+  .menu__link[aria-current='page'] { color: var(--brick); }
 </style>

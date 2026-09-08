@@ -9,12 +9,13 @@ const {
 } = Astro.props;
 ---
 
-<section class="cta on-dark-deep">
-  <div class="shell shell--railed cta__inner reveal">
-    <div>
-      <h2 class="cta__title">{title}</h2>
+<section class="cta on-ink">
+  <div class="shell cta__inner">
+    <div class="cta__copy">
+      <h2 class="cta__title display display--lg">{title}</h2>
       <p class="cta__body">{body}</p>
     </div>
+
     <div class="cta__actions">
       <Button href={site.ctaPrimary.href} variant="primary" size="lg">
         {site.ctaPrimary.label}
@@ -27,29 +28,25 @@ const {
 </section>
 
 <style>
-  .cta { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
+  .cta { padding-block: clamp(var(--s-20), 8vw, var(--s-32)); }
 
   .cta__inner {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: clamp(var(--s-8), 4vw, var(--s-16));
-    align-items: center;
-    border-top: var(--hairline) solid var(--line);
-    padding-top: clamp(var(--s-8), 4vw, var(--s-16));
+    align-items: end;
   }
-  @media (max-width: 900px) {
-    .cta__inner { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 900px) { .cta__inner { grid-template-columns: 1fr; } }
 
-  .cta__title {
-    font-size: var(--t-display);
-    letter-spacing: var(--ls-display);
-    max-width: 14ch;
+  .cta__title { max-width: 12ch; }
+  .cta__body {
+    margin-top: var(--s-5);
+    max-width: 46ch;
+    color: var(--on-ink-2);
+    font-size: var(--t-lead);
+    line-height: 1.55;
   }
-  .cta__body { margin-top: var(--s-4); max-width: 48ch; color: var(--text-2); }
 
   .cta__actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
-  @media (min-width: 901px) {
-    .cta__actions { justify-self: end; }
-  }
+  @media (min-width: 901px) { .cta__actions { justify-self: end; } }
 </style>

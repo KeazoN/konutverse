@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/sections/PageHead.astro';
-import SheetRule from '../components/ui/SheetRule.astro';
 import SheetLabel from '../components/ui/SheetLabel.astro';
 import Button from '../components/ui/Button.astro';
 import Accordion from '../components/ui/Accordion.astro';
@@ -73,7 +72,7 @@ const p = site.pricing;
   <section class="faq">
     <div class="shell shell--railed faq__inner">
       <div class="faq__aside">
-        <SheetRule no=". 02" />
+        <p class="tech eyebrow">SSS</p>
         <h2 class="faq__title">{p.faqTitle}</h2>
       </div>
       <div class="faq__body">
@@ -91,7 +90,7 @@ const p = site.pricing;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0;
-    border-top: var(--hairline) solid var(--line-dark);
+    border-top: var(--hairline) solid var(--stone);
   }
   @media (max-width: 900px) {
     .plans__grid { grid-template-columns: 1fr; }
@@ -103,8 +102,8 @@ const p = site.pricing;
     align-content: start;
     gap: var(--s-4);
     padding: var(--s-12) var(--s-8);
-    border-right: var(--hairline) solid var(--line-dark);
-    border-bottom: var(--hairline) solid var(--line-dark);
+    border-right: var(--hairline) solid var(--stone);
+    border-bottom: var(--hairline) solid var(--stone);
   }
   .plan:last-child { border-right: 0; }
   @media (max-width: 900px) { .plan { border-right: 0; } }

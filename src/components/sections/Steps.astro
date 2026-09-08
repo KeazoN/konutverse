@@ -1,22 +1,22 @@
 ---
 import { site } from '../../content/site';
-import SheetRule from '../ui/SheetRule.astro';
 
 const { steps } = site.home;
 ---
 
-<section class="steps on-dark">
-  <div class="shell shell--railed">
-    <SheetRule no=". 04" kicker={steps.kicker} />
-
-    <h2 class="steps__title reveal">{steps.title}</h2>
+<section class="steps section">
+  <div class="shell">
+    <div class="steps__head">
+      <p class="tech eyebrow">{steps.kicker}</p>
+      <h2 class="steps__title display display--lg">{steps.title}</h2>
+    </div>
 
     <ol class="steps__list">
       {steps.items.map((item, i) => (
-        <li class="steps__item reveal" style={`--reveal-delay:${i * 80}ms`}>
-          <span class="tech steps__no num">{item.no}</span>
-          <h3 class="steps__itemTitle">{item.title}</h3>
-          <p class="steps__body">{item.body}</p>
+        <li class="step reveal" style={`--reveal-delay:${i * 70}ms`}>
+          <span class="tech step__no num">{item.no}</span>
+          <h3 class="step__title">{item.title}</h3>
+          <p class="step__body">{item.body}</p>
         </li>
       ))}
     </ol>
@@ -24,14 +24,8 @@ const { steps } = site.home;
 </section>
 
 <style>
-  .steps { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
-
-  .steps__title {
-    font-size: var(--t-display);
-    letter-spacing: var(--ls-display);
-    margin-block: var(--s-8) var(--s-16);
-    max-width: 16ch;
-  }
+  .steps__head { margin-bottom: clamp(var(--s-12), 5vw, var(--s-20)); }
+  .steps__title { max-width: 14ch; }
 
   .steps__list {
     list-style: none;
@@ -39,30 +33,18 @@ const { steps } = site.home;
     padding: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    border-top: var(--hairline) solid var(--line);
+    gap: var(--gutter);
   }
-  @media (max-width: 900px) {
-    .steps__list { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 900px) { .steps__list { grid-template-columns: 1fr; } }
 
-  .steps__item {
+  .step {
     display: grid;
     gap: var(--s-3);
     align-content: start;
-    padding: var(--s-8) var(--s-8) var(--s-12) 0;
-    border-right: var(--hairline) solid var(--line);
+    padding-top: var(--s-6);
+    border-top: 2px solid var(--ink);
   }
-  .steps__item:last-child { border-right: 0; }
-  @media (max-width: 900px) {
-    .steps__item {
-      border-right: 0;
-      border-bottom: var(--hairline) solid var(--line);
-      padding-right: 0;
-    }
-  }
-
-  .steps__no { color: var(--brick-lit); }
-  .steps__itemTitle { font-size: var(--t-h3); margin-top: var(--s-2); }
-  .steps__body { font-size: var(--t-small); color: var(--text-2); }
+  .step__no { color: var(--brick); }
+  .step__title { font-size: var(--t-h3); margin-top: var(--s-1); }
+  .step__body { color: var(--ink-2); font-size: var(--t-small); }
 </style>

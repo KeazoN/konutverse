@@ -25,7 +25,7 @@ export const credits = {
   design: 'Alis Dijital',
   development: 'Alis Dijital',
 
-  typography: ['Archivo', 'IBM Plex Mono', 'Inter'],
+  typography: ['Archivo', 'IBM Plex Mono'],
   technology: ['Astro', 'GSAP ScrollTrigger', 'Lenis'],
   accessibility: 'WCAG 2.2 AA',
 

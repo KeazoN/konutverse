@@ -10,11 +10,10 @@
     "preview": "astro preview",
     "test": "vitest run",
     "verify": "npm run build && npm run test",
-    "prebuild": "node scripts/sync-signature.mjs"
+    "prebuild": "node scripts/sync-signature.mjs && node scripts/sync-fonts.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
-    "@fontsource-variable/inter": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "astro": "^7.3.1",
     "gsap": "^3.15.0",

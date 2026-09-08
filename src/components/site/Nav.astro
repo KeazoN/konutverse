@@ -29,15 +29,13 @@ const { current } = Astro.props;
     display: inline-block;
     padding: var(--s-2) 0;
     text-decoration: none;
-    color: var(--chalk-3);
+    color: var(--ink-2);
     transition: color var(--dur-fast) var(--ease);
   }
-  .nav__link:hover { color: var(--chalk); }
-
-  /* Aktif sayfa: kot rayının işaret dilinden — altta tuğla çentik */
+  .nav__link:hover { color: var(--ink); }
   .nav__link[aria-current='page'] {
-    color: var(--chalk);
-    box-shadow: 0 2px 0 var(--brick-lit);
+    color: var(--ink);
+    box-shadow: 0 2px 0 var(--brick);
   }
 
   @media (max-width: 900px) { .nav { display: none; } }

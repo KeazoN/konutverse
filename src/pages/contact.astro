@@ -56,7 +56,7 @@ const AUTOCOMPLETE: Record<string, string> = {
         <p class="form__status tech" id="form-status" role="status" aria-live="polite"></p>
       </form>
 
-      <aside class="block on-dark">
+      <aside class="block on-ink">
         <dl class="block__list">
           {c.details.map((d) => (
             <div class="block__row">
@@ -109,7 +109,7 @@ const AUTOCOMPLETE: Record<string, string> = {
     align-items: start;
     margin-top: var(--s-8);
     padding-top: var(--s-6);
-    border-top: var(--hairline) solid var(--line-dark);
+    border-top: var(--hairline) solid var(--stone);
   }
   .form__check {
     width: 18px;
@@ -159,7 +159,7 @@ const AUTOCOMPLETE: Record<string, string> = {
   /* ── Antet bloğu ────────────────────────────────────────── */
   .block {
     background: var(--ink);
-    color: var(--chalk);
+    color: var(--paper);
     padding: clamp(var(--s-8), 3vw, var(--s-12));
   }
 
@@ -168,12 +168,12 @@ const AUTOCOMPLETE: Record<string, string> = {
     display: grid;
     gap: var(--s-2);
     padding-block: var(--s-6);
-    border-bottom: var(--hairline) solid var(--line);
+    border-bottom: var(--hairline) solid var(--stone);
   }
   .block__row:first-child { padding-top: 0; }
   .block__label { color: var(--text-3); margin: 0; }
   .block__value { margin: 0; font-size: var(--t-body); }
-  .block__link { text-decoration: none; box-shadow: 0 1px 0 var(--line); }
+  .block__link { text-decoration: none; box-shadow: 0 1px 0 var(--stone); }
   .block__link:hover { color: var(--brick-lit); }
 
   .block__see { margin-top: var(--s-8); display: grid; gap: var(--s-4); justify-items: start; }

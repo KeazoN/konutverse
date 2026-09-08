@@ -1,11 +1,16 @@
 ---
 // Fontlar self-host (Fontsource). Üçüncü taraf CDN yok.
-// Archivo için standard.css: wght + wdth eksenlerinin İKİSİ de gelir.
-// index.css yalnız wght yükler ve geniş kurulum sessizce çalışmaz.
-import '@fontsource-variable/archivo/standard.css';
-import '@fontsource/ibm-plex-mono/400.css';
-import '@fontsource/ibm-plex-mono/500.css';
-import '@fontsource-variable/inter';
+//
+// İKİ superaile, ÜÇ ses:
+//   Archivo geniş (wdth 112, 600) -> display
+//   Archivo normal (wdth 100, 400) -> gövde
+//   IBM Plex Mono -> teknik katman
+// Üçüncü bir gövde ailesi (Inter) kaldırıldı: ayrım zaten genişlik
+// ekseninden geliyordu ve 130 KB font yükü ekliyordu.
+//
+// standard.css şart: index.css yalnız wght yükler, geniş kurulum
+// sessizce çalışmazdı.
+import '../styles/fonts.css';
 
 import '../styles/tokens.css';
 import '../styles/base.css';
@@ -20,11 +25,9 @@ interface Props {
   title: string;
   description: string;
   route: string;
-  /** Sayfanın kendi zemini koyuysa gövdeye koyu yüzey sınıfı uygulanır. */
-  surface?: 'light' | 'dark';
 }
 
-const { title, description, route, surface = 'light' } = Astro.props;
+const { title, description, route } = Astro.props;
 const canonical = new URL(route, Astro.site).href;
 
 // ── İmza Sistemi, Katman 0: makine katmanı ──────────────────
@@ -82,6 +85,16 @@ const jsonLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content={THEME_COLOR} />
 
+    <!-- İKİ Archivo alt kümesi de ön yüklenir.
+         Preload olmadan font ilk boyamadan sonra geliyor, metin yeniden
+         sarıyor ve hero butonları zıplıyor (ölçülen CLS 0.108).
+         latin-ext ŞART: Türkçe ş/ğ/İ harfleri orada; yalnız latin
+         preload edildiğinde CLS 0.104'e geri dönüyor (ölçüldü). -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="/fonts/archivo-latin.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="/fonts/archivo-latin-ext.woff2" />
+
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="mask-icon" href="/favicon.svg" color={THEME_COLOR} />
 
@@ -110,9 +123,7 @@ const jsonLd = {
 
     <Header current={route} />
 
-    <slot name="rail" />
-
-    <main id="main" class:list={[surface === 'dark' && 'on-dark-deep']}>
+    <main id="main">
       <slot />
     </main>
 

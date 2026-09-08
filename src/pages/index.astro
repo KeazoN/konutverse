@@ -1,33 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
-import KotRayi from '../components/site/KotRayi.astro';
 import Hero from '../components/sections/Hero.astro';
-import Kesit from '../components/sections/Kesit.astro';
 import Capabilities from '../components/sections/Capabilities.astro';
 import Status from '../components/sections/Status.astro';
 import Steps from '../components/sections/Steps.astro';
 import Cta from '../components/sections/Cta.astro';
 import { site } from '../content/site';
-import { kotOf } from '../content/projects';
 
 const { meta } = site.home;
-const railMarks = [11, 8, 5, 2, 0].map((i) => ({ kot: kotOf(i), id: `f${i}` }));
 ---
 
-<Base title={meta.title} description={meta.description} route="/" surface="dark">
-  <KotRayi slot="rail" marks={railMarks} />
-
+<Base title={meta.title} description={meta.description} route="/">
   <Hero />
-  <Kesit />
   <Capabilities />
   <Status />
   <Steps />
   <Cta />
-
-  {/* Ağır hareket YALNIZCA ana sayfada. Base.astro'da koşullu
-      yüklemek Astro'nun script hoisting'i yüzünden bundle'ı
-      bölmezdi; burada tutmak ayrımı garantiler. */}
-  <script>
-    import '../scripts/kesit-scrub.ts';
-  </script>
 </Base>

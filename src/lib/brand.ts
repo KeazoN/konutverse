@@ -6,4 +6,4 @@
  * tests/tokens.test.ts eşleşmeyi kilitler. Birini değiştirirsen
  * diğerini de değiştir, yoksa test kırılır.
  */
-export const THEME_COLOR = '#0F1B33';
+export const THEME_COLOR = '#201C18';

@@ -1,29 +1,17 @@
 ---
 import { site } from '../../content/site';
 import { featuredProject } from '../../content/projects';
-import BuildingSection from '../viz/BuildingSection.astro';
-import TechCaption from '../site/TechCaption.astro';
 import Button from '../ui/Button.astro';
-import Arrow from '../ui/Arrow.astro';
 
 const { hero } = site.home;
 const p = featuredProject;
-
-// Büyük harf CSS'e bırakılır (.tech sınıfı). <html lang="tr"> sayesinde
-// tarayıcı 'i' harfini 'İ' yapar; JS'in toUpperCase()'i 'I' yapardı.
-const caption = [
-  p.name,
-  `${p.floors} kat`,
-  `${p.units} daire`,
-  `${p.district}, ${p.city}`,
-];
 ---
 
-<section class="hero on-dark-deep">
-  <div class="shell shell--railed hero__inner">
+<section class="hero">
+  <div class="hero__grid">
 
     <div class="hero__copy">
-      <p class="tech hero__kicker">{site.brand.tagline}</p>
+      <p class="tech eyebrow">{site.brand.tagline}</p>
 
       <h1 class="display display--hero hero__title">
         {hero.title.map((line, i) => (
@@ -31,7 +19,7 @@ const caption = [
         ))}
       </h1>
 
-      <p class="hero__body">{hero.body}</p>
+      <p class="lead hero__lead">{hero.body}</p>
 
       <div class="hero__actions">
         <Button href={hero.cta.href} variant="primary" size="lg">{hero.cta.label}</Button>
@@ -41,123 +29,90 @@ const caption = [
       </div>
     </div>
 
-    <div class="hero__figure" aria-hidden="false">
-      <BuildingSection
-        floors={p.floors}
-        unitsPerFloor={4}
-        tourableFloors={[0, 2]}
-        animate={true}
-        label={`${p.name} — ${p.floors} katlı bina kesiti, gezilebilir daireler işaretli`}
-      />
-    </div>
-  </div>
+    <figure class="hero__figure">
+      <div class="media hero__media">
+        <img
+          src="/img/hero-poster.jpg"
+          alt="360° turla gezilebilen bir dairenin oturma odası"
+          width="1920"
+          height="1013"
+          fetchpriority="high"
+          decoding="async"
+        />
+        <span class="tech hero__badge">360° gezilebilir</span>
+      </div>
 
-  <div class="shell shell--railed hero__foot">
-    <hr class="rule" />
-    <div class="hero__footRow">
-      <TechCaption items={caption} />
-      <a class="tech hero__scroll" href="#kesit">
-        {hero.scrollHint}
-        <Arrow dir="down" />
-      </a>
-    </div>
+      <figcaption class="hero__caption">
+        <span class="tech hero__project">{p.name}</span>
+        <span class="tech hero__meta">
+          {p.floors} kat · {p.units} daire · {p.district}, {p.city}
+        </span>
+      </figcaption>
+    </figure>
+
   </div>
 </section>
 
 <style>
-  .hero {
-    position: relative;
-    min-height: calc(100dvh - 68px);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-top: clamp(var(--s-12), 7vw, var(--s-24));
-  }
+  .hero { padding-top: clamp(var(--s-12), 6vw, var(--s-32)); }
 
-  .hero__inner {
-    flex: 1;
+  .hero__grid {
     display: grid;
-    grid-template-columns: minmax(0, 9fr) minmax(0, 3fr);
-    gap: clamp(var(--s-6), 4vw, var(--s-16));
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
     align-items: center;
+    gap: clamp(var(--s-8), 5vw, var(--s-24));
+    /* Sol kolon kabuk içinde hizalı; sağdaki fotoğraf ekran kenarına taşar */
+    padding-left: max(var(--gutter), calc((100vw - var(--max-w)) / 2 + var(--gutter)));
   }
 
-  .hero__copy { display: grid; gap: var(--s-6); align-content: center; }
+  .hero__copy {
+    max-width: 640px;
+    padding-block: clamp(var(--s-8), 4vw, var(--s-20));
+  }
 
-  .hero__kicker { color: var(--brick-lit); }
-
-  .hero__title { max-width: 18ch; }
+  .hero__title { margin-bottom: var(--s-6); }
   .hero__line { display: block; }
 
-  .hero__body {
-    max-width: 52ch;
-    font-size: clamp(var(--t-small), 1.2vw, 19px);
-    color: var(--text-2);
+  .hero__lead { margin-bottom: var(--s-10, 40px); max-width: 46ch; }
+
+  .hero__actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+
+  /* ── Fotoğraf: hero'nun ağırlık merkezi ─────────────────────── */
+  .hero__figure { margin: 0; }
+
+  .hero__media {
+    aspect-ratio: 4 / 3.9;
+    box-shadow: var(--shadow-lift);
   }
 
-  .hero__actions {
+  .hero__badge {
+    position: absolute;
+    left: var(--s-5);
+    bottom: var(--s-5);
+    background: var(--brick);
+    color: var(--paper);
+    padding: 8px 12px;
+  }
+
+  .hero__caption {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--s-3);
-    margin-top: var(--s-2);
-  }
-
-  /* Kesit çizimi — ince ve tam yükseklikte, tipografiyle yarışmaz */
-  .hero__figure {
-    align-self: stretch;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    min-height: 0;
-    padding-block: var(--s-8);
-  }
-  .hero__figure :global(svg) { max-height: min(62vh, 560px); width: auto; }
-
-  /* ── Alt künye şeridi ────────────────────────────────────── */
-  .hero__foot { padding-bottom: var(--s-8); }
-  .hero__footRow {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s-4);
+    align-items: baseline;
+    gap: var(--s-2) var(--s-4);
     padding-top: var(--s-4);
   }
+  .hero__project { color: var(--ink); }
+  .hero__meta { color: var(--text-3); }
 
-  .hero__scroll {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-3);
-    text-decoration: none;
-    color: var(--text-3);
-    transition: color var(--dur-fast) var(--ease);
-  }
-  .hero__scroll:hover { color: var(--brick-lit); }
-  .hero__scroll :global(.arrow) {
-    animation: hero-nudge 2.4s var(--ease) infinite;
-  }
-  @keyframes hero-nudge {
-    0%, 70%, 100% { transform: rotate(90deg) translateX(0); }
-    82%           { transform: rotate(90deg) translateX(4px); }
-  }
-
-  /* ── Dar ekran ───────────────────────────────────────────── */
   @media (max-width: 900px) {
-    .hero__inner {
+    .hero { padding-top: var(--s-8); }
+    .hero__grid {
       grid-template-columns: 1fr;
       gap: var(--s-12);
-      align-items: start;
+      padding-left: var(--gutter);
+      padding-right: var(--gutter);
     }
-    .hero__figure {
-      order: -1;
-      justify-content: flex-start;
-      padding-block: 0;
-    }
-    .hero__figure :global(svg) { max-height: 34vh; }
-    .hero__title { max-width: none; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero__scroll :global(.arrow) { animation: none; }
+    .hero__copy { max-width: none; padding-block: 0; }
+    .hero__media { aspect-ratio: 4 / 3; }
   }
 </style>

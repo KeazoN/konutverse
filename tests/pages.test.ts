@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { parseHTML } from 'linkedom';
 import { gzipSync } from 'node:zlib';
 import { projects } from '../src/content/projects';
@@ -10,12 +10,24 @@ const DIST = 'dist';
 export const pathFor = (route: string) =>
   route === 'index' ? `${DIST}/index.html` : `${DIST}/${route}/index.html`;
 
-/** dist/_astro içindeki tüm CSS'i tek metin olarak döndürür. */
-function bundledCss(): string {
-  return readdirSync(`${DIST}/_astro`)
-    .filter((f) => f.endsWith('.css'))
-    .map((f) => readFileSync(`${DIST}/_astro/${f}`, 'utf8'))
+/**
+ * Yayınlanan CSS'in tamamı. Astro `inlineStylesheets: 'always'` ile
+ * stilleri HTML'e gömüyor (mobilde render-blocking istekleri sıfırlamak
+ * için), o yüzden hem gömülü <style> blokları hem varsa dış dosyalar
+ * birlikte okunur.
+ */
+function bundledCss(route = 'index'): string {
+  const { document } = parseHTML(readFileSync(pathFor(route), 'utf8'));
+
+  const inline = [...document.querySelectorAll('style')]
+    .map((s) => s.textContent ?? '')
     .join('\n');
+
+  const external = [...document.querySelectorAll('link[rel="stylesheet"]')]
+    .map((l) => readFileSync(`${DIST}${l.getAttribute('href')}`, 'utf8'))
+    .join('\n');
+
+  return inline + '\n' + external;
 }
 
 const ROUTES = ['index', 'features', 'about', 'pricing', 'contact', 'search', 'demo'];
@@ -72,16 +84,52 @@ describe('tipografi yüklemesi', () => {
     expect(css).toContain('font-stretch');
   });
 
-  it('üç ayrı aile de yüklenir — tek Inter problemi çözüldü', () => {
+  it('iki superaile yüklenir; gereksiz üçüncü gövde ailesi yok', () => {
     const css = bundledCss();
     expect(css).toContain('Archivo Variable');
     expect(css).toContain('IBM Plex Mono');
-    expect(css).toContain('Inter Variable');
+    // Inter kaldırıldı: ayrım genişlik ekseninden geliyor, 130 KB tasarruf
+    expect(css).not.toContain('Inter Variable');
   });
 
-  it('Türkçe için latin-ext alt kümesi mevcut (ğ ş ı İ)', () => {
-    const fonts = readdirSync(`${DIST}/_astro`).filter((f) => f.endsWith('.woff2'));
-    expect(fonts.some((f) => f.includes('latin-ext'))).toBe(true);
+  /**
+   * Fontlar sabit yolla self-host edilir (public/fonts). Yalnızca
+   * Türkçe için gereken latin + latin-ext yayınlanır; vietnamese ve
+   * cyrillic hiç kopyalanmaz. Mobil simülasyonda bant genişliğini
+   * bu yük belirliyor.
+   */
+  it('font yükü mobil bütçe içinde (< 260 KB)', () => {
+    const dir = `${DIST}/fonts`;
+    const files = readdirSync(dir).filter((f) => f.endsWith('.woff2'));
+    expect(files.length).toBe(6);
+    const total = files.reduce((n, f) => n + statSync(`${dir}/${f}`).size, 0);
+    const kb = total / 1024;
+    expect(kb, `${kb.toFixed(0)} KB`).toBeLessThan(260);
+  });
+
+  it('gereksiz alt küme yayınlanmaz', () => {
+    const files = readdirSync(`${DIST}/fonts`).join(' ');
+    expect(files).not.toMatch(/vietnamese|cyrillic|greek/);
+  });
+
+  it('kritik fontlar ön yüklenir — CLS için şart', () => {
+    const { document } = parseHTML(readFileSync(pathFor('index'), 'utf8'));
+    const pre = [...document.querySelectorAll('link[rel="preload"][as="font"]')];
+    expect(pre.length).toBeGreaterThanOrEqual(1);
+    for (const l of pre) {
+      expect(l.getAttribute('crossorigin')).not.toBeNull();
+      expect(l.getAttribute('href')).toMatch(/^\/fonts\//);
+    }
+  });
+
+  it('CSS render-blocking istek üretmez — HTML içine gömülü', () => {
+    for (const route of ROUTES) {
+      const { document } = parseHTML(readFileSync(pathFor(route), 'utf8'));
+      expect(
+        document.querySelectorAll('link[rel="stylesheet"]').length,
+        `/${route} render-blocking CSS yüklüyor`
+      ).toBe(0);
+    }
   });
 
   it('fontlar self-host — üçüncü taraf font CDN yok', () => {
@@ -134,102 +182,7 @@ describe('navigasyon sözleşmesi', () => {
   }
 });
 
-describe('ana sayfa hero', () => {
-  const doc = () => parseHTML(readFileSync('dist/index.html', 'utf8')).document;
-  const html = () => readFileSync('dist/index.html', 'utf8');
 
-  it('canlı sitedeki başlığı birebir taşır', () => {
-    const h1 = doc().querySelector('h1')!.textContent!.replace(/\s+/g, ' ').trim();
-    expect(h1).toBe('Alıcı daireyi gezip randevuya geliyor');
-  });
-
-  it('teknik künye şeridi gerçek proje verisini gösterir', () => {
-    const h = html();
-    // Kaynak metin DOĞAL halde; büyük harfi CSS text-transform yapar.
-    // JS ile büyütmek Türkçe 'i' harfini bozardı (MELİKGAZİ -> MELIKGAZI).
-    for (const s of ['DUMAN-ERSA ORT.', '12 kat', '48 daire', 'Melikgazi, Kayseri']) {
-      expect(h).toContain(s);
-    }
-  });
-
-  it('künye şeridi CSS ile büyütülür — kaynakta bozuk Türkçe yok', () => {
-    const cap = doc().querySelector('.techcap')!;
-    expect(cap.textContent).toContain('Melikgazi');
-    expect(cap.textContent).not.toContain('MELIKGAZI');
-  });
-
-  it('bina kesiti erişilebilir etiket taşıyan gerçek SVG', () => {
-    const svg = doc().querySelector('.hero__figure svg[role="img"]');
-    expect(svg).toBeTruthy();
-    expect(svg!.getAttribute('aria-label')).toContain('12 katlı');
-  });
-
-  it('kesit 12 katı da çizer, gezilebilir katlar işaretli', () => {
-    const d = doc();
-    expect(d.querySelectorAll('.hero__figure [data-floor]').length).toBe(12);
-    expect(d.querySelectorAll('.hero__figure .sec__floor--tourable').length).toBe(2);
-  });
-
-  it('kesit çizgileri pathLength ile normalize — çizim animasyonu kontrollü', () => {
-    const lines = [...doc().querySelectorAll('.hero__figure line')];
-    expect(lines.length).toBeGreaterThan(20);
-    for (const l of lines) expect(l.getAttribute('pathLength')).toBe('1');
-  });
-
-  it('başlık iki satır olarak kurulur — sarma tesadüfe bırakılmaz', () => {
-    expect(doc().querySelectorAll('h1 .hero__line').length).toBe(2);
-  });
-
-  it('kot rayı gerçek kot değerleri taşır', () => {
-    const h = html();
-    for (const kot of ['+35.20', '+25.60', '+16.00', '+6.40', '+0.00']) {
-      expect(h).toContain(kot);
-    }
-  });
-});
-
-describe('kesit sahnesi', () => {
-  const doc = () => parseHTML(readFileSync('dist/index.html', 'utf8')).document;
-  const html = () => readFileSync('dist/index.html', 'utf8');
-
-  it('üç durak da HTML içinde STATİK — JS olmadan okunur', () => {
-    const stops = doc().querySelectorAll('#kesit [data-stop]');
-    expect(stops.length).toBe(3);
-    for (const s of stops) expect(s.textContent!.trim().length).toBeGreaterThan(10);
-  });
-
-  it('canlı sitedeki kesit metnini birebir taşır', () => {
-    const h = html();
-    expect(h).toContain('Sahaya gelen alıcı');
-    expect(h).toContain('daireyi zaten gezmiş olur');
-    expect(h).toContain('görüşme tanıtımla değil fiyat konuşmasıyla başlıyor');
-  });
-
-  it('kesit ve mekân katmanlarının ikisi de DOM\'da', () => {
-    const d = doc();
-    expect(d.querySelector('[data-layer="section"]')).toBeTruthy();
-    expect(d.querySelector('[data-layer="room"]')).toBeTruthy();
-  });
-
-  it('perspektif mekân erişilebilir etiket taşır ve fotoğraf DEĞİL', () => {
-    const d = doc();
-    const room = d.querySelector('[data-layer="room"] svg[role="img"]');
-    expect(room).toBeTruthy();
-    expect(room!.getAttribute('aria-label')).toContain('360°');
-    // Stok fotoğraf kullanılmadı — çizgi diliyle çizildi
-    expect(d.querySelector('[data-layer="room"] img')).toBeNull();
-  });
-
-  it('kesit düzlemi ve scrub kancaları var', () => {
-    const d = doc();
-    expect(d.querySelector('[data-kesit]')).toBeTruthy();
-    expect(d.querySelector('[data-cut-plane]')).toBeTruthy();
-  });
-
-  it('scrub varsayılan olarak KAPALI — JS açar, yoksa içerik statik kalır', () => {
-    expect(doc().querySelector('[data-kesit]')!.getAttribute('data-scrub')).toBeNull();
-  });
-});
 
 describe('JS bütçesi (spec §9)', () => {
   const BUDGET = { home: 80 * 1024, other: 20 * 1024 };
@@ -256,67 +209,26 @@ describe('JS bütçesi (spec §9)', () => {
     expect(bytes, `künye ${(bytes / 1024).toFixed(1)} KB`).toBeLessThanOrEqual(BUDGET.other);
   });
 
-  it('ağır hareket YALNIZCA ana sayfada — bundle gerçekten bölünmüş', () => {
-    const home = jsBytesOf('index');
-    const other = jsBytesOf('kunye');
-    // GSAP + ScrollTrigger en az 30 KB gzip ekler
-    expect(home - other).toBeGreaterThan(30 * 1024);
+  /**
+   * GSAP artık ilk yükte HİÇ gelmiyor: kesit sahnesi ekranın altında
+   * olduğu için IntersectionObserver yaklaşınca dinamik import ediyor.
+   * Bu yüzden ana sayfanın ilk JS'i de küçük olmalı.
+   */
+  it('ağır hareket ilk yükte gelmiyor — tembel yükleniyor', () => {
+    const bytes = jsBytesOf('index');
+    expect(bytes, `ana sayfa ilk JS ${(bytes / 1024).toFixed(1)} KB`).toBeLessThan(15 * 1024);
+  });
+
+  it('GSAP ayrı bir parçaya bölünmüş ve ilk yükte referans edilmiyor', () => {
+    const { document } = parseHTML(readFileSync(pathFor('index'), 'utf8'));
+    const eager = [...document.querySelectorAll('script[src]')]
+      .map((s) => readFileSync(`${DIST}${s.getAttribute('src')}`, 'utf8'))
+      .join('');
+    // Kütüphanenin kendisi ilk yüklenen dosyalarda bulunmamalı
+    expect(eager).not.toContain('ScrollTrigger.create');
   });
 });
 
-describe('ana sayfa — kalan bölümler', () => {
-  const doc = () => parseHTML(readFileSync('dist/index.html', 'utf8')).document;
-  const html = () => readFileSync('dist/index.html', 'utf8');
-
-  it('üç kabiliyet bloğu, pafta numaralarıyla', () => {
-    const h = html();
-    for (const no of ['. 01', '. 02', '. 03']) expect(h).toContain(no);
-    expect(doc().querySelectorAll('.caps__item').length).toBe(3);
-  });
-
-  it('kabiliyet görselleri KOD İLE çizilmiş — ekran görüntüsü yok', () => {
-    const figs = [...doc().querySelectorAll('.caps__figure')];
-    expect(figs.length).toBe(3);
-    for (const f of figs) {
-      expect(f.querySelector('svg'), 'SVG temsili yok').toBeTruthy();
-      expect(f.querySelector('img'), 'ekran görüntüsü kullanılmış').toBeNull();
-    }
-  });
-
-  it('kabiliyet görselleri erişilebilir etiket taşır', () => {
-    for (const svg of doc().querySelectorAll('.caps__figure svg')) {
-      expect(svg.getAttribute('aria-label')?.length).toBeGreaterThan(10);
-    }
-  });
-
-  it('yayın durumu: tarihli sicil damgası ve sıfır dolgulu sayılar', () => {
-    const h = html();
-    expect(h).toContain('YAYIN DURUMU · 08.09.2026');
-    const values = [...doc().querySelectorAll('.metric__value')].map((e) => e.textContent);
-    expect(values).toEqual(['01', '02', '04']);
-  });
-
-  it('3 adımda: pafta referansı numaralandırması', () => {
-    const h = html();
-    for (const no of ['01/03', '02/03', '03/03']) expect(h).toContain(no);
-  });
-
-  it('adım metinleri canlı siteyle birebir', () => {
-    const h = html();
-    expect(h).toContain('Daire fotoğraflarınızı ve varsa kat planlarını iletin');
-    expect(h).toContain('Bina, kat ve daire yapısını kurup odaları birbirine bağlıyoruz');
-  });
-
-  it('başlık hiyerarşisi geçerli — tek h1, h2 atlanmamış', () => {
-    const d = doc();
-    expect(d.querySelectorAll('h1').length).toBe(1);
-    expect(d.querySelectorAll('h2').length).toBeGreaterThanOrEqual(4);
-  });
-
-  it('#nasil çapası var — footer linki kırık değil', () => {
-    expect(doc().querySelector('#nasil')).toBeTruthy();
-  });
-});
 
 describe('/pricing', () => {
   const doc = () => parseHTML(readFileSync('dist/pricing/index.html', 'utf8')).document;
@@ -434,11 +346,6 @@ describe('/search', () => {
     expect(h).toContain('4.450.000');
   });
 
-  it('her kart minik cephe diyagrami tasir', () => {
-    const figs = doc().querySelectorAll('[data-project] .psheet__figure svg');
-    expect(figs.length).toBe(projects.length);
-  });
-
   it('filtreler native select — klavye erisilebilir ve label bagli', () => {
     const d = doc();
     const selects = [...d.querySelectorAll('.filters__control')];
@@ -514,6 +421,75 @@ describe('/demo', () => {
     const h = html();
     for (const s of ['Boş', 'Rezerve', 'Satıldı', '360° turu var']) {
       expect(h).toContain(s);
+    }
+  });
+});
+
+describe('ana sayfa — açık tema, fotoğraf öncelikli', () => {
+  const doc = () => parseHTML(readFileSync('dist/index.html', 'utf8')).document;
+  const html = () => readFileSync('dist/index.html', 'utf8');
+
+  it('canlı sitedeki başlığı birebir taşır', () => {
+    const h1 = doc().querySelector('h1')!.textContent!.replace(/\s+/g, ' ').trim();
+    expect(h1).toBe('Alıcı daireyi gezip randevuya geliyor');
+  });
+
+  it('hero GERÇEK fotoğrafla açılır — soyut çizim değil', () => {
+    const img = doc().querySelector('.hero__media img');
+    expect(img, 'hero fotoğrafı yok').toBeTruthy();
+    expect(img!.getAttribute('src')).toBe('/img/hero-poster.jpg');
+    expect(img!.getAttribute('alt')?.length).toBeGreaterThan(10);
+    // Boyut verilmeli: yoksa görsel yüklenince sayfa zıplar
+    expect(img!.getAttribute('width')).toBeTruthy();
+    expect(img!.getAttribute('height')).toBeTruthy();
+  });
+
+  it('hero görseli öncelikli yüklenir — LCP öğesi', () => {
+    expect(doc().querySelector('.hero__media img')?.getAttribute('fetchpriority')).toBe('high');
+  });
+
+  it('üç kabiliyetin her biri gerçek daire fotoğrafı taşır', () => {
+    const imgs = [...doc().querySelectorAll('.cap__media img')];
+    expect(imgs.length).toBe(3);
+    for (const img of imgs) {
+      expect(img.getAttribute('src')).toMatch(/^\/img\//);
+      expect(img.getAttribute('loading')).toBe('lazy');
+      expect(img.getAttribute('alt')?.length).toBeGreaterThan(10);
+    }
+  });
+
+  it('yayın durumu tarihli sicil damgası ve sıfır dolgulu sayılar', () => {
+    expect(html()).toContain('YAYIN DURUMU · 08.09.2026');
+    const values = [...doc().querySelectorAll('.status__value')].map((e) => e.textContent);
+    expect(values).toEqual(['01', '02', '04']);
+  });
+
+  it('3 adımda pafta referansı numaralandırması', () => {
+    const h = html();
+    for (const no of ['01/03', '02/03', '03/03']) expect(h).toContain(no);
+  });
+
+  it('#nasil çapası var — footer linki kırık değil', () => {
+    expect(doc().querySelector('#nasil')).toBeTruthy();
+  });
+
+  it('başlık hiyerarşisi geçerli — tek h1, birden çok h2', () => {
+    const d = doc();
+    expect(d.querySelectorAll('h1').length).toBe(1);
+    expect(d.querySelectorAll('h2').length).toBeGreaterThanOrEqual(4);
+  });
+});
+
+describe('/search — fotoğraflı proje kartları', () => {
+  const doc = () => parseHTML(readFileSync('dist/search/index.html', 'utf8')).document;
+
+  it('her kart gerçek fotoğrafla açılır — çizim değil', () => {
+    const cards = [...doc().querySelectorAll('[data-project]')];
+    expect(cards.length).toBe(projects.length);
+    for (const c of cards) {
+      const img = c.querySelector('.card__media img');
+      expect(img, 'kart fotoğrafı yok').toBeTruthy();
+      expect(img!.getAttribute('src')).toMatch(/^\/img\//);
     }
   });
 });

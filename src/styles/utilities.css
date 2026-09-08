@@ -1,5 +1,5 @@
 /* ============================================================
-   Utilities — grid, yüzeyler, kurallar, giriş animasyonu
+   Utilities — kabuk, grid, yüzeyler, ritim
    ============================================================ */
 
 .shell {
@@ -9,10 +9,7 @@
   padding-inline: var(--gutter);
 }
 
-/* Kot rayının açtığı sol boşluk — yalnızca desktop */
-@media (min-width: 1024px) {
-  .shell--railed { padding-left: calc(var(--rail-w) + var(--gutter)); }
-}
+.shell--narrow { max-width: 900px; }
 
 .grid-12 {
   display: grid;
@@ -23,31 +20,52 @@
   .grid-12 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
-/* ── Yüzeyler ───────────────────────────────────────────────── */
-.on-dark, .on-dark-deep {
-  color: var(--chalk);
-  --text-2: var(--chalk-2);
-  --text-3: var(--chalk-3);
-}
-.on-dark      { background: var(--ink); }
-.on-dark-deep { background: var(--ink-deep); }
-.on-plaster   { background: var(--plaster);  color: var(--ink); }
+/* ── Yüzeyler — ritim açık tonlar arasında kurulur ─────────── */
+.on-paper { background: var(--paper); color: var(--ink); }
+.on-sand  { background: var(--sand);  color: var(--ink); }
+.on-linen { background: var(--linen); color: var(--ink); }
 
-/* ── Saç teli kurallar ──────────────────────────────────────── */
+/* Koyu yüzey AZ kullanılır: footer, künye, fotoğraf üstü panel */
+.on-ink {
+  background: var(--ink-surface);
+  color: var(--on-ink);
+  --text-2: var(--on-ink-2);
+  --text-3: var(--on-ink-2);
+}
+.on-ink h1, .on-ink h2, .on-ink h3 { color: var(--on-ink); }
+
+/* ── Kurallar ───────────────────────────────────────────────── */
 .rule {
   border: 0;
-  border-top: var(--hairline) solid var(--line-dark);
+  border-top: var(--hairline) solid var(--stone);
   margin: 0;
   width: 100%;
 }
-.on-dark .rule, .on-dark-deep .rule { border-top-color: var(--line); }
+.on-ink .rule { border-top-color: rgba(252, 251, 249, 0.16); }
 
-/* ── Bölüm ritmi ────────────────────────────────────────────── */
-.section { padding-block: clamp(var(--s-16), 9vw, var(--s-48)); }
-.section--tight { padding-block: clamp(var(--s-12), 6vw, var(--s-24)); }
+/* ── Bölüm ritmi — cömert ama yapılı ────────────────────────── */
+.section        { padding-block: clamp(var(--s-20), 9vw, var(--s-40)); }
+.section--tight { padding-block: clamp(var(--s-12), 5vw, var(--s-24)); }
 
-/* ── Giriş animasyonu — reveal.ts tetikler ──────────────────── */
-.reveal { opacity: 0; transform: translateY(18px); }
+/* ── Bölüm başlığı: mono etiket + iri başlık ────────────────── */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  color: var(--brick);
+  margin-bottom: var(--s-5);
+}
+.eyebrow::before {
+  content: '';
+  width: 28px;
+  height: 2px;
+  background: var(--brick);
+}
+.on-ink .eyebrow { color: var(--brick-lit); }
+.on-ink .eyebrow::before { background: var(--brick-lit); }
+
+/* ── Giriş animasyonu ───────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(20px); }
 .reveal.is-in {
   opacity: 1;
   transform: none;
@@ -60,7 +78,19 @@
   .reveal, .reveal.is-in { opacity: 1; transform: none; transition: none; }
 }
 
-/* ── Erişilebilirlik yardımcıları ───────────────────────────── */
+/* ── Görsel ─────────────────────────────────────────────────── */
+.media {
+  position: relative;
+  overflow: hidden;
+  background: var(--linen);
+}
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Erişilebilirlik ────────────────────────────────────────── */
 .visually-hidden {
   position: absolute;
   width: 1px; height: 1px;

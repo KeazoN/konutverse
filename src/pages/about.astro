@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import SheetRule from '../components/ui/SheetRule.astro';
 import Cta from '../components/sections/Cta.astro';
 import { site } from '../content/site';
 
@@ -10,9 +9,9 @@ const a = site.about;
 <Base title={a.meta.title} description={a.meta.description} route="/about">
 
   {/* Anahtar cümle — sanat yönünün dayanağı, tam genişlik tipografik an */}
-  <section class="keyline on-dark">
+  <section class="keyline on-ink">
     <div class="shell shell--railed">
-      <SheetRule no=". 01" kicker={a.kicker} />
+      <p class="tech eyebrow">{a.kicker}</p>
       <h1 class="keyline__title display display--xl">{a.keyline}</h1>
       <p class="keyline__rest">{a.keylineRest}</p>
     </div>
@@ -31,7 +30,7 @@ const a = site.about;
 
   <section class="promises">
     <div class="shell shell--railed">
-      <SheetRule no=". 02" kicker={a.promises.kicker} />
+      <p class="tech eyebrow">{a.promises.kicker}</p>
       <h2 class="promises__title">{a.promises.title}</h2>
 
       <div class="promises__grid">
@@ -88,7 +87,7 @@ const a = site.about;
   .promises__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    border-top: var(--hairline) solid var(--line-dark);
+    border-top: var(--hairline) solid var(--stone);
   }
   @media (max-width: 720px) {
     .promises__grid { grid-template-columns: 1fr; }
@@ -98,7 +97,7 @@ const a = site.about;
     gap: var(--s-3);
     align-content: start;
     padding: var(--s-8) var(--s-8) var(--s-12) 0;
-    border-bottom: var(--hairline) solid var(--line-dark);
+    border-bottom: var(--hairline) solid var(--stone);
   }
   .promises__no { color: var(--brick); }
   .promises__itemTitle { font-size: var(--t-h3); }

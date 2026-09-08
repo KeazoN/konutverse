@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/sections/PageHead.astro';
 import ProjectSheet from '../components/site/ProjectSheet.astro';
-import SheetRule from '../components/ui/SheetRule.astro';
 import { site } from '../content/site';
 import { projects } from '../content/projects';
 
@@ -23,7 +22,7 @@ const unitTypes = ['1+1', '2+1', '3+1', '4+1'];
       <!-- Filtre paneli — drafting paneli -->
       <aside class="filters" aria-labelledby="filters-heading">
         <h2 class="visually-hidden" id="filters-heading">Filtreler</h2>
-        <SheetRule no=". 02" kicker="Filtre" />
+        <p class="tech eyebrow">Filtre</p>
 
         <div class="filters__list">
           <div class="filters__row">
@@ -78,7 +77,13 @@ const unitTypes = ['1+1', '2+1', '3+1', '4+1'];
       <div class="results" aria-labelledby="results-heading">
         <h2 class="visually-hidden" id="results-heading">Yayındaki projeler</h2>
         <div class="results__grid" data-results>
-          {projects.map((p) => <ProjectSheet project={p} />)}
+          {projects.map((p, i) => (
+            <ProjectSheet
+              project={p}
+              image={i === 0 ? '/img/hero-poster.jpg' : '/img/bedroom.jpg'}
+              imageAlt={`${p.name} — 360° turla gezilebilen daire`}
+            />
+          ))}
         </div>
         <p class="results__empty tech" data-empty hidden>
           Seçtiğiniz filtrelere uygun proje bulunamadı.
@@ -116,7 +121,7 @@ const unitTypes = ['1+1', '2+1', '3+1', '4+1'];
     font-size: var(--t-small);
     color: var(--ink);
     background: var(--paper);
-    border: var(--hairline) solid var(--line-dark);
+    border: var(--hairline) solid var(--stone);
     border-radius: var(--radius-control);
     padding: 11px 13px;
   }
@@ -128,12 +133,12 @@ const unitTypes = ['1+1', '2+1', '3+1', '4+1'];
     gap: var(--s-3);
     margin-top: var(--s-8);
     padding-top: var(--s-6);
-    border-top: var(--hairline) solid var(--line-dark);
+    border-top: var(--hairline) solid var(--stone);
   }
   .filters__clear {
     justify-self: start;
     background: none;
-    border: var(--hairline) solid var(--line-dark);
+    border: var(--hairline) solid var(--stone);
     border-radius: var(--radius-control);
     padding: 10px 14px;
     color: var(--ink);

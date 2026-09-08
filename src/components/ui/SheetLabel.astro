@@ -19,12 +19,12 @@ const { text, tone = 'brick' } = Astro.props;
     white-space: nowrap;
   }
   .sheet-label--brick  { background: var(--brick); color: var(--paper); }
-  .sheet-label--line   { border: var(--hairline) solid var(--line-dark); color: var(--ink); }
-  .sheet-label--invert { background: var(--ink); color: var(--chalk); }
+  .sheet-label--line   { border: var(--hairline) solid var(--stone); color: var(--ink); }
+  .sheet-label--invert { background: var(--ink); color: var(--paper); }
 
-  :global(.on-dark) .sheet-label--line,
-  :global(.on-dark-deep) .sheet-label--line {
-    border-color: var(--line);
-    color: var(--chalk);
+  :global(.on-ink) .sheet-label--line,
+  :global(.on-ink) .sheet-label--line {
+    border-color: var(--stone);
+    color: var(--paper);
   }
 </style>

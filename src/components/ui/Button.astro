@@ -3,17 +3,20 @@ import Arrow from './Arrow.astro';
 
 interface Props {
   href: string;
-  variant?: 'primary' | 'ghost';
+  variant?: 'primary' | 'ghost' | 'quiet';
   size?: 'md' | 'lg';
   arrow?: boolean;
   external?: boolean;
 }
 const { href, variant = 'primary', size = 'md', arrow = true, external = false } = Astro.props;
-const rel = external ? 'noopener noreferrer' : undefined;
-const target = external ? '_blank' : undefined;
 ---
 
-<a class:list={['btn', `btn--${variant}`, `btn--${size}`]} href={href} rel={rel} target={target}>
+<a
+  class:list={['btn', `btn--${variant}`, `btn--${size}`]}
+  href={href}
+  rel={external ? 'noopener noreferrer' : undefined}
+  target={external ? '_blank' : undefined}
+>
   <span class="btn__label"><slot /></span>
   {arrow && <Arrow />}
 </a>
@@ -26,6 +29,7 @@ const target = external ? '_blank' : undefined;
     border-radius: var(--radius-control);
     border: var(--hairline) solid transparent;
     text-decoration: none;
+    white-space: nowrap;
     transition:
       background-color var(--dur-fast) var(--ease),
       border-color var(--dur-fast) var(--ease),
@@ -41,29 +45,34 @@ const target = external ? '_blank' : undefined;
     line-height: 1;
   }
 
-  .btn :global(.arrow) {
-    transition: transform var(--dur-fast) var(--ease);
-  }
+  .btn :global(.arrow) { transition: transform var(--dur-fast) var(--ease); }
   .btn:hover :global(.arrow) { transform: translateX(4px); }
 
-  .btn--md { padding: 15px 20px; }
-  .btn--lg { padding: 19px 28px; }
+  .btn--md { padding: 14px 18px; }
+  .btn--lg { padding: 19px 26px; }
 
-  /* Birincil — tuğla dolgu. Beyaz metin brick üstünde 5.48 ✓ */
+  /* Birincil — tek dolu buton, sayfada bir tane */
   .btn--primary { background: var(--brick); color: var(--paper); }
-  .btn--primary:hover { background: var(--brick-lit); color: var(--ink); }
+  .btn--primary:hover { background: var(--brick-ink); }
 
-  /* İkincil — saç teli çerçeve, zemine göre ton değiştirir */
-  .btn--ghost { border-color: var(--line-dark); color: var(--ink); }
-  .btn--ghost:hover { border-color: var(--brick); color: var(--brick); }
+  /* İkincil — sıcak çerçeve */
+  .btn--ghost { border-color: var(--stone); color: var(--ink); }
+  .btn--ghost:hover { border-color: var(--ink); }
 
-  :global(.on-dark) .btn--ghost,
-  :global(.on-dark-deep) .btn--ghost { border-color: var(--line); color: var(--chalk); }
-  :global(.on-dark) .btn--ghost:hover,
-  :global(.on-dark-deep) .btn--ghost:hover {
-    border-color: var(--brick-lit);
-    color: var(--brick-lit);
+  /* Üçüncül — sadece metin + alt çizgi */
+  .btn--quiet {
+    padding-inline: 0;
+    color: var(--brick);
+    box-shadow: 0 1px 0 currentColor;
   }
+  .btn--quiet:hover { color: var(--brick-ink); }
+
+  :global(.on-ink) .btn--ghost {
+    border-color: rgba(252, 251, 249, 0.28);
+    color: var(--on-ink);
+  }
+  :global(.on-ink) .btn--ghost:hover { border-color: var(--on-ink); }
+  :global(.on-ink) .btn--quiet { color: var(--brick-lit); }
 
   @media (prefers-reduced-motion: reduce) {
     .btn:hover :global(.arrow) { transform: none; }

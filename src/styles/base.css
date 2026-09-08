@@ -12,9 +12,10 @@ html {
 
 body {
   margin: 0;
-  background: var(--chalk);
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
+  font-stretch: 100%;
   font-size: var(--t-body);
   line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
@@ -22,22 +23,22 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Display tipografisi ─────────────────────────────────────
-   Archivo variable, genişlik ekseni açık. font-variation-settings
-   yerine font-stretch/font-weight kullanılır: yüksek seviye
-   özellikler doğru miras alınır ve fallback'te bozulmaz.        */
+/* ── Başlıklar ───────────────────────────────────────────────
+   Hiyerarşi BOYUTTAN gelir, gri tonlarından değil.
+   Sıçramalar sert: 108 → 68 → 46 → 32 → 19.                  */
 
 h1, h2, h3, .display {
   font-family: var(--font-display);
   font-stretch: var(--wdth-display);
   font-weight: 600;
   line-height: var(--lh-display);
+  color: var(--ink);
   margin: 0;
   text-wrap: balance;
 }
 
 h1 { font-size: var(--t-h1); letter-spacing: var(--ls-h); }
-h2 { font-size: var(--t-h2); letter-spacing: var(--ls-h); }
+h2 { font-size: var(--t-h2); letter-spacing: var(--ls-h); line-height: var(--lh-tight); }
 h3 {
   font-size: var(--t-h3);
   letter-spacing: var(--ls-h3);
@@ -45,26 +46,25 @@ h3 {
   line-height: var(--lh-tight);
 }
 
-.display--hero {
-  font-size: var(--t-hero);
-  letter-spacing: var(--ls-display);
-}
-.display--xl {
-  font-size: var(--t-display-xl);
-  letter-spacing: var(--ls-display);
-}
-.display--lg {
-  font-size: var(--t-display);
-  letter-spacing: var(--ls-display);
+.display--hero { font-size: var(--t-hero); letter-spacing: var(--ls-display); }
+.display--xl   { font-size: var(--t-display-xl); letter-spacing: var(--ls-display); }
+.display--lg   { font-size: var(--t-display); letter-spacing: var(--ls-display); }
+
+p { margin: 0; max-width: 66ch; }
+
+/* Giriş paragrafı — gövdeden belirgin biçimde büyük */
+.lead {
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: 52ch;
 }
 
-p { margin: 0; max-width: 68ch; }
-
-/* ── Teknik katman — mono, kotlar, etiketler, veri ─────────── */
+/* ── Teknik katman — mono etiketler, kotlar, veri ─────────── */
 .tech {
   font-family: var(--font-tech);
   font-size: var(--t-tech);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.4;
   text-transform: uppercase;
   letter-spacing: var(--ls-tech);
@@ -72,22 +72,18 @@ p { margin: 0; max-width: 68ch; }
   font-variant-numeric: tabular-nums;
 }
 
-.tech--strong { font-weight: 500; }
-
-/* Sayılar her yerde hizalı */
 .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
 
 a { color: inherit; }
 
-/* ── Focus — her odaklanabilir öğede görünür ────────────────── */
+/* ── Focus ──────────────────────────────────────────────────── */
 :focus { outline: none; }
 :focus-visible {
   outline: 2px solid var(--brick);
   outline-offset: 3px;
   border-radius: var(--radius-control);
 }
-.on-dark :focus-visible,
-.on-dark-deep :focus-visible { outline-color: var(--brick-lit); }
+.on-ink :focus-visible { outline-color: var(--brick-lit); }
 
 /* ── Skip link ──────────────────────────────────────────────── */
 .skip {

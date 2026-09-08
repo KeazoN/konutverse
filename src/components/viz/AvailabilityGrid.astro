@@ -1,5 +1,13 @@
 ---
-/** Bir kattaki daire hücreleri. Her hücre klavye erişilebilir <button>. */
+/**
+ * Bir kattaki daire hücreleri. Her hücre klavye erişilebilir <button>.
+ *
+ * Vurgu hiyerarşisi: GEZİLEBİLİR daireler öne çıkar — ürünün kendisi
+ * onlar. Satılmış daireler geri çekilir. Durum, dolu blok yerine
+ * küçük bir renk işaretiyle verilir; sayfa ısı haritasına dönmez.
+ *
+ * WCAG 2.5.3: erişilebilir ad görünür metinle (daire no) başlar.
+ */
 export type Unit = {
   id: string;
   status: 'free' | 'sold' | 'reserved';
@@ -7,11 +15,6 @@ export type Unit = {
   area?: number;
 };
 
-/**
- * WCAG 2.5.3 (Label in Name): erişilebilir ad, GÖRÜNÜR metni bitişik
- * bir alt dize olarak içermeli. Hücrede görünen 'A01 360°' olduğu için
- * aria-label de onunla başlar; açıklama arkadan gelir.
- */
 interface Props { units: readonly Unit[]; floorLabel: string; floorIndex: number; }
 const { units, floorLabel, floorIndex } = Astro.props;
 
@@ -21,7 +24,7 @@ const STATUS_TR = { free: 'boş', sold: 'satıldı', reserved: 'rezerve' } as co
 <div class="avail">
   {units.map((u) => (
     <button
-      class:list={['avail__cell', `is-${u.status}`, u.tourable && 'is-tourable']}
+      class:list={['cell', `is-${u.status}`, u.tourable && 'is-tourable']}
       type="button"
       data-unit={u.id}
       data-floor={String(floorIndex)}
@@ -31,12 +34,14 @@ const STATUS_TR = { free: 'boş', sold: 'satıldı', reserved: 'rezerve' } as co
       data-area={u.area ? String(u.area) : undefined}
       aria-label={`${u.id} — ${floorLabel}, ${u.id} numaralı daire, ${STATUS_TR[u.status]}${u.tourable ? ', 360° turu var' : ''}`}
     >
-      <span class="tech avail__id">{u.id}</span>
+      <span class="tech cell__id">{u.id}</span>
+      <span class="cell__dot" aria-hidden="true"></span>
+
       {u.tourable && (
-        <svg class="avail__tour" viewBox="0 0 24 16" aria-hidden="true"
+        <svg class="cell__tour" viewBox="0 0 24 16" aria-hidden="true"
              fill="none" stroke="currentColor" stroke-width="1.6">
           <ellipse cx="12" cy="8" rx="10" ry="5.5" />
-          <path d="M12 2.5 v11" opacity=".5" />
+          <path d="M12 2.5 v11" opacity=".45" />
           <path d="M8.5 4.6 l-2.4 -1.4 l2.6 -1.2" />
         </svg>
       )}
@@ -45,50 +50,58 @@ const STATUS_TR = { free: 'boş', sold: 'satıldı', reserved: 'rezerve' } as co
 </div>
 
 <style>
-  .avail { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+  .avail { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-2); }
 
-  .avail__cell {
+  .cell {
     position: relative;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: center;
     gap: var(--s-2);
-    min-height: 58px;
-    padding: var(--s-2) var(--s-3);
-    border: var(--hairline) solid transparent;
+    min-height: 54px;
+    padding: var(--s-3) var(--s-4);
+    background: var(--paper);
+    border: var(--hairline) solid var(--stone);
     border-radius: var(--radius-structural);
-    color: var(--paper);
+    color: var(--ink-2);
     cursor: pointer;
     font: inherit;
     text-align: left;
     transition:
-      transform var(--dur-fast) var(--ease),
-      filter var(--dur-fast) var(--ease);
+      border-color var(--dur-fast) var(--ease),
+      background-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
   }
-  .avail__cell:hover { filter: brightness(1.18); }
-  .avail__cell:active { transform: translateY(1px); }
+  .cell:hover { border-color: var(--ink); color: var(--ink); }
 
-  /* Zeminler AA güvenli tonlar — beyaz metinle 6.3+ */
-  .is-free     { background: var(--avail-free); }
-  .is-sold     { background: var(--avail-sold); }
-  .is-reserved { background: var(--avail-reserved); }
+  .cell__id { letter-spacing: 0.06em; }
 
-  /* Zeminler AA güvenli; metin tam güçte beyaz kalır. */
-  .avail__id { color: var(--paper); }
-
-  /* Gezilebilir daire — tuğla çerçeve, çizim işareti */
-  .is-tourable { border-color: var(--brick); }
-  /* 360° işareti METİN değil İKON: aria-hidden gerçekten etkili olur
-     ve erişilebilir ad görünür metinle çakışmaz (WCAG 2.5.3). */
-  .avail__tour {
-    align-self: flex-end;
-    width: 22px;
-    height: 15px;
-    color: var(--paper);
+  /* Durum: dolu blok değil, küçük işaret */
+  .cell__dot {
+    width: 8px;
+    height: 8px;
+    margin-left: auto;
+    flex: none;
+    border-radius: var(--radius-pill);
   }
+  .is-free     .cell__dot { background: var(--avail-free); }
+  .is-reserved .cell__dot { background: var(--avail-reserved); }
+  .is-sold     .cell__dot { background: var(--avail-sold); }
 
-  @media (prefers-reduced-motion: reduce) {
-    .avail__cell:active { transform: none; }
+  /* Satılmış daire geri çekilir — tıklanacak bir şey yok */
+  .is-sold { background: var(--sand); color: var(--ink-3); }
+
+  /* Gezilebilir daire ÖNE ÇIKAR — ürünün kendisi bu */
+  .is-tourable {
+    border-color: var(--brick);
+    border-width: 2px;
+    color: var(--ink);
+    background: var(--brick-wash);
+  }
+  .is-tourable:hover { background: var(--paper); }
+  .cell__tour { width: 22px; height: 15px; color: var(--brick); flex: none; }
+  .is-tourable .cell__dot { display: none; }
+
+  @media (max-width: 560px) {
+    .avail { grid-template-columns: repeat(2, 1fr); }
   }
 </style>

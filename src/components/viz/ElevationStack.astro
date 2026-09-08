@@ -56,7 +56,7 @@ const rows = Array.from({ length: project.floors }, (_, i) => project.floors - 1
     gap: var(--s-6);
     align-items: center;
     padding-block: var(--s-2);
-    border-top: var(--hairline) solid var(--line);
+    border-top: var(--hairline) solid var(--stone);
   }
   @media (max-width: 720px) {
     .elev__row { grid-template-columns: 1fr; gap: var(--s-3); }
@@ -86,6 +86,6 @@ const rows = Array.from({ length: project.floors }, (_, i) => project.floors - 1
   }
 
   .elev__ground { padding-top: var(--s-4); }
-  .elev__ground .rule { border-top-width: 2px; border-top-color: var(--line); }
+  .elev__ground .rule { border-top-width: 2px; border-top-color: var(--stone); }
   .elev__groundLabel { display: block; margin-top: var(--s-2); color: var(--text-3); }
 </style>

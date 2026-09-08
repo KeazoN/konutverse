@@ -26,14 +26,14 @@ const filled = Math.round((pct / 100) * ticks);
   }
   .gauge__label { color: var(--text-3); }
   .gauge__pct { color: var(--brick); }
-  :global(.on-dark) .gauge__pct,
-  :global(.on-dark-deep) .gauge__pct { color: var(--brick-lit); }
+  :global(.on-ink) .gauge__pct,
+  :global(.on-ink) .gauge__pct { color: var(--brick-lit); }
 
   .gauge__rail { display: flex; gap: 2px; }
-  .gauge__tick { flex: 1; height: 9px; background: var(--line-dark); }
+  .gauge__tick { flex: 1; height: 9px; background: var(--stone); }
   .gauge__tick.is-filled { background: var(--brick); }
-  :global(.on-dark) .gauge__tick,
-  :global(.on-dark-deep) .gauge__tick { background: var(--line); }
-  :global(.on-dark) .gauge__tick.is-filled,
-  :global(.on-dark-deep) .gauge__tick.is-filled { background: var(--brick); }
+  :global(.on-ink) .gauge__tick,
+  :global(.on-ink) .gauge__tick { background: var(--stone); }
+  :global(.on-ink) .gauge__tick.is-filled,
+  :global(.on-ink) .gauge__tick.is-filled { background: var(--brick); }
 </style>

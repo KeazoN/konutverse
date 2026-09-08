@@ -1,31 +1,42 @@
 ---
 import { site } from '../../content/site';
-import SheetRule from '../ui/SheetRule.astro';
 import Button from '../ui/Button.astro';
-import CapabilityFigure from '../viz/CapabilityFigure.astro';
 
-const KINDS = ['selector', 'pages', 'setup'] as const;
 const items = site.home.capabilities;
+
+/** Her kabiliyet gerçek bir daire fotoğrafıyla eşlenir. */
+const MEDIA = [
+  { src: '/img/living.jpg',  w: 1920, h: 1694, alt: 'Oturma odası — 360° turda gezilebilen daire' },
+  { src: '/img/kitchen.jpg', w: 1920, h: 1151, alt: 'Mutfak — 360° turda gezilebilen daire' },
+  { src: '/img/bedroom.jpg', w: 1920, h: 1280, alt: 'Yatak odası — 360° turda gezilebilen daire' },
+];
 ---
 
-<section class="caps on-dark" id="nasil">
-  <div class="shell shell--railed">
+<section class="caps section" id="nasil">
+  <div class="shell">
     {items.map((item, i) => (
-      <article class="caps__item reveal" style={`--reveal-delay:${i * 60}ms`}>
-        <div class="caps__copy">
-          <SheetRule no={`. ${item.no}`} kicker={item.kicker} />
-          <h2 class="caps__title">
+      <article class="cap reveal" style={`--reveal-delay:${i * 60}ms`}>
+        <div class="cap__copy">
+          <p class="tech eyebrow">{item.kicker}</p>
+          <h2 class="cap__title">
             {item.title.map((line, j) => (
-              <>{j > 0 && ' '}<span class="caps__line">{line}</span></>
+              <>{j > 0 && ' '}<span class="cap__line">{line}</span></>
             ))}
           </h2>
-          <p class="caps__body">{item.body}</p>
-          <div class="caps__cta">
-            <Button href={item.cta.href} variant="ghost">{item.cta.label}</Button>
-          </div>
+          <p class="cap__body">{item.body}</p>
+          <Button href={item.cta.href} variant="quiet">{item.cta.label}</Button>
         </div>
-        <div class="caps__figure">
-          <CapabilityFigure kind={KINDS[i]} />
+
+        <div class="media cap__media">
+          <img
+            src={MEDIA[i].src}
+            alt={MEDIA[i].alt}
+            width={MEDIA[i].w}
+            height={MEDIA[i].h}
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="tech cap__no num">{item.no}</span>
         </div>
       </article>
     ))}
@@ -33,39 +44,45 @@ const items = site.home.capabilities;
 </section>
 
 <style>
-  .caps { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
-
-  .caps__item {
+  .cap {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: clamp(var(--s-8), 5vw, var(--s-24));
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     align-items: center;
+    gap: clamp(var(--s-8), 5vw, var(--s-24));
     padding-block: clamp(var(--s-12), 5vw, var(--s-24));
   }
-  .caps__item + .caps__item { border-top: var(--hairline) solid var(--line); }
-
-  /* Tek numaralı bloklarda görsel sola geçer — ritim */
-  .caps__item:nth-child(even) .caps__figure { order: -1; }
+  /* Çift sıralarda görsel sola geçer — ritim */
+  .cap:nth-child(even) .cap__media { order: -1; }
 
   @media (max-width: 900px) {
-    .caps__item { grid-template-columns: 1fr; gap: var(--s-8); }
-    .caps__item:nth-child(even) .caps__figure { order: 0; }
+    .cap { grid-template-columns: 1fr; gap: var(--s-8); }
+    .cap:nth-child(even) .cap__media { order: 0; }
   }
 
-  .caps__copy { display: grid; gap: var(--s-5, 20px); align-content: start; }
-  .caps__title {
+  .cap__title {
     font-size: var(--t-h1);
     letter-spacing: var(--ls-h);
-    max-width: 15ch;
-    margin-top: var(--s-2);
+    margin-bottom: var(--s-5);
   }
-  .caps__line { display: block; }
-  .caps__body { max-width: 46ch; color: var(--text-2); margin-top: var(--s-2); }
-  .caps__cta { margin-top: var(--s-4); }
+  .cap__line { display: block; }
 
-  .caps__figure {
-    border: var(--hairline) solid var(--line);
-    padding: clamp(var(--s-6), 3vw, var(--s-12));
-    background: var(--ink-deep);
+  .cap__body {
+    color: var(--ink-2);
+    font-size: var(--t-lead);
+    line-height: 1.55;
+    max-width: 44ch;
+    margin-bottom: var(--s-6);
+  }
+
+  .cap__media { aspect-ratio: 16 / 11; box-shadow: var(--shadow-soft); }
+
+  .cap__no {
+    position: absolute;
+    top: var(--s-5);
+    left: var(--s-5);
+    background: var(--paper);
+    color: var(--brick);
+    padding: 8px 12px;
+    font-size: var(--t-tech);
   }
 </style>

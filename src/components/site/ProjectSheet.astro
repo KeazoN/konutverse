@@ -1,161 +1,127 @@
 ---
-/**
- * Proje kartı — pafta antet bloğu.
- * Açık sayfada koyu blueprint kart: çizim dili her zaman lacivert
- * zeminde yaşar, tıpkı gerçek ozalitte olduğu gibi.
- */
+/** Proje kartı — fotoğraf önde, teknik künye altta.
+ *  Emlak kartının işi arzu uyandırmak; çizim değil fotoğraf gösterir. */
 import type { Project } from '../../content/projects';
 import { formatPrice } from '../../content/projects';
 import { site } from '../../content/site';
-import BuildingSection from '../viz/BuildingSection.astro';
 import ProgressGauge from '../viz/ProgressGauge.astro';
-import SheetLabel from '../ui/SheetLabel.astro';
 import Arrow from '../ui/Arrow.astro';
 
-interface Props { project: Project; }
-const { project: p } = Astro.props;
+interface Props { project: Project; image: string; imageAlt: string; }
+const { project: p, image, imageAlt } = Astro.props;
 const u = site.search.units;
 ---
 
 <article
-  class="psheet on-dark reveal"
+  class="card reveal"
   data-project={p.slug}
   data-firm={p.firm}
   data-city={p.city}
   data-floors={String(p.floors)}
 >
-  <header class="psheet__head">
-    <span class="tech psheet__firm">{p.firm}</span>
-    <SheetLabel text={site.search.tourBadge} tone="brick" />
-  </header>
-
-  <div class="psheet__body">
-    <div class="psheet__figure" aria-hidden="true">
-      <BuildingSection
-        floors={p.floors}
-        unitsPerFloor={4}
-        tourableFloors={p.floors > 1 ? [0, 2] : [0]}
-        label=""
-      />
+  <a class="card__link" href="/demo">
+    <div class="media card__media">
+      <img src={image} alt={imageAlt} width="1920" height="1280" loading="lazy" decoding="async" />
+      <span class="tech card__badge">{site.search.tourBadge}</span>
     </div>
 
-    <div class="psheet__info">
-      <h3 class="psheet__name">{p.name}</h3>
-      <p class="tech psheet__loc">{p.district}, {p.city}</p>
+    <div class="card__body">
+      <p class="tech card__firm">{p.firm}</p>
+      <h3 class="card__name">{p.name}</h3>
+      <p class="tech card__loc">{p.district}, {p.city}</p>
 
-      <p class="psheet__price">
-        <span class="psheet__amount num">{formatPrice(p.priceFrom)} ₺</span>
-        <span class="tech psheet__priceNote">{site.search.priceSuffix}</span>
+      <p class="card__price">
+        <span class="card__amount num">{formatPrice(p.priceFrom)} ₺</span>
+        <span class="tech card__priceNote">{site.search.priceSuffix}</span>
       </p>
 
-      <div class="psheet__gauge">
+      <div class="card__gauge">
         <ProgressGauge label={p.stage} pct={p.stagePct} />
       </div>
 
-      <dl class="psheet__stats">
-        <div><dt class="psheet__stat num">{p.floors}</dt><dd class="tech">{u.floors}</dd></div>
-        <div><dt class="psheet__stat num">{p.units}</dt><dd class="tech">{u.units}</dd></div>
-        <div>
-          <dt class="psheet__stat psheet__stat--hot num">{p.tourable}</dt>
-          <dd class="tech">{u.tourable}</dd>
-        </div>
+      <dl class="card__stats">
+        <div><dt class="card__stat num">{p.floors}</dt><dd class="tech">{u.floors}</dd></div>
+        <div><dt class="card__stat num">{p.units}</dt><dd class="tech">{u.units}</dd></div>
+        <div><dt class="card__stat card__stat--hot num">{p.tourable}</dt><dd class="tech">{u.tourable}</dd></div>
       </dl>
-    </div>
-  </div>
 
-  <a class="psheet__cta" href="/demo">
-    <span class="tech">{site.search.startTour}</span>
-    <Arrow />
+      <span class="tech card__cta">{site.search.startTour} <Arrow /></span>
+    </div>
   </a>
 </article>
 
 <style>
-  .psheet {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    border: var(--hairline) solid var(--line);
-    border-radius: var(--radius-structural);
+  .card {
+    background: var(--paper);
+    border: var(--hairline) solid var(--stone);
+    transition: box-shadow var(--dur-fast) var(--ease),
+                transform var(--dur-fast) var(--ease);
+  }
+  .card:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+
+  .card__link { display: block; text-decoration: none; color: inherit; height: 100%; }
+
+  .card__media { aspect-ratio: 16 / 10; }
+  .card__badge {
+    position: absolute;
+    top: var(--s-4);
+    left: var(--s-4);
+    background: var(--brick);
+    color: var(--paper);
+    padding: 7px 10px;
   }
 
-  .psheet__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s-4);
-    padding: var(--s-4) var(--s-6);
-    border-bottom: var(--hairline) solid var(--line);
-  }
-  .psheet__firm { color: var(--brick-lit); }
+  .card__body { padding: var(--s-6); display: grid; gap: var(--s-3); }
 
-  .psheet__body {
-    display: grid;
-    grid-template-columns: 108px 1fr;
-    gap: var(--s-6);
-    padding: var(--s-6);
-    align-items: start;
-  }
-  @media (max-width: 520px) {
-    .psheet__body { grid-template-columns: 84px 1fr; gap: var(--s-4); }
-  }
-
-  .psheet__figure { align-self: stretch; display: flex; align-items: flex-end; }
-  .psheet__figure :global(svg) { max-height: 240px; width: 100%; }
-
-  .psheet__info { display: grid; gap: var(--s-4); }
-
-  .psheet__name {
+  .card__firm { color: var(--brick); }
+  .card__name {
     font-size: var(--t-h2);
     letter-spacing: var(--ls-h);
     line-height: 1.05;
   }
-  .psheet__loc { color: var(--text-3); margin-top: calc(var(--s-2) * -1); }
+  .card__loc { color: var(--ink-3); margin-top: calc(var(--s-2) * -1); }
 
-  .psheet__price { display: grid; gap: 2px; }
-  .psheet__amount {
+  .card__price { display: grid; gap: 2px; margin-top: var(--s-2); }
+  .card__amount {
     font-family: var(--font-display);
     font-stretch: var(--wdth-display);
     font-weight: 600;
     font-size: var(--t-h3);
-    letter-spacing: var(--ls-h3);
   }
-  .psheet__priceNote { color: var(--text-3); }
+  .card__priceNote { color: var(--ink-3); }
 
-  .psheet__gauge { margin-top: var(--s-2); }
+  .card__gauge { margin-top: var(--s-2); }
 
-  .psheet__stats {
+  .card__stats {
     display: flex;
-    gap: var(--s-6);
+    gap: var(--s-8);
     margin: var(--s-2) 0 0;
-    padding-top: var(--s-4);
-    border-top: var(--hairline) solid var(--line);
+    padding-top: var(--s-5);
+    border-top: var(--hairline) solid var(--stone);
   }
-  .psheet__stats div { display: grid; gap: 2px; }
-  .psheet__stats dd { margin: 0; color: var(--text-3); }
-  .psheet__stat {
+  .card__stats div { display: grid; gap: 2px; }
+  .card__stats dd { margin: 0; color: var(--ink-3); }
+  .card__stat {
     font-family: var(--font-display);
     font-stretch: var(--wdth-display);
     font-weight: 600;
     font-size: var(--t-h3);
     line-height: 1;
   }
-  .psheet__stat--hot { color: var(--brick-lit); }
+  .card__stat--hot { color: var(--brick); }
 
-  .psheet__cta {
-    display: flex;
+  .card__cta {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
     gap: var(--s-3);
-    padding: var(--s-4) var(--s-6);
-    border-top: var(--hairline) solid var(--line);
-    text-decoration: none;
-    transition: background-color var(--dur-fast) var(--ease);
+    margin-top: var(--s-4);
+    color: var(--brick);
   }
-  /* brick-lit, ink-raised üstünde 4.16 — AA'dan kalıyor. Hover'da chalk. */
-  .psheet__cta:hover { background: var(--ink-raised); color: var(--chalk); }
-  .psheet__cta :global(.arrow) { transition: transform var(--dur-fast) var(--ease); }
-  .psheet__cta:hover :global(.arrow) { transform: translateX(4px); }
+  .card:hover .card__cta :global(.arrow) { transform: translateX(4px); }
+  .card__cta :global(.arrow) { transition: transform var(--dur-fast) var(--ease); }
 
   @media (prefers-reduced-motion: reduce) {
-    .psheet__cta:hover :global(.arrow) { transform: none; }
+    .card:hover { transform: none; }
+    .card:hover .card__cta :global(.arrow) { transform: none; }
   }
 </style>

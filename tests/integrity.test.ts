@@ -151,9 +151,13 @@ describe('erişilebilirlik temel sözleşmeleri', () => {
 });
 
 describe('hareket erişilebilirliği', () => {
-  const css = readdirSync(`${DIST}/_astro`)
-    .filter((f) => f.endsWith('.css'))
-    .map((f) => readFileSync(`${DIST}/_astro/${f}`, 'utf8'))
+  // CSS HTML'e gömülü (inlineStylesheets: 'always'), dosyadan değil
+  // sayfadan okunur.
+  const css = pages
+    .map((f) => {
+      const { document } = parseHTML(readFileSync(f, 'utf8'));
+      return [...document.querySelectorAll('style')].map((s) => s.textContent ?? '').join('\n');
+    })
     .join('\n');
 
   it('reduced-motion kuralı yayınlanan CSS içinde', () => {
@@ -161,7 +165,7 @@ describe('hareket erişilebilirliği', () => {
   });
 
   it('hareketli scriptler reduced-motion kontrolü yapıyor', () => {
-    for (const f of ['reveal.ts', 'lenis-init.ts', 'kesit-scrub.ts']) {
+    for (const f of ['reveal.ts', 'lenis-init.ts']) {
       const src = readFileSync(`src/scripts/${f}`, 'utf8');
       expect(src, `${f} reduced-motion kontrolü yok`).toContain('prefers-reduced-motion');
     }

@@ -6,16 +6,24 @@ import { THEME_COLOR } from '../src/lib/brand';
 const tokens = readFileSync('src/styles/tokens.css', 'utf8');
 
 const REQUIRED = [
-  '--ink', '--ink-deep', '--ink-raised', '--chalk', '--paper', '--plaster',
-  '--brick', '--brick-lit', '--line', '--line-dark',
+  // Zeminler — sıcak açık palet
+  '--paper', '--sand', '--linen', '--stone',
+  // Metin
+  '--ink', '--ink-2', '--ink-3', '--text-2', '--text-3',
+  // Vurgu
+  '--brick', '--brick-ink', '--brick-lit', '--brick-wash',
+  // Koyu yüzey (az kullanılır)
+  '--ink-surface', '--on-ink', '--on-ink-2',
+  // Durum
   '--avail-free', '--avail-sold', '--avail-reserved',
-  '--avail-free-tint', '--avail-sold-tint', '--avail-reserved-tint',
+  // Tipografi
   '--t-hero', '--t-display-xl', '--t-display', '--t-h1', '--t-h2', '--t-h3',
-  '--t-body', '--t-small', '--t-tech',
+  '--t-lead', '--t-body', '--t-small', '--t-tech',
   '--font-display', '--font-tech', '--font-body',
+  // Form / uzay / hareket
   '--radius-structural', '--radius-control', '--radius-pill',
   '--ease', '--dur-fast', '--dur-base', '--dur-draw',
-  '--max-w', '--gutter', '--rail-w',
+  '--max-w', '--gutter',
 ];
 
 /** `--ink` gibi bir token adının bildirimini bulur. */
@@ -36,22 +44,43 @@ describe('tokens.css', () => {
     expect(declarationOf('--radius-structural')).toBe('0');
   });
 
-  it('üç ayrı tipografik aile tanımlar — hepsi Inter değil', () => {
-    const display = declarationOf('--font-display')!;
-    const tech = declarationOf('--font-tech')!;
-    const body = declarationOf('--font-body')!;
-    expect(new Set([display, tech, body]).size).toBe(3);
-    expect(display).toContain('Archivo');
-    expect(tech).toContain('Plex Mono');
-    expect(body).toContain('Inter');
+  /**
+   * Mevcut sitenin problemi: --font-display / --font-serif / --font-mono
+   * / --font-sans token'larının DÖRDÜ de "Inter" idi. Tipografik ses yoktu.
+   *
+   * Yeni sistem: İKİ superaile, ÜÇ ses. Display ile gövde ayrımı
+   * üçüncü bir aileden değil, Archivo'nun GENİŞLİK EKSENİNDEN gelir.
+   */
+  it('teknik katman gövdeden ayrı bir aile', () => {
+    expect(declarationOf('--font-tech')).toContain('Plex Mono');
+    expect(declarationOf('--font-tech')).not.toBe(declarationOf('--font-body'));
+  });
+
+  it('display ve gövde Archivo, ayrım genişlik ekseninde', () => {
+    expect(declarationOf('--font-display')).toContain('Archivo');
+    expect(declarationOf('--font-body')).toContain('Archivo');
+    expect(declarationOf('--wdth-display')).toBe('112%');
+  });
+
+  it('mevcut sitenin tek-Inter problemi geri gelmemiş', () => {
+    const fams = ['--font-display', '--font-tech', '--font-body'].map((n) => declarationOf(n));
+    expect(fams.every((f) => f && f.includes('Inter'))).toBe(false);
   });
 
   it('gövde metni 15px değil 17px — mevcut sitenin çekingen ölçeği düzeltildi', () => {
     expect(declarationOf('--t-body')).toBe('17px');
   });
 
-  it('display tavanı 148px — mevcut sitenin 52px tavanı yükseltildi', () => {
-    expect(declarationOf('--t-display-xl')).toContain('148px');
+  it('tipografi ölçeği mevcut sitenin çekingen tavanını aşar', () => {
+    // Mevcut site: --t-display tavanı 52px. Yeni ölçek belirgin biçimde iri.
+    expect(declarationOf('--t-display')).toContain('68px');
+    expect(declarationOf('--t-display-xl')).toContain('132px');
+  });
+
+  it('AÇIK zemin varsayılan — koyu yüzey istisna', () => {
+    const base = readFileSync('src/styles/base.css', 'utf8');
+    expect(base).toContain('background: var(--paper)');
+    expect(base).toContain('color: var(--ink)');
   });
 
   it('reduced-motion altında tüm süreleri sıfırlar', () => {
@@ -148,9 +177,9 @@ describe('metin renk token\'ları', () => {
     expect(declarationOf('--text-3')).toBe('var(--ink-3)');
   });
 
-  it('koyu yüzeyler token\'ları devralır', () => {
+  it('koyu yüzey metin token\'larını devralır', () => {
     const utils = readFileSync('src/styles/utilities.css', 'utf8');
-    expect(utils).toContain('--text-2: var(--chalk-2)');
-    expect(utils).toContain('--text-3: var(--chalk-3)');
+    expect(utils).toContain('--text-2: var(--on-ink-2)');
+    expect(utils).toContain('--text-3: var(--on-ink-2)');
   });
 });

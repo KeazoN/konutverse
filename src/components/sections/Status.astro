@@ -1,66 +1,62 @@
 ---
 import { site } from '../../content/site';
-import Metric from '../ui/Metric.astro';
-import SheetRule from '../ui/SheetRule.astro';
 
 const { status } = site.home;
 ---
 
-<section class="status on-dark-deep">
-  <div class="shell shell--railed">
-    <SheetRule no=". 03" kicker={status.kicker} />
-
-    <div class="status__head reveal">
+<section class="status on-sand section--tight">
+  <div class="shell">
+    <div class="status__head">
+      <p class="tech eyebrow">{status.kicker}</p>
       <h2 class="status__title">{status.title}</h2>
       <span class="tech status__stamp num">{status.stamp}</span>
     </div>
 
-    <dl class="status__grid reveal">
-      {status.metrics.map((m) => <Metric value={m.value} label={m.label} />)}
+    <dl class="status__grid">
+      {status.metrics.map((m) => (
+        <div class="status__cell">
+          <dt class="tech status__label">{m.label}</dt>
+          <dd class="status__value num">{String(m.value).padStart(2, '0')}</dd>
+        </div>
+      ))}
     </dl>
   </div>
 </section>
 
 <style>
-  .status { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
-
   .status__head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--s-6);
-    margin-block: var(--s-8) var(--s-12);
+    display: grid;
+    gap: var(--s-3);
+    margin-bottom: clamp(var(--s-8), 4vw, var(--s-16));
   }
-  .status__title { font-size: var(--t-h1); max-width: 20ch; }
-
-  /* Sicil damgası — sayıyı saklamak yerine tarihleyip sahipleniyoruz */
-  .status__stamp {
-    color: var(--brick-lit);
-    border: var(--hairline) solid var(--line);
-    padding: 6px 10px;
-  }
+  .status__title { font-size: var(--t-h1); max-width: 22ch; }
+  .status__stamp { color: var(--ink-3); }
 
   .status__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--gutter);
     margin: 0;
-    border-top: var(--hairline) solid var(--line);
+    border-top: var(--hairline) solid var(--stone);
   }
-  @media (max-width: 720px) {
-    .status__grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 720px) { .status__grid { grid-template-columns: 1fr; } }
 
-  .status__grid :global(.metric) {
-    padding: var(--s-8) var(--s-6) var(--s-8) 0;
-    border-right: var(--hairline) solid var(--line);
+  .status__cell {
+    display: flex;
+    flex-direction: column-reverse;   /* sayı üstte görünür */
+    justify-content: flex-end;
+    gap: var(--s-2);
+    padding-top: var(--s-8);
   }
-  .status__grid :global(.metric:last-child) { border-right: 0; }
-  @media (max-width: 720px) {
-    .status__grid :global(.metric) {
-      border-right: 0;
-      border-bottom: var(--hairline) solid var(--line);
-      padding-right: 0;
-    }
+  .status__value {
+    margin: 0;
+    font-family: var(--font-display);
+    font-stretch: var(--wdth-display);
+    font-weight: 600;
+    font-size: var(--t-display);
+    line-height: 0.9;
+    letter-spacing: var(--ls-display);
+    color: var(--brick);
   }
+  .status__label { color: var(--ink-2); }
 </style>
