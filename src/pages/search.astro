@@ -1,0 +1,158 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/sections/PageHead.astro';
+import ProjectSheet from '../components/site/ProjectSheet.astro';
+import SheetRule from '../components/ui/SheetRule.astro';
+import { site } from '../content/site';
+import { projects } from '../content/projects';
+
+const s = site.search;
+const f = s.filters;
+
+const firms = [...new Set(projects.map((p) => p.firm))];
+const cities = [...new Set(projects.map((p) => p.city))];
+const unitTypes = ['1+1', '2+1', '3+1', '4+1'];
+---
+
+<Base title={s.meta.title} description={s.meta.description} route="/search">
+  <PageHead kicker={s.kicker} title={s.title} lead={s.lead} />
+
+  <section class="search">
+    <div class="shell shell--railed search__inner">
+
+      <!-- Filtre paneli — drafting paneli -->
+      <aside class="filters">
+        <SheetRule no=". 02" kicker="Filtre" />
+
+        <div class="filters__list">
+          <div class="filters__row">
+            <label class="tech filters__label" for="fl-firm">{f.firm}</label>
+            <select class="filters__control" id="fl-firm" data-filter="firm">
+              <option value="">{f.all}</option>
+              {firms.map((firm) => <option value={firm}>{firm}</option>)}
+            </select>
+          </div>
+
+          <div class="filters__row">
+            <label class="tech filters__label" for="fl-city">{f.location}</label>
+            <select class="filters__control" id="fl-city" data-filter="city">
+              <option value="">{f.all}</option>
+              {cities.map((city) => <option value={city}>{city}</option>)}
+            </select>
+          </div>
+
+          <div class="filters__row">
+            <label class="tech filters__label" for="fl-floors">{f.floors}</label>
+            <select class="filters__control" id="fl-floors" data-filter="floors">
+              <option value="">{f.all}</option>
+              <option value="1">1 – 4</option>
+              <option value="5">5 – 10</option>
+              <option value="11">11 ve üzeri</option>
+            </select>
+          </div>
+
+          <div class="filters__row">
+            <label class="tech filters__label" for="fl-type">{f.unitType}</label>
+            <select class="filters__control" id="fl-type">
+              <option value="">{f.all}</option>
+              {unitTypes.map((t) => <option value={t}>{t}</option>)}
+            </select>
+          </div>
+
+          <div class="filters__row">
+            <label class="tech filters__label" for="fl-area">{f.area}</label>
+            <input class="filters__control" id="fl-area" type="number" min="40" max="400" step="10" placeholder="90" />
+          </div>
+        </div>
+
+        <div class="filters__foot">
+          <button class="filters__clear tech" type="button" data-filter-clear>{f.clear}</button>
+          <p class="tech filters__count" data-result-count aria-live="polite">
+            {s.resultsLabel(projects.length)}
+          </p>
+        </div>
+      </aside>
+
+      <!-- Sonuçlar -->
+      <div class="results">
+        <div class="results__grid" data-results>
+          {projects.map((p) => <ProjectSheet project={p} />)}
+        </div>
+        <p class="results__empty tech" data-empty hidden>
+          Seçtiğiniz filtrelere uygun proje bulunamadı.
+        </p>
+      </div>
+
+    </div>
+  </section>
+</Base>
+
+<style>
+  .search { padding-block: clamp(var(--s-8), 4vw, var(--s-16)) clamp(var(--s-16), 8vw, var(--s-32)); }
+
+  .search__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: clamp(var(--s-8), 4vw, var(--s-16));
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .search__inner { grid-template-columns: 1fr; }
+  }
+
+  /* ── Filtreler ──────────────────────────────────────────── */
+  .filters { position: sticky; top: 92px; }
+  @media (max-width: 900px) { .filters { position: static; } }
+
+  .filters__list { display: grid; gap: var(--s-5, 20px); margin-top: var(--s-6); }
+  .filters__row { display: grid; gap: var(--s-2); }
+  .filters__label { opacity: 0.6; }
+
+  .filters__control {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--t-small);
+    color: var(--ink);
+    background: var(--paper);
+    border: var(--hairline) solid var(--line-dark);
+    border-radius: var(--radius-control);
+    padding: 11px 13px;
+  }
+  .filters__control:hover { border-color: var(--ink); }
+  .filters__control:focus-visible { border-color: var(--brick); }
+
+  .filters__foot {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-8);
+    padding-top: var(--s-6);
+    border-top: var(--hairline) solid var(--line-dark);
+  }
+  .filters__clear {
+    justify-self: start;
+    background: none;
+    border: var(--hairline) solid var(--line-dark);
+    border-radius: var(--radius-control);
+    padding: 10px 14px;
+    color: var(--ink);
+    cursor: pointer;
+    font-family: var(--font-tech);
+    font-size: var(--t-tech);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-tech);
+  }
+  .filters__clear:hover { border-color: var(--brick); color: var(--brick); }
+  .filters__count { opacity: 0.55; }
+
+  /* ── Sonuçlar ───────────────────────────────────────────── */
+  .results__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+    gap: var(--gutter);
+  }
+  .results__empty { margin-top: var(--s-8); opacity: 0.6; }
+</style>
+
+<script>
+  import '../scripts/search-filter.ts';
+</script>

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { parseHTML } from 'linkedom';
 import { gzipSync } from 'node:zlib';
+import { projects } from '../src/content/projects';
 
 const DIST = 'dist';
 
@@ -17,7 +18,10 @@ function bundledCss(): string {
     .join('\n');
 }
 
-const ROUTES = ['index', 'features', 'about', 'pricing', 'contact'];
+const ROUTES = ['index', 'features', 'about', 'pricing', 'contact', 'search'];
+
+/** Ana menüde yer alan rotalar — aria-current yalnızca bunlarda beklenir. */
+const NAV_HREFS = ['/', '/features', '/pricing', '/about', '/contact'];
 
 describe('build çıktısı', () => {
   it('ana sayfayı üretir', () => {
@@ -100,9 +104,22 @@ describe('navigasyon sözleşmesi', () => {
       }
     });
 
-    it(`/${route}: aktif sayfa aria-current ile işaretli`, () => {
-      const current = doc().querySelector('nav a[aria-current="page"]');
-      expect(current).toBeTruthy();
+    // aria-current yalnızca ANA MENÜDEKİ sayfalar için anlamlıdır.
+    // /search, /demo, /kunye menüde değildir (canlı sitede de değil);
+    // yönlendirmeyi sayfa başlığındaki kicker sağlar.
+    const inNav = NAV_HREFS.includes(route === 'index' ? '/' : `/${route}`);
+
+    it(`/${route}: ${inNav ? 'aktif sayfa aria-current ile işaretli' : 'menü dışı — sayfa kendi başlığıyla yönlendirir'}`, () => {
+      const d = doc();
+      if (inNav) {
+        const current = d.querySelector('nav a[aria-current="page"]');
+        expect(current).toBeTruthy();
+        expect(current!.getAttribute('href')).toBe(route === 'index' ? '/' : `/${route}`);
+      } else {
+        expect(d.querySelector('nav a[aria-current="page"]')).toBeNull();
+        // Menü dışı sayfa nerede olduğunu kendi başlık bloğunda söylemeli
+        expect(d.querySelector('h1')?.textContent?.trim().length).toBeGreaterThan(0);
+      }
     });
 
     it(`/${route}: header ve footer landmark'ları var`, () => {
@@ -386,5 +403,61 @@ describe('/contact formu', () => {
 
   it('e-posta alani type=email', () => {
     expect(doc().querySelector('#f-eposta')?.getAttribute('type')).toBe('email');
+  });
+});
+
+describe('/search', () => {
+  const doc = () => parseHTML(readFileSync('dist/search/index.html', 'utf8')).document;
+  const html = () => readFileSync('dist/search/index.html', 'utf8');
+
+  it('her projeyi pafta antet blogu olarak render eder', () => {
+    const h = html();
+    for (const p of projects) {
+      expect(h).toContain(p.name);
+      expect(h).toContain(p.firm);
+      expect(h).toContain(`${p.district}, ${p.city}`);
+    }
+    expect(doc().querySelectorAll('[data-project]').length).toBe(projects.length);
+  });
+
+  it('teknik gostergeyi asama verisiyle gosterir', () => {
+    const h = html();
+    expect(h).toContain('Boya');
+    expect(h).toContain('%75');
+    expect(h).toContain('Teslim');
+    expect(h).toContain('%100');
+  });
+
+  it('fiyatlari Turkce bicimde basar', () => {
+    const h = html();
+    expect(h).toContain('5.750.000');
+    expect(h).toContain('4.450.000');
+  });
+
+  it('her kart minik cephe diyagrami tasir', () => {
+    const figs = doc().querySelectorAll('[data-project] .psheet__figure svg');
+    expect(figs.length).toBe(projects.length);
+  });
+
+  it('filtreler native select — klavye erisilebilir ve label bagli', () => {
+    const d = doc();
+    const selects = [...d.querySelectorAll('.filters__control')];
+    expect(selects.length).toBeGreaterThanOrEqual(5);
+    for (const el of selects) {
+      const id = el.getAttribute('id')!;
+      expect(d.querySelector(`label[for="${id}"]`), `${id} icin label yok`).toBeTruthy();
+    }
+  });
+
+  it('sonuc sayaci ekran okuyucuya duyurulur', () => {
+    const c = doc().querySelector('[data-result-count]');
+    expect(c?.getAttribute('aria-live')).toBe('polite');
+    expect(c?.textContent).toContain('(2)');
+  });
+
+  it('JS olmadan tum projeler gorunur — asamali iyilestirme', () => {
+    for (const card of doc().querySelectorAll('[data-project]')) {
+      expect(card.hasAttribute('hidden')).toBe(false);
+    }
   });
 });
