@@ -1,0 +1,106 @@
+---
+import Base from '../layouts/Base.astro';
+import SheetRule from '../components/ui/SheetRule.astro';
+import Cta from '../components/sections/Cta.astro';
+import { site } from '../content/site';
+
+const a = site.about;
+---
+
+<Base title={a.meta.title} description={a.meta.description} route="/about">
+
+  {/* Anahtar cümle — sanat yönünün dayanağı, tam genişlik tipografik an */}
+  <section class="keyline on-dark">
+    <div class="shell shell--railed">
+      <SheetRule no=". 01" kicker={a.kicker} />
+      <h1 class="keyline__title display display--xl">{a.keyline}</h1>
+      <p class="keyline__rest">{a.keylineRest}</p>
+    </div>
+  </section>
+
+  <section class="body">
+    <div class="shell shell--railed body__inner">
+      <div class="body__aside">
+        <span class="tech">{a.title}</span>
+      </div>
+      <div class="body__text">
+        {a.body.map((para) => <p>{para}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="promises">
+    <div class="shell shell--railed">
+      <SheetRule no=". 02" kicker={a.promises.kicker} />
+      <h2 class="promises__title">{a.promises.title}</h2>
+
+      <div class="promises__grid">
+        {a.promises.items.map((item, i) => (
+          <article class="promises__item reveal" style={`--reveal-delay:${i * 60}ms`}>
+            <span class="tech promises__no num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="promises__itemTitle">{item.title}</h3>
+            <p class="promises__body">{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Cta />
+</Base>
+
+<style>
+  /* ── Anahtar cümle ──────────────────────────────────────── */
+  .keyline { padding-block: clamp(var(--s-16), 9vw, var(--s-32)); }
+  .keyline__title {
+    margin-block: var(--s-8) 0;
+    max-width: 17ch;
+    text-wrap: balance;
+  }
+  .keyline__rest {
+    margin-top: var(--s-8);
+    max-width: 54ch;
+    font-size: clamp(var(--t-small), 1.15vw, 19px);
+    opacity: 0.7;
+  }
+
+  /* ── Gövde ──────────────────────────────────────────────── */
+  .body { padding-block: clamp(var(--s-12), 6vw, var(--s-24)); }
+  .body__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: clamp(var(--s-6), 4vw, var(--s-16));
+  }
+  @media (max-width: 900px) {
+    .body__inner { grid-template-columns: 1fr; gap: var(--s-6); }
+  }
+  .body__aside { opacity: 0.45; padding-top: 6px; }
+  .body__text { display: grid; gap: var(--s-6); }
+  .body__text p { font-size: clamp(var(--t-body), 1.2vw, 19px); }
+
+  /* ── Taahhütler ─────────────────────────────────────────── */
+  .promises { padding-block: clamp(var(--s-12), 6vw, var(--s-24)); }
+  .promises__title {
+    font-size: var(--t-h1);
+    letter-spacing: var(--ls-h);
+    margin-block: var(--s-6) var(--s-12);
+  }
+  .promises__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: var(--hairline) solid var(--line-dark);
+  }
+  @media (max-width: 720px) {
+    .promises__grid { grid-template-columns: 1fr; }
+  }
+  .promises__item {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+    padding: var(--s-8) var(--s-8) var(--s-12) 0;
+    border-bottom: var(--hairline) solid var(--line-dark);
+  }
+  .promises__no { color: var(--brick); }
+  .promises__itemTitle { font-size: var(--t-h3); }
+  .promises__body { font-size: var(--t-small); opacity: 0.76; max-width: 42ch; }
+</style>

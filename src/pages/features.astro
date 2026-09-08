@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/sections/PageHead.astro';
+import SheetRule from '../components/ui/SheetRule.astro';
+import Cta from '../components/sections/Cta.astro';
+import { site } from '../content/site';
+
+const f = site.features;
+const groups = [
+  { ...f.buyer, no: '02' },
+  { ...f.firm, no: '03' },
+];
+---
+
+<Base title={f.meta.title} description={f.meta.description} route="/features">
+  <PageHead kicker={f.kicker} title={f.title} lead={f.lead} />
+
+  {groups.map((group) => (
+    <section class="sheet">
+      <div class="shell shell--railed">
+        <SheetRule no={`. ${group.no}`} kicker={group.kicker} />
+        <h2 class="sheet__title">{group.title}</h2>
+
+        <div class="sheet__grid">
+          {group.items.map((item, i) => (
+            <article class="sheet__item reveal" style={`--reveal-delay:${i * 50}ms`}>
+              <span class="tech sheet__no num">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="sheet__itemTitle">{item.title}</h3>
+              <p class="sheet__body">{item.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <Cta />
+</Base>
+
+<style>
+  .sheet { padding-block: clamp(var(--s-12), 6vw, var(--s-24)); }
+  .sheet__title {
+    font-size: var(--t-h1);
+    letter-spacing: var(--ls-h);
+    margin-block: var(--s-6) var(--s-12);
+    max-width: 18ch;
+  }
+
+  .sheet__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 0;
+    border-top: var(--hairline) solid var(--line-dark);
+  }
+
+  .sheet__item {
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+    padding: var(--s-8) var(--s-8) var(--s-12) 0;
+    border-bottom: var(--hairline) solid var(--line-dark);
+  }
+  .sheet__no { color: var(--brick); }
+  .sheet__itemTitle { font-size: var(--t-h3); }
+  .sheet__body { font-size: var(--t-small); opacity: 0.76; max-width: 42ch; }
+</style>

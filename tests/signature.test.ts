@@ -4,7 +4,12 @@ import { parseHTML } from 'linkedom';
 import { credits } from '../src/components/signature/credits';
 
 /** İmza her sayfada bulunmak zorunda — bu liste sayfa eklendikçe büyür. */
-const PAGES = ['dist/index.html', 'dist/kunye/index.html'];
+const PAGES = [
+  'dist/index.html',
+  'dist/features/index.html',
+  'dist/about/index.html',
+  'dist/kunye/index.html',
+];
 
 const docOf = (file: string) => parseHTML(readFileSync(file, 'utf8')).document;
 

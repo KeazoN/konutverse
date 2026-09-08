@@ -17,7 +17,7 @@ function bundledCss(): string {
     .join('\n');
 }
 
-const ROUTES = ['index'];
+const ROUTES = ['index', 'features', 'about'];
 
 describe('build çıktısı', () => {
   it('ana sayfayı üretir', () => {
