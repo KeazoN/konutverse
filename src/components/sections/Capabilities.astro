@@ -1,0 +1,71 @@
+---
+import { site } from '../../content/site';
+import SheetRule from '../ui/SheetRule.astro';
+import Button from '../ui/Button.astro';
+import CapabilityFigure from '../viz/CapabilityFigure.astro';
+
+const KINDS = ['selector', 'pages', 'setup'] as const;
+const items = site.home.capabilities;
+---
+
+<section class="caps on-dark" id="nasil">
+  <div class="shell shell--railed">
+    {items.map((item, i) => (
+      <article class="caps__item reveal" style={`--reveal-delay:${i * 60}ms`}>
+        <div class="caps__copy">
+          <SheetRule no={`. ${item.no}`} kicker={item.kicker} />
+          <h2 class="caps__title">
+            {item.title.map((line, j) => (
+              <>{j > 0 && ' '}<span class="caps__line">{line}</span></>
+            ))}
+          </h2>
+          <p class="caps__body">{item.body}</p>
+          <div class="caps__cta">
+            <Button href={item.cta.href} variant="ghost">{item.cta.label}</Button>
+          </div>
+        </div>
+        <div class="caps__figure">
+          <CapabilityFigure kind={KINDS[i]} />
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .caps { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
+
+  .caps__item {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(var(--s-8), 5vw, var(--s-24));
+    align-items: center;
+    padding-block: clamp(var(--s-12), 5vw, var(--s-24));
+  }
+  .caps__item + .caps__item { border-top: var(--hairline) solid var(--line); }
+
+  /* Tek numaralı bloklarda görsel sola geçer — ritim */
+  .caps__item:nth-child(even) .caps__figure { order: -1; }
+
+  @media (max-width: 900px) {
+    .caps__item { grid-template-columns: 1fr; gap: var(--s-8); }
+    .caps__item:nth-child(even) .caps__figure { order: 0; }
+  }
+
+  .caps__copy { display: grid; gap: var(--s-5, 20px); align-content: start; }
+  .caps__title {
+    font-size: var(--t-h1);
+    letter-spacing: var(--ls-h);
+    max-width: 15ch;
+    margin-top: var(--s-2);
+  }
+  .caps__line { display: block; }
+  .caps__body { max-width: 46ch; opacity: 0.76; margin-top: var(--s-2); }
+  .caps__cta { margin-top: var(--s-4); }
+
+  .caps__figure {
+    border: var(--hairline) solid var(--line);
+    padding: clamp(var(--s-6), 3vw, var(--s-12));
+    background: var(--ink-deep);
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+import { site } from '../../content/site';
+import Button from '../ui/Button.astro';
+
+interface Props { title?: string; body?: string; }
+const {
+  title = 'Bir dairenizle başlayın',
+  body = 'Örnek daireyi şimdi gezin; sonra 15 dakikalık görüşmede ilk dairenizi panele birlikte kuralım.',
+} = Astro.props;
+---
+
+<section class="cta on-dark-deep">
+  <div class="shell shell--railed cta__inner reveal">
+    <div>
+      <h2 class="cta__title">{title}</h2>
+      <p class="cta__body">{body}</p>
+    </div>
+    <div class="cta__actions">
+      <Button href={site.ctaPrimary.href} variant="primary" size="lg">
+        {site.ctaPrimary.label}
+      </Button>
+      <Button href={site.ctaSecondary.href} variant="ghost" size="lg">
+        {site.ctaSecondary.label}
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
+
+  .cta__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(var(--s-8), 4vw, var(--s-16));
+    align-items: center;
+    border-top: var(--hairline) solid var(--line);
+    padding-top: clamp(var(--s-8), 4vw, var(--s-16));
+  }
+  @media (max-width: 900px) {
+    .cta__inner { grid-template-columns: 1fr; }
+  }
+
+  .cta__title {
+    font-size: var(--t-display);
+    letter-spacing: var(--ls-display);
+    max-width: 14ch;
+  }
+  .cta__body { margin-top: var(--s-4); max-width: 48ch; opacity: 0.76; }
+
+  .cta__actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  @media (min-width: 901px) {
+    .cta__actions { justify-self: end; }
+  }
+</style>

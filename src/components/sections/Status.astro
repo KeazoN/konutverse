@@ -1,0 +1,70 @@
+---
+import { site } from '../../content/site';
+import Metric from '../ui/Metric.astro';
+import SheetRule from '../ui/SheetRule.astro';
+
+const { status } = site.home;
+---
+
+<section class="status on-dark-deep">
+  <div class="shell shell--railed">
+    <SheetRule no=". 03" kicker={status.kicker} />
+
+    <div class="status__head reveal">
+      <h2 class="status__title">{status.title}</h2>
+      <span class="tech status__stamp num">{status.stamp}</span>
+    </div>
+
+    <dl class="status__grid reveal">
+      {status.metrics.map((m) => (
+        <div class="status__cell">
+          <Metric value={m.value} label={m.label} />
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .status { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
+
+  .status__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-6);
+    margin-block: var(--s-8) var(--s-12);
+  }
+  .status__title { font-size: var(--t-h1); max-width: 20ch; }
+
+  /* Sicil damgası — sayıyı saklamak yerine tarihleyip sahipleniyoruz */
+  .status__stamp {
+    color: var(--brick-lit);
+    border: var(--hairline) solid var(--line);
+    padding: 6px 10px;
+  }
+
+  .status__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 0;
+    border-top: var(--hairline) solid var(--line);
+  }
+  @media (max-width: 720px) {
+    .status__grid { grid-template-columns: 1fr; }
+  }
+
+  .status__cell {
+    padding: var(--s-8) var(--s-6) var(--s-8) 0;
+    border-right: var(--hairline) solid var(--line);
+  }
+  .status__cell:last-child { border-right: 0; }
+  @media (max-width: 720px) {
+    .status__cell {
+      border-right: 0;
+      border-bottom: var(--hairline) solid var(--line);
+      padding-right: 0;
+    }
+  }
+</style>

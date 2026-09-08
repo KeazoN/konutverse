@@ -246,3 +246,57 @@ describe('JS bütçesi (spec §9)', () => {
     expect(home - other).toBeGreaterThan(30 * 1024);
   });
 });
+
+describe('ana sayfa — kalan bölümler', () => {
+  const doc = () => parseHTML(readFileSync('dist/index.html', 'utf8')).document;
+  const html = () => readFileSync('dist/index.html', 'utf8');
+
+  it('üç kabiliyet bloğu, pafta numaralarıyla', () => {
+    const h = html();
+    for (const no of ['. 01', '. 02', '. 03']) expect(h).toContain(no);
+    expect(doc().querySelectorAll('.caps__item').length).toBe(3);
+  });
+
+  it('kabiliyet görselleri KOD İLE çizilmiş — ekran görüntüsü yok', () => {
+    const figs = [...doc().querySelectorAll('.caps__figure')];
+    expect(figs.length).toBe(3);
+    for (const f of figs) {
+      expect(f.querySelector('svg'), 'SVG temsili yok').toBeTruthy();
+      expect(f.querySelector('img'), 'ekran görüntüsü kullanılmış').toBeNull();
+    }
+  });
+
+  it('kabiliyet görselleri erişilebilir etiket taşır', () => {
+    for (const svg of doc().querySelectorAll('.caps__figure svg')) {
+      expect(svg.getAttribute('aria-label')?.length).toBeGreaterThan(10);
+    }
+  });
+
+  it('yayın durumu: tarihli sicil damgası ve sıfır dolgulu sayılar', () => {
+    const h = html();
+    expect(h).toContain('YAYIN DURUMU · 08.09.2026');
+    const values = [...doc().querySelectorAll('.metric__value')].map((e) => e.textContent);
+    expect(values).toEqual(['01', '02', '04']);
+  });
+
+  it('3 adımda: pafta referansı numaralandırması', () => {
+    const h = html();
+    for (const no of ['01/03', '02/03', '03/03']) expect(h).toContain(no);
+  });
+
+  it('adım metinleri canlı siteyle birebir', () => {
+    const h = html();
+    expect(h).toContain('Daire fotoğraflarınızı ve varsa kat planlarını iletin');
+    expect(h).toContain('Bina, kat ve daire yapısını kurup odaları birbirine bağlıyoruz');
+  });
+
+  it('başlık hiyerarşisi geçerli — tek h1, h2 atlanmamış', () => {
+    const d = doc();
+    expect(d.querySelectorAll('h1').length).toBe(1);
+    expect(d.querySelectorAll('h2').length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('#nasil çapası var — footer linki kırık değil', () => {
+    expect(doc().querySelector('#nasil')).toBeTruthy();
+  });
+});

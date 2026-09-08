@@ -1,0 +1,135 @@
+---
+/**
+ * Kabiliyet görselleri — KOD İLE ÇİZİLİR, ekran görüntüsü değil.
+ *
+ * Gerekçe (spec §7.1): 360° görüntüleyici kapsam dışı olduğu için
+ * canlı ürün ekranına erişim yok; ayrıca yeniden tasarlanmış bir
+ * sitede eski arayüzün fotoğrafını göstermek tasarım dilini bozar.
+ * Temsiller yeni tasarım sisteminin çizgi diliyle çizilir.
+ */
+interface Props { kind: 'selector' | 'pages' | 'setup'; }
+const { kind } = Astro.props;
+---
+
+<div class="fig" data-fig={kind}>
+  {kind === 'selector' && (
+    <svg viewBox="0 0 260 180" role="img"
+         aria-label="Kat seçici temsili: bina, kat ve daire seçimi">
+      {[0, 1, 2, 3, 4].map((r) => (
+        <g class:list={['fig__row', r === 2 && 'is-active']}>
+          <text class="fig__kot" x="4" y={30 + r * 30}>{`+${((4 - r) * 3.2).toFixed(2)}`}</text>
+          {[0, 1, 2, 3].map((c) => (
+            <rect class:list={['fig__cell', r === 2 && c === 1 && 'is-pick']}
+                  x={46 + c * 52} y={14 + r * 30} width="46" height="22" />
+          ))}
+        </g>
+      ))}
+      <g class="fig__cursor">
+        <circle cx="122" cy="88" r="13" />
+        <circle class="fig__dot" cx="122" cy="88" r="2.5" />
+      </g>
+    </svg>
+  )}
+
+  {kind === 'pages' && (
+    <svg viewBox="0 0 260 180" role="img"
+         aria-label="Firma sayfası temsili: tüm projeler tek adreste">
+      <rect class="fig__frame" x="6" y="6" width="248" height="168" />
+      <g class="fig__head">
+        <rect x="22" y="24" width="26" height="26" />
+        <line x1="58" y1="31" x2="140" y2="31" />
+        <line x1="58" y1="43" x2="106" y2="43" />
+      </g>
+      <line class="fig__rule" x1="22" y1="66" x2="238" y2="66" />
+      {[0, 1, 2].map((i) => (
+        <g class="fig__proj">
+          <rect x={22 + i * 74} y="82" width="64" height="52" />
+          {[0, 1, 2, 3].map((f) => (
+            <line x1={22 + i * 74} y1={94 + f * 12} x2={86 + i * 74} y2={94 + f * 12} />
+          ))}
+          <line class="fig__projName" x1={22 + i * 74} y1="146" x2={70 + i * 74} y2="146" />
+        </g>
+      ))}
+    </svg>
+  )}
+
+  {kind === 'setup' && (
+    <svg viewBox="0 0 260 180" role="img"
+         aria-label="Kurulum akışı temsili: fotoğraf, yapı kurulumu, paylaşım">
+      <line class="fig__flow" x1="46" y1="90" x2="214" y2="90" />
+
+      <g class="fig__step">
+        <rect x="18" y="62" width="56" height="56" />
+        <polyline points="26,106 42,86 52,98 62,88 66,106" />
+        <circle cx="58" cy="76" r="4" />
+        <text class="fig__stepNo" x="18" y="134">01</text>
+      </g>
+
+      <g class="fig__step is-mid">
+        <rect x="102" y="62" width="56" height="56" />
+        {[0, 1, 2, 3].map((f) => (
+          <line x1="102" y1={72 + f * 12} x2="158" y2={72 + f * 12} />
+        ))}
+        <line x1="130" y1="62" x2="130" y2="118" />
+        <text class="fig__stepNo" x="102" y="134">02</text>
+      </g>
+
+      <g class="fig__step">
+        <rect x="186" y="62" width="56" height="56" />
+        <path d="M202 96 a9 9 0 0 1 0 -12 l6 -6 a9 9 0 0 1 12 12" />
+        <path d="M226 84 a9 9 0 0 1 0 12 l-6 6 a9 9 0 0 1 -12 -12" />
+        <text class="fig__stepNo" x="186" y="134">03</text>
+      </g>
+    </svg>
+  )}
+</div>
+
+<style>
+  .fig { width: 100%; }
+  .fig svg { width: 100%; height: auto; }
+
+  .fig :global(rect),
+  .fig :global(line),
+  .fig :global(circle),
+  .fig :global(polyline),
+  .fig :global(path) {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  .fig__kot {
+    font-family: var(--font-tech);
+    font-size: 7px;
+    fill: var(--chalk);
+    opacity: 0.32;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Kat seçici ─────────────────────────────────────────── */
+  .fig__row.is-active :global(rect) { stroke: var(--chalk); opacity: 0.5; }
+  .fig__row.is-active .fig__kot { fill: var(--brick-lit); opacity: 1; }
+  :global(.fig__cell.is-pick) { stroke: var(--brick) !important; stroke-width: 1.6 !important; }
+
+  .fig__cursor :global(circle) { stroke: var(--brick); }
+  .fig__cursor :global(.fig__dot) { fill: var(--brick); }
+
+  /* ── Firma sayfası ──────────────────────────────────────── */
+  .fig__frame { stroke: var(--chalk); opacity: 0.28; }
+  .fig__head :global(rect) { stroke: var(--brick); }
+  .fig__rule { stroke: var(--chalk); opacity: 0.22; }
+  .fig__proj :global(rect) { stroke: var(--chalk); opacity: 0.4; }
+  .fig__projName { stroke: var(--chalk); opacity: 0.3; }
+
+  /* ── Kurulum akışı ──────────────────────────────────────── */
+  .fig__flow { stroke: var(--brick); stroke-dasharray: 4 4; opacity: 0.6; }
+  .fig__step :global(rect) { stroke: var(--chalk); opacity: 0.42; }
+  .fig__step.is-mid :global(rect) { stroke: var(--brick); opacity: 1; }
+  .fig__stepNo {
+    font-family: var(--font-tech);
+    font-size: 8px;
+    fill: var(--brick-lit);
+    letter-spacing: 0.08em;
+    stroke: none;
+  }
+</style>
