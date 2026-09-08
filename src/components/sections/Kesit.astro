@@ -1,0 +1,200 @@
+---
+/**
+ * Kesit sahnesi — sitenin TEK gösteri anı.
+ *
+ * Scroll, bina boyunca bir kesit düzlemini yukarı sürer. Üç durakta
+ * üç iddia. Son durakta ortografik kesit yerini perspektif mekâna
+ * bırakır: "plandan mekâna".
+ *
+ * KRİTİK: üç durağın da metni HTML'de STATİK olarak bulunur.
+ * JS çalışmasa da, reduced-motion açık da olsa üç blok da okunur.
+ * Görünürlüğü yöneten sadece bir sınıf; içerik her zaman orada.
+ */
+import { site } from '../../content/site';
+import { featuredProject } from '../../content/projects';
+import BuildingSection from '../viz/BuildingSection.astro';
+import RoomPerspective from '../viz/RoomPerspective.astro';
+import SheetRule from '../ui/SheetRule.astro';
+
+const { kesit } = site.home;
+const p = featuredProject;
+---
+
+<section class="kesit on-dark" id="kesit" data-kesit>
+  <div class="kesit__stage">
+    <div class="shell shell--railed kesit__inner">
+
+      <!-- Metin durakları — üçü de her zaman DOM'da -->
+      <div class="kesit__stops">
+        <SheetRule no="02" kicker="Kesit" />
+
+        <h2 class="kesit__title">
+          {kesit.title.map((line, i) => (
+            <>{i > 0 && ' '}<span class="kesit__line">{line}</span></>
+          ))}
+        </h2>
+
+        <p class="kesit__body">{kesit.body}</p>
+
+        <ol class="kesit__list">
+          {kesit.stops.map((stop, i) => (
+            <li class="kesit__stop" data-stop={String(i)}>
+              <span class="tech kesit__stopKot num">{stop.kot}</span>
+              <span class="kesit__stopLabel">{stop.label}</span>
+              <span class="kesit__stopLine">{stop.line}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <!-- Görsel: kesit → mekân -->
+      <div class="kesit__figure">
+        <div class="kesit__layer kesit__layer--section" data-layer="section">
+          <BuildingSection
+            floors={p.floors}
+            unitsPerFloor={4}
+            tourableFloors={[0, 2]}
+            label={`${p.name} kesiti — kesit düzlemi kat kat yükseliyor`}
+          />
+          <div class="kesit__plane" data-cut-plane aria-hidden="true">
+            <span class="tech kesit__planeLabel">kesit düzlemi</span>
+          </div>
+        </div>
+
+        <div class="kesit__layer kesit__layer--room" data-layer="room">
+          <RoomPerspective />
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .kesit { position: relative; }
+
+  .kesit__stage {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    padding-block: clamp(var(--s-16), 9vw, var(--s-32));
+  }
+
+  .kesit__inner {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    gap: clamp(var(--s-8), 5vw, var(--s-24));
+    align-items: center;
+  }
+
+  .kesit__stops { display: grid; gap: var(--s-6); }
+
+  .kesit__title {
+    font-size: var(--t-display);
+    letter-spacing: var(--ls-display);
+    max-width: 16ch;
+  }
+  .kesit__line { display: block; }
+
+  .kesit__body { max-width: 46ch; opacity: 0.76; }
+
+  /* ── Üç durak ─────────────────────────────────────────────── */
+  .kesit__list {
+    list-style: none;
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .kesit__stop {
+    display: grid;
+    grid-template-columns: 8ch 9ch 1fr;
+    align-items: baseline;
+    gap: var(--s-4);
+    padding-block: var(--s-4);
+    border-top: var(--hairline) solid var(--line);
+    opacity: 0.34;
+    transition: opacity var(--dur-base) var(--ease);
+  }
+  .kesit__stop:last-child { border-bottom: var(--hairline) solid var(--line); }
+
+  /* Aktif durak — scrub işaretler. JS yoksa hepsi okunur kalır. */
+  .kesit__stop[data-active='true'] { opacity: 1; }
+
+  .kesit__stopKot { color: var(--brick-lit); }
+  .kesit__stopLabel {
+    font-family: var(--font-display);
+    font-stretch: 100%;
+    font-weight: 600;
+    font-size: var(--t-h3);
+  }
+  .kesit__stopLine { font-size: var(--t-small); opacity: 0.82; }
+
+  @media (max-width: 560px) {
+    .kesit__stop { grid-template-columns: 7ch 1fr; }
+    .kesit__stopLine { grid-column: 2; }
+  }
+
+  /* ── Görsel katmanlar ─────────────────────────────────────── */
+  .kesit__figure {
+    position: relative;
+    aspect-ratio: 5 / 6;
+    max-height: 76vh;
+    justify-self: center;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .kesit__layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .kesit__layer--section :global(svg) { max-height: 100%; width: auto; }
+
+  /* Mekân katmanı — scrub açar. JS yoksa varsayılan görünür
+     (aşağıdaki no-js kuralı) ki içerik kaybolmasın. */
+  .kesit__layer--room { opacity: 0; }
+  .kesit[data-scrub='on'] .kesit__layer--room { opacity: var(--room-opacity, 0); }
+  .kesit[data-scrub='on'] .kesit__layer--section { opacity: var(--section-opacity, 1); }
+
+  /* ── Kesit düzlemi ────────────────────────────────────────── */
+  .kesit__plane {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 12%;
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    border-top: 1px dashed var(--brick);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .kesit[data-scrub='on'] .kesit__plane { opacity: 1; }
+
+  .kesit__planeLabel {
+    background: var(--ink);
+    color: var(--brick-lit);
+    padding: 2px 6px;
+    font-size: 9px;
+    transform: translateY(-50%);
+  }
+
+  @media (max-width: 900px) {
+    .kesit__inner { grid-template-columns: 1fr; }
+    .kesit__figure { aspect-ratio: 4 / 5; max-height: 56vh; order: -1; }
+  }
+
+  /* Hareket kapalıysa: mekân katmanı da görünür olsun diye
+     figürü iki ayrı bloğa bölmek yerine mekânı sabit gösteririz. */
+  @media (prefers-reduced-motion: reduce) {
+    .kesit__stop { opacity: 1; }
+    .kesit__plane { display: none; }
+  }
+</style>

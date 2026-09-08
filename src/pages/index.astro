@@ -2,16 +2,24 @@
 import Base from '../layouts/Base.astro';
 import KotRayi from '../components/site/KotRayi.astro';
 import Hero from '../components/sections/Hero.astro';
+import Kesit from '../components/sections/Kesit.astro';
 import { site } from '../content/site';
-import { featuredProject, kotOf } from '../content/projects';
+import { kotOf } from '../content/projects';
 
 const { meta } = site.home;
-
-// Kot rayı işaretleri — binanın gerçek kotlarından örneklenir
 const railMarks = [11, 8, 5, 2, 0].map((i) => ({ kot: kotOf(i), id: `f${i}` }));
 ---
 
 <Base title={meta.title} description={meta.description} route="/" surface="dark">
   <KotRayi slot="rail" marks={railMarks} />
+
   <Hero />
+  <Kesit />
+
+  {/* Ağır hareket YALNIZCA ana sayfada. Base.astro'da koşullu
+      yüklemek Astro'nun script hoisting'i yüzünden bundle'ı
+      bölmezdi; burada tutmak ayrımı garantiler. */}
+  <script>
+    import '../scripts/kesit-scrub.ts';
+  </script>
 </Base>

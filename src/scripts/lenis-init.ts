@@ -4,8 +4,17 @@ import Lenis from 'lenis';
  *  native scroll, klavye ve anchor davranışı aynen korunur. */
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+declare global {
+  interface Window { __lenis?: Lenis }
+}
+
 if (!reduce) {
   const lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+
+  // ScrollTrigger'ın Lenis'i takip edebilmesi için örneği paylaş.
+  // Senkronize edilmezse pinned sahne scroll'dan kopar.
+  window.__lenis = lenis;
+  window.dispatchEvent(new CustomEvent('kv:lenis-ready'));
 
   const raf = (time: number) => {
     lenis.raf(time);

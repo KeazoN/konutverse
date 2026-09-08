@@ -1,0 +1,138 @@
+---
+/**
+ * Tek kaçış noktalı perspektif iç mekân — kesit sahnesinin ödül anı.
+ *
+ * Konsept: sayfa ortografik kesitle başlar, perspektif mekânla biter.
+ * "Plandan mekâna." Ortografik = ölçü, perspektif = içeride olmak.
+ *
+ * Aynı çizgi dilinde çizilir (saç teli, dolgu yok) — fotoğraf DEĞİL.
+ * Gerekçe: Konutverse'ün kendi metni "kat planı ve düz fotoğraf bir
+ * daireyi anlatmıyor" diyor. Stok fotoğraf bu tezi çürütürdü.
+ *
+ * FOTOĞRAF YUVASI: müşteri gerçek daire fotoğrafı verirse
+ * <slot name="photo" /> içine konur; çizgiler üstünde kalır.
+ */
+interface Props { label?: string; }
+const { label = 'Daire içi perspektif görünüm — 360° bakış noktası işaretli' } = Astro.props;
+
+const VP = { x: 200, y: 130 };
+const BACK = { l: 130, r: 270, t: 75, b: 185 };
+const W = 400;
+const H = 260;
+
+/** Zemin karo çizgileri — kaçış noktasına yakınsar. */
+const floorRays = [40, 80, 120, 160, 200, 240, 280, 320, 360].map((x) => {
+  const t = (H - BACK.b) / (H - VP.y);
+  return { x1: x, y1: H, x2: x + t * (VP.x - x), y2: BACK.b };
+});
+
+/** Zemin enine çizgileri — derinlikle sıkışır. */
+const floorBands = [230, 208, 196, 189].map((y) => {
+  const k = (y - BACK.b) / (H - BACK.b);
+  return { y, x1: BACK.l - BACK.l * k, x2: BACK.r + (W - BACK.r) * k };
+});
+
+/** Sağ duvardaki kapı boşluğu — perspektifte dörtgen. */
+const door = '302.5,97.5 335,89.3 335,222.5 302.5,203.75';
+---
+
+<svg
+  class="room"
+  viewBox={`0 0 ${W} ${H}`}
+  role="img"
+  aria-label={label}
+  preserveAspectRatio="xMidYMid slice"
+>
+  <slot name="photo" />
+
+  <!-- Pencere ışığının zemine düşen izi -->
+  <polygon class="room__light" points="155,185 215,185 258,260 96,260" />
+
+  <!-- Zemin -->
+  <g class="room__floor">
+    {floorRays.map((l) => <line x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} />)}
+    {floorBands.map((b) => <line x1={b.x1} y1={b.y} x2={b.x2} y2={b.y} />)}
+  </g>
+
+  <!-- Oda kabuğu: köşe çizgileri -->
+  <g class="room__shell">
+    <line x1={BACK.l} y1={BACK.b} x2="0" y2={H} />
+    <line x1={BACK.r} y1={BACK.b} x2={W} y2={H} />
+    <line x1={BACK.l} y1={BACK.t} x2="0" y2="0" />
+    <line x1={BACK.r} y1={BACK.t} x2={W} y2="0" />
+    <rect x={BACK.l} y={BACK.t} width={BACK.r - BACK.l} height={BACK.b - BACK.t} />
+  </g>
+
+  <!-- Pencere -->
+  <g class="room__window">
+    <rect x="155" y="95" width="60" height="55" />
+    <line x1="185" y1="95" x2="185" y2="150" />
+    <line x1="155" y1="122.5" x2="215" y2="122.5" />
+  </g>
+
+  <!-- Kapı boşluğu + geçiş oku -->
+  <g class="room__door">
+    <polygon points={door} />
+    <g class="room__doorArrow">
+      <line x1="310" y1="160" x2="326" y2="157" />
+      <polyline points="321,151 327,157 320,163" />
+    </g>
+  </g>
+
+  <!-- 360° bakış noktası — zeminde perspektif daire + görüş konisi -->
+  <g class="room__eye">
+    <line class="room__cone" x1="200" y1="224" x2="150" y2="186" />
+    <line class="room__cone" x1="200" y1="224" x2="250" y2="186" />
+    <ellipse cx="200" cy="224" rx="27" ry="9" />
+    <line x1="173" y1="224" x2="227" y2="224" />
+    <line x1="200" y1="215" x2="200" y2="233" />
+    <circle cx="200" cy="224" r="3" />
+  </g>
+</svg>
+
+<style>
+  .room { width: 100%; height: 100%; display: block; }
+
+  .room__shell line,
+  .room__shell rect {
+    fill: none;
+    stroke: var(--chalk);
+    stroke-width: 0.9;
+    opacity: 0.5;
+  }
+
+  .room__floor line { stroke: var(--line); stroke-width: 0.5; }
+
+  /* Pencereden düşen ışık — mekânı "gerçek" yapan tek yumuşak öğe */
+  .room__light { fill: var(--chalk); opacity: 0.05; }
+
+  .room__window rect,
+  .room__window line {
+    fill: none;
+    stroke: var(--chalk);
+    stroke-width: 0.8;
+    opacity: 0.62;
+  }
+
+  .room__door polygon { fill: none; stroke: var(--chalk); stroke-width: 0.8; opacity: 0.45; }
+  .room__doorArrow line,
+  .room__doorArrow polyline {
+    fill: none;
+    stroke: var(--brick-lit);
+    stroke-width: 1.3;
+  }
+
+  /* 360° bakış noktası — tuğla vurgu, grafik öğe */
+  .room__eye ellipse,
+  .room__eye line,
+  .room__eye circle {
+    fill: none;
+    stroke: var(--brick);
+    stroke-width: 1.1;
+  }
+  .room__eye circle { fill: var(--brick); }
+  .room__cone { stroke-dasharray: 3 3; opacity: 0.5; }
+
+  /* Fotoğraf yuvası doldurulursa çizgiler onun üstünde kalır */
+  .room :global([slot='photo']) { opacity: 0.55; }
+</style>

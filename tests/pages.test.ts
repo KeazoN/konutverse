@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { parseHTML } from 'linkedom';
+import { gzipSync } from 'node:zlib';
 
 const DIST = 'dist';
 
@@ -167,5 +168,81 @@ describe('ana sayfa hero', () => {
     for (const kot of ['+35.20', '+25.60', '+16.00', '+6.40', '+0.00']) {
       expect(h).toContain(kot);
     }
+  });
+});
+
+describe('kesit sahnesi', () => {
+  const doc = () => parseHTML(readFileSync('dist/index.html', 'utf8')).document;
+  const html = () => readFileSync('dist/index.html', 'utf8');
+
+  it('üç durak da HTML içinde STATİK — JS olmadan okunur', () => {
+    const stops = doc().querySelectorAll('#kesit [data-stop]');
+    expect(stops.length).toBe(3);
+    for (const s of stops) expect(s.textContent!.trim().length).toBeGreaterThan(10);
+  });
+
+  it('canlı sitedeki kesit metnini birebir taşır', () => {
+    const h = html();
+    expect(h).toContain('Sahaya gelen alıcı');
+    expect(h).toContain('daireyi zaten gezmiş olur');
+    expect(h).toContain('görüşme tanıtımla değil fiyat konuşmasıyla başlıyor');
+  });
+
+  it('kesit ve mekân katmanlarının ikisi de DOM\'da', () => {
+    const d = doc();
+    expect(d.querySelector('[data-layer="section"]')).toBeTruthy();
+    expect(d.querySelector('[data-layer="room"]')).toBeTruthy();
+  });
+
+  it('perspektif mekân erişilebilir etiket taşır ve fotoğraf DEĞİL', () => {
+    const d = doc();
+    const room = d.querySelector('[data-layer="room"] svg[role="img"]');
+    expect(room).toBeTruthy();
+    expect(room!.getAttribute('aria-label')).toContain('360°');
+    // Stok fotoğraf kullanılmadı — çizgi diliyle çizildi
+    expect(d.querySelector('[data-layer="room"] img')).toBeNull();
+  });
+
+  it('kesit düzlemi ve scrub kancaları var', () => {
+    const d = doc();
+    expect(d.querySelector('[data-kesit]')).toBeTruthy();
+    expect(d.querySelector('[data-cut-plane]')).toBeTruthy();
+  });
+
+  it('scrub varsayılan olarak KAPALI — JS açar, yoksa içerik statik kalır', () => {
+    expect(doc().querySelector('[data-kesit]')!.getAttribute('data-scrub')).toBeNull();
+  });
+});
+
+describe('JS bütçesi (spec §9)', () => {
+  const BUDGET = { home: 80 * 1024, other: 20 * 1024 };
+
+  const jsBytesOf = (route: string): number => {
+    const { document } = parseHTML(readFileSync(pathFor(route), 'utf8'));
+    const srcs = [...document.querySelectorAll('script[src]')]
+      .map((s) => s.getAttribute('src')!)
+      .filter((s) => s.startsWith('/'));
+    let total = 0;
+    for (const src of srcs) {
+      total += gzipSync(readFileSync(`dist${src}`)).length;
+    }
+    return total;
+  };
+
+  it(`ana sayfa <= ${BUDGET.home / 1024} KB gzip`, () => {
+    const bytes = jsBytesOf('index');
+    expect(bytes, `ana sayfa ${(bytes / 1024).toFixed(1)} KB`).toBeLessThanOrEqual(BUDGET.home);
+  });
+
+  it(`künye sayfası <= ${BUDGET.other / 1024} KB gzip — ağır hareket yüklenmiyor`, () => {
+    const bytes = jsBytesOf('kunye');
+    expect(bytes, `künye ${(bytes / 1024).toFixed(1)} KB`).toBeLessThanOrEqual(BUDGET.other);
+  });
+
+  it('ağır hareket YALNIZCA ana sayfada — bundle gerçekten bölünmüş', () => {
+    const home = jsBytesOf('index');
+    const other = jsBytesOf('kunye');
+    // GSAP + ScrollTrigger en az 30 KB gzip ekler
+    expect(home - other).toBeGreaterThan(30 * 1024);
   });
 });
