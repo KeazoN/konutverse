@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { THEME_COLOR } from '../src/lib/brand';
 
 const tokens = readFileSync('src/styles/tokens.css', 'utf8');
 
@@ -55,6 +56,14 @@ describe('tokens.css', () => {
 
   it('reduced-motion altında tüm süreleri sıfırlar', () => {
     expect(tokens).toContain('prefers-reduced-motion: reduce');
+  });
+});
+
+// <meta name="theme-color"> CSS değişkeni kabul etmez, literal ister.
+// Kopya kaçınılmaz; bu test kopyanın token'dan KAYMASINI engeller.
+describe('brand.ts / tokens.css eşleşmesi', () => {
+  it('THEME_COLOR ile --ink aynı değer', () => {
+    expect(THEME_COLOR).toBe(declarationOf('--ink'));
   });
 });
 

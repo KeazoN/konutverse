@@ -49,10 +49,18 @@
   --t-tech:       12px;
 
   --lh-display:   0.98;
+  --lh-tight:     1.06;
   --lh-body:      1.65;
-  --ls-display:   -0.03em;
+
+  /* Harf aralığı boyuta göre ayrışır: 148px ve 19px aynı tracking'i kaldırmaz */
+  --ls-display:   -0.035em;   /* display-xl, display */
+  --ls-h:         -0.022em;   /* h1, h2 */
+  --ls-h3:        -0.008em;
   --ls-tech:      0.08em;
-  --wdth-display: 112;
+
+  /* font-stretch yüzdesi — Archivo wdth ekseni 62%–125% arası.
+     font-variation-settings yerine yüksek seviye özellik kullanılır. */
+  --wdth-display: 112%;
 
   /* ── Form ─────────────────────────────────────────────────── */
   --radius-structural: 0;      /* çizimin yuvarlak köşesi yoktur */

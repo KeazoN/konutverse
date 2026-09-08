@@ -1,0 +1,68 @@
+/* ============================================================
+   Utilities — grid, yüzeyler, kurallar, giriş animasyonu
+   ============================================================ */
+
+.shell {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Kot rayının açtığı sol boşluk — yalnızca desktop */
+@media (min-width: 1024px) {
+  .shell--railed { padding-left: calc(var(--rail-w) + var(--gutter)); }
+}
+
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gutter);
+}
+@media (max-width: 900px) {
+  .grid-12 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* ── Yüzeyler ───────────────────────────────────────────────── */
+.on-dark      { background: var(--ink);      color: var(--chalk); }
+.on-dark-deep { background: var(--ink-deep); color: var(--chalk); }
+.on-plaster   { background: var(--plaster);  color: var(--ink); }
+
+.on-dark p, .on-dark-deep p { color: var(--chalk); opacity: 0.78; }
+
+/* ── Saç teli kurallar ──────────────────────────────────────── */
+.rule {
+  border: 0;
+  border-top: var(--hairline) solid var(--line-dark);
+  margin: 0;
+  width: 100%;
+}
+.on-dark .rule, .on-dark-deep .rule { border-top-color: var(--line); }
+
+/* ── Bölüm ritmi ────────────────────────────────────────────── */
+.section { padding-block: clamp(var(--s-16), 9vw, var(--s-48)); }
+.section--tight { padding-block: clamp(var(--s-12), 6vw, var(--s-24)); }
+
+/* ── Giriş animasyonu — reveal.ts tetikler ──────────────────── */
+.reveal { opacity: 0; transform: translateY(18px); }
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.is-in { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── Erişilebilirlik yardımcıları ───────────────────────────── */
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

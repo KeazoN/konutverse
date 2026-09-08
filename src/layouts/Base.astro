@@ -1,0 +1,63 @@
+---
+// Fontlar self-host (Fontsource). Üçüncü taraf CDN yok.
+// Archivo için standard.css: wght + wdth eksenlerinin İKİSİ de gelir.
+// index.css yalnız wght yükler ve geniş kurulum sessizce çalışmaz.
+import '@fontsource-variable/archivo/standard.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource-variable/inter';
+
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/utilities.css';
+import { THEME_COLOR } from '../lib/brand';
+
+interface Props {
+  title: string;
+  description: string;
+  route: string;
+}
+
+const { title, description, route } = Astro.props;
+const canonical = new URL(route, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content={THEME_COLOR} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Konutverse" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <slot name="head" />
+  </head>
+
+  <body>
+    <a class="skip" href="#main">İçeriğe atla</a>
+
+    <slot name="chrome-top" />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <slot name="chrome-bottom" />
+
+    <script>
+      import '../scripts/reveal.ts';
+      import '../scripts/lenis-init.ts';
+    </script>
+  </body>
+</html>

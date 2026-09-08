@@ -1,0 +1,117 @@
+/* ============================================================
+   Base — reset, tipografi uygulaması, focus
+   Ham değer yok; her şey tokens.css okur.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--chalk);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ── Display tipografisi ─────────────────────────────────────
+   Archivo variable, genişlik ekseni açık. font-variation-settings
+   yerine font-stretch/font-weight kullanılır: yüksek seviye
+   özellikler doğru miras alınır ve fallback'te bozulmaz.        */
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-stretch: var(--wdth-display);
+  font-weight: 600;
+  line-height: var(--lh-display);
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--t-h1); letter-spacing: var(--ls-h); }
+h2 { font-size: var(--t-h2); letter-spacing: var(--ls-h); }
+h3 {
+  font-size: var(--t-h3);
+  letter-spacing: var(--ls-h3);
+  font-stretch: 100%;
+  line-height: var(--lh-tight);
+}
+
+.display--xl {
+  font-size: var(--t-display-xl);
+  letter-spacing: var(--ls-display);
+}
+.display--lg {
+  font-size: var(--t-display);
+  letter-spacing: var(--ls-display);
+}
+
+p { margin: 0; max-width: 68ch; }
+
+/* ── Teknik katman — mono, kotlar, etiketler, veri ─────────── */
+.tech {
+  font-family: var(--font-tech);
+  font-size: var(--t-tech);
+  font-weight: 400;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-tech);
+  font-feature-settings: "tnum" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.tech--strong { font-weight: 500; }
+
+/* Sayılar her yerde hizalı */
+.num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+
+a { color: inherit; }
+
+/* ── Focus — her odaklanabilir öğede görünür ────────────────── */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--brick);
+  outline-offset: 3px;
+  border-radius: var(--radius-control);
+}
+.on-dark :focus-visible,
+.on-dark-deep :focus-visible { outline-color: var(--brick-lit); }
+
+/* ── Skip link ──────────────────────────────────────────────── */
+.skip {
+  position: fixed;
+  left: var(--s-4);
+  top: calc(var(--s-4) * -8);
+  z-index: 200;
+  background: var(--brick);
+  color: var(--paper);
+  padding: var(--s-3) var(--s-4);
+  font-family: var(--font-tech);
+  font-size: var(--t-tech);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-tech);
+  text-decoration: none;
+  transition: top var(--dur-fast) var(--ease);
+}
+.skip:focus-visible { top: var(--s-4); }
+
+img, svg, video { display: block; max-width: 100%; }
+
+::selection { background: var(--brick); color: var(--paper); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
