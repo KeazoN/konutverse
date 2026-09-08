@@ -1,0 +1,28 @@
+---
+/** İmza Sistemi — Katman 1: her sayfada bulunan marka.
+ *  Sitenin kendi tip sisteminde kurulur; yapıştırılmış değil
+ *  tasarlanmış okunur. /kunye künyesine açılır. */
+import { credits } from './credits';
+import Monogram from './Monogram.astro';
+import './signature.css';
+
+interface Props {
+  variant?: 'stacked' | 'inline' | 'compact';
+  theme?: 'auto' | 'light' | 'dark';
+}
+const { variant = 'stacked', theme = 'auto' } = Astro.props;
+---
+
+<a
+  class:list={['ad-mark', `ad-mark--${variant}`, `ad-mark--${theme}`]}
+  href="/kunye"
+  data-ad-signature
+  aria-label={`${credits.labels.kicker}: ${credits.maker.name} — yapım künyesini gör`}
+>
+  <Monogram />
+  <span class="ad-mark__text">
+    <span class="ad-mark__kicker">{credits.labels.kicker}</span>
+    <span class="ad-mark__name">{credits.maker.name}</span>
+    <span class="ad-mark__meta">{credits.maker.city} · {credits.maker.since}</span>
+  </span>
+</a>

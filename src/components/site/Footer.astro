@@ -1,6 +1,7 @@
 ---
 import { site } from '../../content/site';
 import Wordmark from './Wordmark.astro';
+import MakerMark from '../signature/MakerMark.astro';
 
 const year = site.footer.copyright;
 ---
@@ -32,7 +33,7 @@ const year = site.footer.copyright;
     <div class="foot__bottom">
       <span class="tech foot__meta">{year}</span>
       <span class="tech foot__meta">{site.brand.tagline}</span>
-      <div class="foot__maker"><slot name="maker" /></div>
+      <div class="foot__maker"><MakerMark variant="stacked" theme="dark" /></div>
     </div>
   </div>
 

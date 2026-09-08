@@ -1,0 +1,146 @@
+---
+/** İmza Sistemi — Katman 2: yapım künyesi.
+ *  Pafta antet bloğu olarak kurulur — sanat yönünün tam içinde.
+ *  Ajansın ağırlığı müşterinin ana sayfasında bağırmadan taşınır. */
+import { credits } from './credits';
+import Monogram from './Monogram.astro';
+import './signature.css';
+
+const L = credits.labels.rows;
+
+const groups = [
+  [
+    { label: L.project, value: credits.project },
+    { label: L.client, value: credits.client },
+    { label: L.year, value: credits.year },
+    { label: L.artDirection, value: credits.artDirection },
+  ],
+  [
+    { label: L.design, value: credits.design },
+    { label: L.development, value: credits.development },
+  ],
+  [
+    { label: L.typography, value: credits.typography.join(' · ') },
+    { label: L.technology, value: credits.technology.join(' · ') },
+    { label: L.accessibility, value: credits.accessibility },
+  ],
+];
+---
+
+<section class="colo on-dark">
+  <div class="shell colo__inner">
+
+    <header class="colo__head">
+      <h1 class="colo__title">{credits.labels.sheetTitle}</h1>
+      <span class="tech colo__no num">{credits.labels.sheetNo}</span>
+    </header>
+
+    <hr class="rule" />
+
+    {groups.map((group) => (
+      <>
+        <dl class="colo__group">
+          {group.map((row) => (
+            <div class="colo__row">
+              <dt class="tech colo__label">{row.label}</dt>
+              <dd class="colo__value">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+        <hr class="rule" />
+      </>
+    ))}
+
+    <div class="colo__maker">
+      <div class="colo__makerGlyph" data-ad-signature-static>
+        <Monogram />
+      </div>
+
+      <div class="colo__makerBody">
+        <p class="tech colo__label">{L.maker}</p>
+        <p class="colo__makerLoc">{credits.maker.city}, {credits.maker.country} · {credits.maker.since}</p>
+        <ul class="colo__creds">
+          {credits.maker.credentials.map((c) => <li class="tech">{c}</li>)}
+        </ul>
+        <a class="colo__link" href={credits.maker.url} target="_blank" rel="noopener noreferrer">
+          {credits.labels.visit}
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .colo { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
+  .colo__inner { max-width: 900px; }
+
+  .colo__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-6);
+    margin-bottom: var(--s-6);
+  }
+  .colo__title {
+    font-size: var(--t-h2);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .colo__no { color: var(--brick-lit); }
+
+  .colo__group { margin: 0; padding-block: var(--s-6); display: grid; gap: var(--s-4); }
+
+  .colo__row {
+    display: grid;
+    grid-template-columns: 15ch 1fr;
+    gap: var(--s-6);
+    align-items: baseline;
+  }
+  @media (max-width: 640px) {
+    .colo__row { grid-template-columns: 1fr; gap: var(--s-1); }
+  }
+
+  .colo__label { opacity: 0.45; margin: 0; }
+  .colo__value { margin: 0; font-size: var(--t-body); }
+
+  /* ── Ajans kimlik bloğu ─────────────────────────────────── */
+  .colo__maker {
+    display: flex;
+    gap: var(--s-6);
+    padding-top: var(--s-12);
+  }
+  .colo__makerGlyph { color: var(--brick-lit); flex: none; }
+  .colo__makerGlyph :global(.ad-mark__glyph) { width: 48px; height: 38px; }
+
+  .colo__makerBody { display: grid; gap: var(--s-2); }
+  .colo__makerLoc { font-size: var(--t-body); opacity: 0.8; margin: 0; }
+
+  .colo__creds {
+    list-style: none;
+    margin: var(--s-2) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .colo__creds li {
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-structural);
+    padding: 5px 10px;
+    opacity: 0.72;
+  }
+
+  .colo__link {
+    justify-self: start;
+    margin-top: var(--s-4);
+    font-family: var(--font-tech);
+    font-size: var(--t-tech);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-tech);
+    color: var(--brick-lit);
+    text-decoration: none;
+    box-shadow: 0 1px 0 currentColor;
+  }
+  .colo__link:hover { color: var(--chalk); }
+</style>

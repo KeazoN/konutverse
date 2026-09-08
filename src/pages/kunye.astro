@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import Colophon from '../components/signature/Colophon.astro';
+import { credits } from '../components/signature/credits';
+---
+
+<Base
+  title={`${credits.labels.sheetTitle} — ${credits.client}`}
+  description={`${credits.project} — tasarım ve geliştirme: ${credits.maker.name}, ${credits.maker.city}.`}
+  route="/kunye"
+>
+  <Colophon />
+</Base>

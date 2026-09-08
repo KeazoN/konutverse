@@ -14,6 +14,7 @@ import '../styles/utilities.css';
 import { THEME_COLOR } from '../lib/brand';
 import Header from '../components/site/Header.astro';
 import Footer from '../components/site/Footer.astro';
+import { credits } from '../components/signature/credits';
 
 interface Props {
   title: string;
@@ -25,6 +26,53 @@ interface Props {
 
 const { title, description, route, surface = 'light' } = Astro.props;
 const canonical = new URL(route, Astro.site).href;
+
+// ── İmza Sistemi, Katman 0: makine katmanı ──────────────────
+// Yapımcı kredisi arama motorları için makine-okunur hâle gelir.
+const ORG_KV = 'https://www.konutverse.com/#organization';
+const ORG_AD = 'https://alisdijital.com/#organization';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': ORG_KV,
+      name: 'Konutverse',
+      url: 'https://www.konutverse.com',
+      description: 'Emlak ve inşaat firmaları için 360° sanal daire turu.',
+      areaServed: { '@type': 'Country', name: 'Türkiye' },
+    },
+    {
+      '@type': 'Organization',
+      '@id': ORG_AD,
+      name: credits.maker.name,
+      url: credits.maker.url,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: credits.maker.city,
+        addressCountry: credits.maker.country,
+      },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://www.konutverse.com/#website',
+      url: 'https://www.konutverse.com',
+      name: 'Konutverse',
+      inLanguage: 'tr-TR',
+      publisher: { '@id': ORG_KV },
+      creator: { '@id': ORG_AD },
+    },
+    {
+      '@type': 'WebPage',
+      url: canonical,
+      name: title,
+      description,
+      isPartOf: { '@id': 'https://www.konutverse.com/#website' },
+      creator: { '@id': ORG_AD },
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -46,6 +94,11 @@ const canonical = new URL(route, Astro.site).href;
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- İmza Sistemi · Katman 0 -->
+    <meta name="author" content={credits.maker.name} />
+    <link rel="author" href={credits.maker.url} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+
     <slot name="head" />
   </head>
 
@@ -65,6 +118,7 @@ const canonical = new URL(route, Astro.site).href;
     <script>
       import '../scripts/reveal.ts';
       import '../scripts/lenis-init.ts';
+      import '../scripts/console-signature.ts';
     </script>
   </body>
 </html>

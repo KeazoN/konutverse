@@ -1,0 +1,17 @@
+/* YAPIM */
+    Ajans      : Alis Dijital
+    Site       : https://alisdijital.com
+    Konum      : Kayseri, Türkiye
+    Kuruluş    : 2016
+    Yetkinlik  : 200+ marka · İkas Premium Partner · Shopify Partner
+
+/* PROJE */
+    Ad         : Konutverse — 360° Sanal Daire Turu
+    Müşteri    : Konutverse
+    Yıl        : 2026
+    Sanat yönü : Plandan Mekâna
+
+/* TEKNOLOJI */
+    Astro · GSAP ScrollTrigger · Lenis
+    Archivo · IBM Plex Mono · Inter
+    Erişilebilirlik : WCAG 2.2 AA

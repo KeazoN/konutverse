@@ -1,0 +1,101 @@
+/* ============================================================
+   Alis Dijital — İmza Sistemi, Katman 1
+   KENDİ token'ları. Host sitenin token'larına BAĞIMLI DEĞİL.
+   Bu dosya ham değer yasağından muaftır: taşınabilirlik için
+   kendi kendine yeterli olmak zorundadır.
+   ============================================================ */
+
+[data-ad-signature] {
+  --ad-fg: #16203A;
+  --ad-muted: rgba(22, 32, 58, 0.55);
+  --ad-accent: #C23616;          /* açık zeminde AA ✓ (5.16) */
+  --ad-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  --ad-sans: "Archivo Variable", "Archivo", system-ui, -apple-system, sans-serif;
+  --ad-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--ad-fg);
+}
+
+/* Koyu zemin — açıkça ya da kapsayıcıdan devralarak */
+.ad-mark--dark,
+.ad-mark--auto.is-on-dark,
+.on-dark .ad-mark--auto,
+.on-dark-deep .ad-mark--auto {
+  --ad-fg: #FFFFFF;
+  --ad-muted: rgba(255, 255, 255, 0.55);
+  --ad-accent: #ED5A34;          /* koyu zeminde AA ✓ (4.99) */
+}
+
+/* ── Monogram ─────────────────────────────────────────────────
+   pathLength="1" ile normalize edildi: dasharray/offset tam
+   kontrollü, path uzunluğu hesabı gerekmez.                    */
+.ad-mark__glyph {
+  width: 34px;
+  height: 27px;
+  flex: none;
+  overflow: visible;
+}
+.ad-mark__glyph path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+[data-ad-signature]:hover .ad-mark__glyph path,
+[data-ad-signature]:focus-visible .ad-mark__glyph path {
+  animation: ad-draw 560ms var(--ad-ease) both;
+}
+[data-ad-signature]:hover .ad-mark__glyph path:nth-child(2) { animation-delay: 90ms; }
+[data-ad-signature]:hover .ad-mark__glyph path:nth-child(3) { animation-delay: 150ms; }
+
+@keyframes ad-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* ── Metin ────────────────────────────────────────────────── */
+.ad-mark__text { display: grid; gap: 2px; }
+
+.ad-mark__kicker,
+.ad-mark__meta {
+  font-family: var(--ad-mono);
+  font-size: 10px;
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--ad-muted);
+}
+
+.ad-mark__name {
+  font-family: var(--ad-sans);
+  font-stretch: 108%;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  transition: color 220ms var(--ad-ease);
+}
+[data-ad-signature]:hover .ad-mark__name { color: var(--ad-accent); }
+
+/* ── Varyantlar ───────────────────────────────────────────── */
+.ad-mark--inline { gap: 9px; }
+.ad-mark--inline .ad-mark__kicker,
+.ad-mark--inline .ad-mark__meta { display: none; }
+
+.ad-mark--compact .ad-mark__text { display: none; }
+.ad-mark--compact .ad-mark__glyph { width: 26px; height: 21px; }
+
+@media print {
+  [data-ad-signature] { --ad-fg: #000000; --ad-muted: #444444; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-ad-signature]:hover .ad-mark__glyph path,
+  [data-ad-signature]:focus-visible .ad-mark__glyph path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
