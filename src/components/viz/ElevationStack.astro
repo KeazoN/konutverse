@@ -80,12 +80,12 @@ const rows = Array.from({ length: project.floors }, (_, i) => project.floors - 1
     font-size: var(--t-h3);
     letter-spacing: var(--ls-h3);
   }
-  .elev__count { grid-column: 2; opacity: 0.5; }
+  .elev__count { grid-column: 2; color: var(--text-3); }
   @media (max-width: 720px) {
     .elev__count { grid-column: auto; }
   }
 
   .elev__ground { padding-top: var(--s-4); }
   .elev__ground .rule { border-top-width: 2px; border-top-color: var(--line); }
-  .elev__groundLabel { display: block; margin-top: var(--s-2); opacity: 0.4; }
+  .elev__groundLabel { display: block; margin-top: var(--s-2); color: var(--text-3); }
 </style>

@@ -1,19 +1,30 @@
 ---
 /** Sıfır dolgulu sicil sayısı. "1 firma" küçüklüğü saklanmaz,
- *  teknik kayıt biçiminde sunulur — şeffaf okunur, yetersiz değil. */
+ *  teknik kayıt biçiminde sunulur — şeffaf okunur, yetersiz değil.
+ *
+ *  <dl> içinde kullanılır: sarmalayıcı <div>'in DOĞRUDAN çocukları
+ *  <dt> ve <dd> olmak zorunda (WCAG / axe definition-list kuralı).
+ *  Görsel sıra column-reverse ile sayı-önce yapılır; DOM sırası
+ *  semantik doğru kalır (terim önce, tanım sonra).                */
 interface Props { value: number; label: string; }
 const { value, label } = Astro.props;
 const padded = String(value).padStart(2, '0');
 ---
 <div class="metric">
-  <span class="metric__value num">{padded}</span>
-  <span class="tech metric__label">{label}</span>
+  <dt class="tech metric__label">{label}</dt>
+  <dd class="metric__value num">{padded}</dd>
 </div>
 
 <style>
-  .metric { display: flex; flex-direction: column; gap: var(--s-3); }
+  .metric {
+    display: flex;
+    flex-direction: column-reverse;   /* sayı üstte görünür */
+    justify-content: flex-end;
+    gap: var(--s-3);
+  }
 
   .metric__value {
+    margin: 0;
     font-family: var(--font-display);
     font-stretch: var(--wdth-display);
     font-weight: 600;
@@ -22,6 +33,8 @@ const padded = String(value).padStart(2, '0');
     letter-spacing: var(--ls-display);
     color: var(--brick);   /* ≥24px — kontrast politikası uygun */
   }
-  :global(.on-dark) .metric__label,
-  :global(.on-dark-deep) .metric__label { opacity: 0.66; }
+  :global(.on-dark) .metric__value,
+  :global(.on-dark-deep) .metric__value { color: var(--brick-lit); }
+
+  .metric__label { color: var(--text-3); }
 </style>

@@ -97,7 +97,7 @@ const p = featuredProject;
   }
   .kesit__line { display: block; }
 
-  .kesit__body { max-width: 46ch; opacity: 0.76; }
+  .kesit__body { max-width: 46ch; color: var(--text-2); }
 
   /* ── Üç durak ─────────────────────────────────────────────── */
   .kesit__list {
@@ -115,13 +115,22 @@ const p = featuredProject;
     gap: var(--s-4);
     padding-block: var(--s-4);
     border-top: var(--hairline) solid var(--line);
-    opacity: 0.34;
-    transition: opacity var(--dur-base) var(--ease);
   }
+  .kesit__stop span { transition: color var(--dur-base) var(--ease); }
+
+  /* Sönükleştirme OPAKLIKLA DEĞİL RENKLE yapılır.
+     CSS'te çocuk, ebeveyninin opaklığını aşamaz; opacity kullanınca
+     vurgu rengi de soluyor ve AA kırılıyordu (ölçüldü: 2.28).
+     JS yokken üç durak da tam okunur kalır. */
+  .kesit[data-scrub='on'] .kesit__stopKot,
+  .kesit[data-scrub='on'] .kesit__stopLabel,
+  .kesit[data-scrub='on'] .kesit__stopLine { color: var(--chalk-3); }
+
+  .kesit[data-scrub='on'] .kesit__stop[data-active='true'] .kesit__stopKot { color: var(--brick-lit); }
+  .kesit[data-scrub='on'] .kesit__stop[data-active='true'] .kesit__stopLabel { color: var(--chalk); }
+  .kesit[data-scrub='on'] .kesit__stop[data-active='true'] .kesit__stopLine { color: var(--text-2); }
   .kesit__stop:last-child { border-bottom: var(--hairline) solid var(--line); }
 
-  /* Aktif durak — scrub işaretler. JS yoksa hepsi okunur kalır. */
-  .kesit__stop[data-active='true'] { opacity: 1; }
 
   .kesit__stopKot { color: var(--brick-lit); }
   .kesit__stopLabel {
@@ -130,7 +139,7 @@ const p = featuredProject;
     font-weight: 600;
     font-size: var(--t-h3);
   }
-  .kesit__stopLine { font-size: var(--t-small); opacity: 0.82; }
+  .kesit__stopLine { font-size: var(--t-small); color: var(--text-2); }
 
   @media (max-width: 560px) {
     .kesit__stop { grid-template-columns: 7ch 1fr; }
@@ -194,7 +203,6 @@ const p = featuredProject;
   /* Hareket kapalıysa: mekân katmanı da görünür olsun diye
      figürü iki ayrı bloğa bölmek yerine mekânı sabit gösteririz. */
   @media (prefers-reduced-motion: reduce) {
-    .kesit__stop { opacity: 1; }
     .kesit__plane { display: none; }
   }
 </style>

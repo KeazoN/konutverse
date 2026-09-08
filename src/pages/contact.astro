@@ -56,7 +56,7 @@ const AUTOCOMPLETE: Record<string, string> = {
         <p class="form__status tech" id="form-status" role="status" aria-live="polite"></p>
       </form>
 
-      <aside class="block">
+      <aside class="block on-dark">
         <dl class="block__list">
           {c.details.map((d) => (
             <div class="block__row">
@@ -117,8 +117,9 @@ const AUTOCOMPLETE: Record<string, string> = {
     margin: 3px 0 0;
     accent-color: var(--brick);
   }
-  .form__kvkkLabel { font-size: var(--t-small); opacity: 0.8; }
-  .form__kvkkLink { color: var(--brick); text-decoration: none; box-shadow: 0 1px 0 currentColor; }
+  .form__kvkkLabel { font-size: var(--t-small); color: var(--text-2); }
+  /* Renk tek ayırt edici olamaz (WCAG 1.4.1): alt çizgi zorunlu. */
+  .form__kvkkLink { color: var(--brick); text-decoration: underline; text-underline-offset: 3px; }
 
   .form__foot {
     display: flex;
@@ -150,7 +151,7 @@ const AUTOCOMPLETE: Record<string, string> = {
     letter-spacing: var(--ls-tech);
   }
 
-  .form__note { opacity: 0.5; max-width: 40ch; }
+  .form__note { color: var(--text-3); max-width: 40ch; }
 
   .form__status { margin-top: var(--s-6); min-height: 1.4em; }
   .form__status[data-state='success'] { color: var(--brick); }
@@ -170,7 +171,7 @@ const AUTOCOMPLETE: Record<string, string> = {
     border-bottom: var(--hairline) solid var(--line);
   }
   .block__row:first-child { padding-top: 0; }
-  .block__label { opacity: 0.45; margin: 0; }
+  .block__label { color: var(--text-3); margin: 0; }
   .block__value { margin: 0; font-size: var(--t-body); }
   .block__link { text-decoration: none; box-shadow: 0 1px 0 var(--line); }
   .block__link:hover { color: var(--brick-lit); }

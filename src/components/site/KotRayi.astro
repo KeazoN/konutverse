@@ -36,7 +36,7 @@ const { marks } = Astro.props;
       pointer-events: none;
     }
 
-    .kot__cap { color: var(--chalk); opacity: 0.3; font-size: 9px; }
+    .kot__cap { color: var(--chalk-3); font-size: 9px; }
 
     .kot__marks {
       flex: 1;
@@ -49,9 +49,8 @@ const { marks } = Astro.props;
 
     .kot__value {
       font-size: 9px;
-      color: var(--chalk);
-      opacity: 0.38;
-      transition: opacity var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+      color: var(--chalk-3);
+      transition: color var(--dur-fast) var(--ease);
     }
 
     .kot__tick {
@@ -61,7 +60,7 @@ const { marks } = Astro.props;
       transition: background-color var(--dur-fast) var(--ease), height var(--dur-fast) var(--ease);
     }
 
-    .kot__mark[data-active='true'] .kot__value { opacity: 1; color: var(--brick-lit); }
+    .kot__mark[data-active='true'] .kot__value { color: var(--brick-lit); }
     .kot__mark[data-active='true'] .kot__tick { background: var(--brick); height: 2px; }
   }
 </style>

@@ -1,0 +1,99 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/sections/PageHead.astro';
+import { site } from '../content/site';
+
+const v = site.privacy;
+---
+
+<Base title={v.meta.title} description={v.meta.description} route="/privacy">
+  <PageHead kicker={v.kicker} title={v.title} lead={v.lead} />
+
+  <section class="legal">
+    <div class="shell shell--railed legal__inner">
+
+      <p class="tech legal__updated">{v.updated}</p>
+
+      {v.sections.map((sec) => (
+        <section class="legal__sec">
+          <h2 class="legal__title">
+            <span class="tech legal__no num">{sec.no}</span>
+            {sec.title}
+          </h2>
+
+          {sec.paragraphs.map((para) => <p class="legal__p">{para}</p>)}
+
+          {sec.items.length > 0 && (
+            <ul class="legal__list">
+              {sec.items.map((item) => <li>{item}</li>)}
+            </ul>
+          )}
+        </section>
+      ))}
+
+      <p class="legal__disclaimer">{v.disclaimer}</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legal { padding-block: clamp(var(--s-8), 4vw, var(--s-16)) clamp(var(--s-16), 8vw, var(--s-32)); }
+  .legal__inner { max-width: 760px; }
+
+  .legal__updated {
+    color: var(--text-3);
+    padding-bottom: var(--s-6);
+    border-bottom: var(--hairline) solid var(--line-dark);
+  }
+
+  .legal__sec { padding-block: var(--s-8); border-bottom: var(--hairline) solid var(--line-dark); }
+
+  .legal__title {
+    display: grid;
+    grid-template-columns: 3ch 1fr;
+    gap: var(--s-3);
+    align-items: baseline;
+    font-size: var(--t-h3);
+    margin-bottom: var(--s-4);
+  }
+  .legal__no { color: var(--brick); }
+
+  .legal__p { margin-bottom: var(--s-4); padding-left: calc(3ch + var(--s-3)); }
+  .legal__p:last-child { margin-bottom: 0; }
+
+  .legal__list {
+    margin: 0;
+    padding-left: calc(3ch + var(--s-3));
+    list-style: none;
+    display: grid;
+    gap: var(--s-3);
+  }
+  .legal__list li {
+    position: relative;
+    padding-left: var(--s-6);
+    font-size: var(--t-small);
+    color: var(--text-2);
+  }
+  .legal__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 10px;
+    height: var(--hairline);
+    background: var(--brick);
+  }
+
+  @media (max-width: 620px) {
+    .legal__title { grid-template-columns: 1fr; gap: var(--s-1); }
+    .legal__p, .legal__list { padding-left: 0; }
+  }
+
+  .legal__disclaimer {
+    margin-top: var(--s-8);
+    font-size: var(--t-small);
+    color: var(--text-2);
+    border-left: 2px solid var(--brick);
+    padding-left: var(--s-4);
+  }
+</style>

@@ -13,11 +13,14 @@ interface Props {
 const { variant = 'stacked', theme = 'auto' } = Astro.props;
 ---
 
+<!-- aria-label YALNIZCA compact varyantında: orada metin CSS ile
+     gizlendiği için erişilebilir ad kalmaz. Diğer varyantlarda
+     görünür metin adı oluşturur (WCAG 2.5.3 Label in Name). -->
 <a
   class:list={['ad-mark', `ad-mark--${variant}`, `ad-mark--${theme}`]}
   href="/kunye"
   data-ad-signature
-  aria-label={`${credits.labels.kicker}: ${credits.maker.name} — yapım künyesini gör`}
+  aria-label={variant === 'compact' ? `${credits.labels.kicker}: ${credits.maker.name}` : undefined}
 >
   <Monogram />
   <span class="ad-mark__text">

@@ -101,14 +101,13 @@ const { kind } = Astro.props;
   .fig__kot {
     font-family: var(--font-tech);
     font-size: 7px;
-    fill: var(--chalk);
-    opacity: 0.32;
+    fill: var(--chalk-3);
     letter-spacing: 0.05em;
   }
 
   /* ── Kat seçici ─────────────────────────────────────────── */
   .fig__row.is-active :global(rect) { stroke: var(--chalk); opacity: 0.5; }
-  .fig__row.is-active .fig__kot { fill: var(--brick-lit); opacity: 1; }
+  .fig__row.is-active .fig__kot { fill: var(--brick-lit); }
   :global(.fig__cell.is-pick) { stroke: var(--brick) !important; stroke-width: 1.6 !important; }
 
   .fig__cursor :global(circle) { stroke: var(--brick); }

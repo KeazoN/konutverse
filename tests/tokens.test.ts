@@ -95,3 +95,62 @@ describe('ham değer yasağı', () => {
     });
   }
 });
+
+/**
+ * Bu bölüm, tüm erişilebilirlik hatalarının KÖK SEBEBİNİ engeller.
+ *
+ * Opaklıkla soldurmak birikimlidir ve CSS'te çocuk, ebeveyninin
+ * opaklığını AŞAMAZ. Bir kapsayıcıya opacity verildiğinde içindeki
+ * vurgu rengi de soluyor; zaten sınırda olan tuğla (4.99) AA'nın
+ * altına düşüyor. Ölçülen gerçek değerler: 3.68, 2.59, 2.28.
+ *
+ * Çözüm: metni soldurmak için OPAKLIK değil, ölçülmüş RENK token'ları.
+ */
+describe('opaklıkla soldurma yasağı', () => {
+  /**
+   * Metin TAŞIYAN bir kuralda opacity kullanılamaz.
+   * SVG çizgi/dolgu opaklığı (stroke/fill taşıyan kurallar) ve
+   * geçiş katmanları serbesttir — onlar metin değildir.
+   */
+  const GRAPHIC = /(stroke[a-z-]*|fill|background)\s*:/;
+  const LAYER = /(reveal|watermark|__layer|__plane|__light|\[slot=)/;
+
+  const files = walk('src').filter((f) => /\.astro$/.test(f));
+
+  for (const file of files) {
+    it(`${file}: metin sönükleştirmede opacity kullanmıyor`, () => {
+      const source = readFileSync(file, 'utf8');
+      const offenders: string[] = [];
+
+      // Kaba ama yeterli kural-bloğu ayrıştırma: '{ ... }' arası
+      const blocks = source.match(/[^{}]*\{[^{}]*\}/g) ?? [];
+      for (const block of blocks) {
+        if (!/opacity:\s*0?\.[0-9]+/.test(block)) continue;
+        if (GRAPHIC.test(block)) continue;   // çizim öğesi
+        if (LAYER.test(block)) continue;     // geçiş katmanı
+        offenders.push(block.replace(/\s+/g, ' ').trim().slice(0, 110));
+      }
+
+      const NL = String.fromCharCode(10);
+      expect(
+        offenders,
+        `metin opaklığı — renk token'ı kullan (--text-2 / --text-3):` +
+          NL +
+          offenders.join(NL)
+      ).toEqual([]);
+    });
+  }
+});
+
+describe('metin renk token\'ları', () => {
+  it('zemin-duyarlı --text-2 / --text-3 tanımlı', () => {
+    expect(declarationOf('--text-2')).toBe('var(--ink-2)');
+    expect(declarationOf('--text-3')).toBe('var(--ink-3)');
+  });
+
+  it('koyu yüzeyler token\'ları devralır', () => {
+    const utils = readFileSync('src/styles/utilities.css', 'utf8');
+    expect(utils).toContain('--text-2: var(--chalk-2)');
+    expect(utils).toContain('--text-3: var(--chalk-3)');
+  });
+});

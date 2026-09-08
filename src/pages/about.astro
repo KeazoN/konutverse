@@ -61,7 +61,7 @@ const a = site.about;
     margin-top: var(--s-8);
     max-width: 54ch;
     font-size: clamp(var(--t-small), 1.15vw, 19px);
-    opacity: 0.7;
+    color: var(--text-2);
   }
 
   /* ── Gövde ──────────────────────────────────────────────── */
@@ -74,7 +74,7 @@ const a = site.about;
   @media (max-width: 900px) {
     .body__inner { grid-template-columns: 1fr; gap: var(--s-6); }
   }
-  .body__aside { opacity: 0.45; padding-top: 6px; }
+  .body__aside { color: var(--text-3); padding-top: 6px; }
   .body__text { display: grid; gap: var(--s-6); }
   .body__text p { font-size: clamp(var(--t-body), 1.2vw, 19px); }
 
@@ -102,5 +102,5 @@ const a = site.about;
   }
   .promises__no { color: var(--brick); }
   .promises__itemTitle { font-size: var(--t-h3); }
-  .promises__body { font-size: var(--t-small); opacity: 0.76; max-width: 42ch; }
+  .promises__body { font-size: var(--t-small); color: var(--text-2); max-width: 42ch; }
 </style>

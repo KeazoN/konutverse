@@ -92,7 +92,7 @@ const caption = [
   .hero__body {
     max-width: 52ch;
     font-size: clamp(var(--t-small), 1.2vw, 19px);
-    opacity: 0.76;
+    color: var(--text-2);
   }
 
   .hero__actions {
@@ -129,10 +129,10 @@ const caption = [
     align-items: center;
     gap: var(--s-3);
     text-decoration: none;
-    opacity: 0.55;
-    transition: opacity var(--dur-fast) var(--ease);
+    color: var(--text-3);
+    transition: color var(--dur-fast) var(--ease);
   }
-  .hero__scroll:hover { opacity: 1; color: var(--brick-lit); }
+  .hero__scroll:hover { color: var(--brick-lit); }
   .hero__scroll :global(.arrow) {
     animation: hero-nudge 2.4s var(--ease) infinite;
   }

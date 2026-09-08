@@ -24,11 +24,14 @@
 }
 
 /* ── Yüzeyler ───────────────────────────────────────────────── */
-.on-dark      { background: var(--ink);      color: var(--chalk); }
-.on-dark-deep { background: var(--ink-deep); color: var(--chalk); }
+.on-dark, .on-dark-deep {
+  color: var(--chalk);
+  --text-2: var(--chalk-2);
+  --text-3: var(--chalk-3);
+}
+.on-dark      { background: var(--ink); }
+.on-dark-deep { background: var(--ink-deep); }
 .on-plaster   { background: var(--plaster);  color: var(--ink); }
-
-.on-dark p, .on-dark-deep p { color: var(--chalk); opacity: 0.78; }
 
 /* ── Saç teli kurallar ──────────────────────────────────────── */
 .rule {

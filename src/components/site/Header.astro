@@ -8,7 +8,7 @@ interface Props { current: string; }
 const { current } = Astro.props;
 ---
 
-<header class="head">
+<header class="head on-dark-deep">
   <div class="shell head__inner">
     <a class="head__brand" href="/" aria-label={site.brand.name}>
       <Wordmark />
@@ -107,9 +107,8 @@ const { current } = Astro.props;
     font-size: var(--t-tech);
     text-transform: uppercase;
     letter-spacing: var(--ls-tech);
-    color: var(--chalk);
-    opacity: 0.72;
+    color: var(--chalk-3);
   }
-  .menu__link:hover { opacity: 1; }
-  .menu__link[aria-current='page'] { opacity: 1; color: var(--brick-lit); }
+  .menu__link:hover { color: var(--chalk); }
+  .menu__link[aria-current='page'] { color: var(--chalk); }
 </style>

@@ -7,6 +7,11 @@ export type Unit = {
   area?: number;
 };
 
+/**
+ * WCAG 2.5.3 (Label in Name): erişilebilir ad, GÖRÜNÜR metni bitişik
+ * bir alt dize olarak içermeli. Hücrede görünen 'A01 360°' olduğu için
+ * aria-label de onunla başlar; açıklama arkadan gelir.
+ */
 interface Props { units: readonly Unit[]; floorLabel: string; floorIndex: number; }
 const { units, floorLabel, floorIndex } = Astro.props;
 
@@ -24,10 +29,17 @@ const STATUS_TR = { free: 'boş', sold: 'satıldı', reserved: 'rezerve' } as co
       data-status={u.status}
       data-tourable={String(u.tourable)}
       data-area={u.area ? String(u.area) : undefined}
-      aria-label={`${floorLabel}, ${u.id} numaralı daire — ${STATUS_TR[u.status]}${u.tourable ? ', 360° turu var' : ''}`}
+      aria-label={`${u.id} — ${floorLabel}, ${u.id} numaralı daire, ${STATUS_TR[u.status]}${u.tourable ? ', 360° turu var' : ''}`}
     >
       <span class="tech avail__id">{u.id}</span>
-      {u.tourable && <span class="tech avail__tour" aria-hidden="true">360°</span>}
+      {u.tourable && (
+        <svg class="avail__tour" viewBox="0 0 24 16" aria-hidden="true"
+             fill="none" stroke="currentColor" stroke-width="1.6">
+          <ellipse cx="12" cy="8" rx="10" ry="5.5" />
+          <path d="M12 2.5 v11" opacity=".5" />
+          <path d="M8.5 4.6 l-2.4 -1.4 l2.6 -1.2" />
+        </svg>
+      )}
     </button>
   ))}
 </div>
@@ -62,16 +74,18 @@ const STATUS_TR = { free: 'boş', sold: 'satıldı', reserved: 'rezerve' } as co
   .is-sold     { background: var(--avail-sold); }
   .is-reserved { background: var(--avail-reserved); }
 
-  .avail__id { opacity: 0.85; }
+  /* Zeminler AA güvenli; metin tam güçte beyaz kalır. */
+  .avail__id { color: var(--paper); }
 
   /* Gezilebilir daire — tuğla çerçeve, çizim işareti */
   .is-tourable { border-color: var(--brick); }
+  /* 360° işareti METİN değil İKON: aria-hidden gerçekten etkili olur
+     ve erişilebilir ad görünür metinle çakışmaz (WCAG 2.5.3). */
   .avail__tour {
     align-self: flex-end;
-    background: var(--brick);
+    width: 22px;
+    height: 15px;
     color: var(--paper);
-    padding: 2px 6px;
-    font-size: 10px;
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -113,19 +113,18 @@ const hatch = Array.from({ length: 14 }, (_, i) => {
     font-family: var(--font-tech);
     font-size: 5.5px;
     letter-spacing: 0.06em;
-    fill: var(--chalk);
-    opacity: 0.34;
+    fill: var(--chalk-3);
   }
   .sec__kotTick { stroke: var(--line); stroke-width: 0.7; }
 
   /* Gezilebilir kat — grafik öğe, kontrast politikası uygun */
   .sec__floor--tourable .sec__slab { stroke: var(--brick); stroke-width: 1.2; }
-  .sec__floor--tourable .sec__kot { fill: var(--brick-lit); opacity: 1; }
+  .sec__floor--tourable .sec__kot { fill: var(--brick-lit); }
 
   /* Aktif kat — kesit scrub'ı işaretler */
   .sec__floor[data-active='true'] .sec__slab { stroke: var(--brick); stroke-width: 1.4; }
   .sec__floor[data-active='true'] .sec__party { stroke: var(--brick); opacity: 0.55; }
-  .sec__floor[data-active='true'] .sec__kot { fill: var(--brick-lit); opacity: 1; }
+  .sec__floor[data-active='true'] .sec__kot { fill: var(--brick-lit); }
 
   .sec__floor line,
   .sec__floor text {

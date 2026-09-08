@@ -108,7 +108,7 @@ const u = site.search.units;
     letter-spacing: var(--ls-h);
     line-height: 1.05;
   }
-  .psheet__loc { opacity: 0.5; margin-top: calc(var(--s-2) * -1); }
+  .psheet__loc { color: var(--text-3); margin-top: calc(var(--s-2) * -1); }
 
   .psheet__price { display: grid; gap: 2px; }
   .psheet__amount {
@@ -118,7 +118,7 @@ const u = site.search.units;
     font-size: var(--t-h3);
     letter-spacing: var(--ls-h3);
   }
-  .psheet__priceNote { opacity: 0.45; }
+  .psheet__priceNote { color: var(--text-3); }
 
   .psheet__gauge { margin-top: var(--s-2); }
 
@@ -130,7 +130,7 @@ const u = site.search.units;
     border-top: var(--hairline) solid var(--line);
   }
   .psheet__stats div { display: grid; gap: 2px; }
-  .psheet__stats dd { margin: 0; opacity: 0.5; }
+  .psheet__stats dd { margin: 0; color: var(--text-3); }
   .psheet__stat {
     font-family: var(--font-display);
     font-stretch: var(--wdth-display);
@@ -150,7 +150,8 @@ const u = site.search.units;
     text-decoration: none;
     transition: background-color var(--dur-fast) var(--ease);
   }
-  .psheet__cta:hover { background: var(--ink-raised); color: var(--brick-lit); }
+  /* brick-lit, ink-raised üstünde 4.16 — AA'dan kalıyor. Hover'da chalk. */
+  .psheet__cta:hover { background: var(--ink-raised); color: var(--chalk); }
   .psheet__cta :global(.arrow) { transition: transform var(--dur-fast) var(--ease); }
   .psheet__cta:hover :global(.arrow) { transform: translateX(4px); }
 

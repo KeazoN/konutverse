@@ -89,9 +89,19 @@ describe('Katman 1 — marka', () => {
     for (const p of paths) expect(p.getAttribute('pathLength')).toBe('1');
   });
 
-  it('marka erişilebilir bir isim taşır', () => {
+  // WCAG 2.5.3 (Label in Name): erişilebilir ad, görünür metni İÇERMELİ.
+  // Görünür metin varken aria-label eklemek ikisini çakıştırır.
+  it('erişilebilir ad görünür metinden gelir — aria-label çakışması yok', () => {
     const mark = docOf('dist/index.html').querySelector('footer a[href="/kunye"]')!;
-    expect(mark.getAttribute('aria-label')).toContain(credits.maker.name);
+    expect(mark.getAttribute('aria-label'), 'stacked varyantta aria-label olmamalı').toBeNull();
+    expect(mark.textContent).toContain(credits.maker.name);
+    expect(mark.textContent).toContain(credits.labels.kicker);
+  });
+
+  it('compact varyantta aria-label ZORUNLU — metin CSS ile gizleniyor', () => {
+    const src = readFileSync('src/components/signature/MakerMark.astro', 'utf8');
+    expect(src).toContain("variant === 'compact'");
+    expect(src).toContain('aria-label');
   });
 });
 

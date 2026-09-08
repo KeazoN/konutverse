@@ -400,6 +400,109 @@ export const site = {
     },
   },
 
+  // ── /privacy ──────────────────────────────────────────────
+  privacy: {
+    meta: {
+      title: 'KVKK Aydınlatma Metni ve Gizlilik Politikası | Konutverse',
+      description:
+        '6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında kişisel verilerinizin nasıl işlendiğine dair bilgilendirme.',
+    },
+    kicker: 'Yasal',
+    title: 'KVKK Aydınlatma Metni',
+    lead: '6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) kapsamında, kişisel verilerinizin nasıl işlendiğine dair bilgilendirme.',
+    updated: 'Son güncelleme: 17 Temmuz 2026',
+
+    sections: [
+      {
+        no: '1',
+        title: 'Veri Sorumlusu',
+        paragraphs: [
+          "Kişisel verileriniz, veri sorumlusu sıfatıyla Konutverse (“Şirket”) tarafından, aşağıda açıklanan kapsamda işlenmektedir. Bu metin, Şirket'in web sitesi ve hizmetleri aracılığıyla elde edilen kişisel veriler için geçerlidir.",
+        ],
+        items: [],
+      },
+      {
+        no: '2',
+        title: 'İşlenen Kişisel Veriler',
+        paragraphs: [],
+        items: [
+          'Kimlik ve iletişim: ad-soyad, firma adı, e-posta, telefon.',
+          'Talep içeriği: demo/iletişim formu aracılığıyla ilettiğiniz mesaj ve proje bilgileri.',
+          'İşlem güvenliği: IP adresi, tarayıcı/cihaz bilgisi, çerez kayıtları.',
+          'Kullanım verisi: gezilen sahneler, seçilen malzemeler gibi anonim/örüntü verileri (analitik).',
+        ],
+      },
+      {
+        no: '3',
+        title: 'İşleme Amaçları',
+        paragraphs: [],
+        items: [
+          'Demo ve iletişim taleplerinizin karşılanması, sizinle iletişim kurulması.',
+          'Hizmetlerin sunulması, iyileştirilmesi ve performansının ölçülmesi.',
+          'Sözleşmesel ve yasal yükümlülüklerin yerine getirilmesi.',
+          'Bilgi güvenliğinin sağlanması ve kötüye kullanımın önlenmesi.',
+        ],
+      },
+      {
+        no: '4',
+        title: 'Hukuki Sebepler',
+        paragraphs: [
+          "Kişisel verileriniz KVKK m.5 uyarınca; açık rızanız, bir sözleşmenin kurulması veya ifasıyla doğrudan ilgili olması, Şirket'in hukuki yükümlülüğünü yerine getirmesi ve meşru menfaati hukuki sebeplerine dayanılarak işlenir.",
+        ],
+        items: [],
+      },
+      {
+        no: '5',
+        title: 'Kimlere ve Hangi Amaçla Aktarılabilir',
+        paragraphs: [
+          'Verileriniz; barındırma ve içerik dağıtım (CDN) sağlayıcıları, e-posta ve analitik hizmet sağlayıcıları gibi tedarikçilerle ve yasal olarak yetkili kamu kurumlarıyla, yalnızca yukarıdaki amaçlarla sınırlı olarak ve gerekli teknik/idari tedbirler alınarak paylaşılabilir. Yurt dışına aktarım söz konusu olduğunda KVKK m.9 hükümlerine uyulur.',
+        ],
+        items: [],
+      },
+      {
+        no: '6',
+        title: 'Saklama Süresi',
+        paragraphs: [
+          'Kişisel verileriniz, işleme amacının gerektirdiği süre boyunca ve ilgili mevzuatta öngörülen zamanaşımı süreleri kadar saklanır; sürenin sonunda silinir, yok edilir veya anonim hale getirilir. Oluşturulan tur konfigürasyonları, kimlik referansı yerine anonim bir kopya (snapshot) olarak tutulur.',
+        ],
+        items: [],
+      },
+      {
+        no: '7',
+        title: 'Çerezler',
+        paragraphs: [
+          'Sitemiz; oturum yönetimi, tercihlerin hatırlanması (örn. tema) ve performans ölçümü için zorunlu ve işlevsel çerezler kullanır. Tarayıcı ayarlarınızdan çerezleri yönetebilir veya engelleyebilirsiniz; ancak bazı işlevler bundan etkilenebilir.',
+        ],
+        items: [],
+      },
+      {
+        no: '8',
+        title: 'İlgili Kişi Olarak Haklarınız (KVKK m.11)',
+        paragraphs: [],
+        items: [
+          'Kişisel verinizin işlenip işlenmediğini öğrenme ve buna ilişkin bilgi talep etme.',
+          'İşlenme amacını ve amaca uygun kullanılıp kullanılmadığını öğrenme.',
+          'Yurt içinde/dışında aktarıldığı üçüncü kişileri bilme.',
+          'Eksik/yanlış işlenmişse düzeltilmesini, şartlar oluştuğunda silinmesini isteme.',
+          'İşlemenin münhasıran otomatik sistemlerle analizi sonucu aleyhinize bir sonuç çıkmasına itiraz etme.',
+          'Kanuna aykırı işleme nedeniyle zararınızın giderilmesini talep etme.',
+        ],
+      },
+      {
+        no: '9',
+        title: 'Başvuru ve İletişim',
+        paragraphs: [
+          'Haklarınıza ilişkin taleplerinizi kvkk@konutverse.com adresine iletebilirsiniz. Başvurunuz en geç 30 gün içinde sonuçlandırılır.',
+        ],
+        items: [],
+      },
+    ],
+
+    disclaimer:
+      'Bu metin bilgilendirme amaçlıdır ve yayına almadan önce hukuk danışmanınızca gözden geçirilmelidir.',
+    contactEmail: 'kvkk@konutverse.com',
+  },
+
   // ── Footer ────────────────────────────────────────────────
   footer: {
     blurb:

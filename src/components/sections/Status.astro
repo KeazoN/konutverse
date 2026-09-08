@@ -16,11 +16,7 @@ const { status } = site.home;
     </div>
 
     <dl class="status__grid reveal">
-      {status.metrics.map((m) => (
-        <div class="status__cell">
-          <Metric value={m.value} label={m.label} />
-        </div>
-      ))}
+      {status.metrics.map((m) => <Metric value={m.value} label={m.label} />)}
     </dl>
   </div>
 </section>
@@ -55,13 +51,13 @@ const { status } = site.home;
     .status__grid { grid-template-columns: 1fr; }
   }
 
-  .status__cell {
+  .status__grid :global(.metric) {
     padding: var(--s-8) var(--s-6) var(--s-8) 0;
     border-right: var(--hairline) solid var(--line);
   }
-  .status__cell:last-child { border-right: 0; }
+  .status__grid :global(.metric:last-child) { border-right: 0; }
   @media (max-width: 720px) {
-    .status__cell {
+    .status__grid :global(.metric) {
       border-right: 0;
       border-bottom: var(--hairline) solid var(--line);
       padding-right: 0;
