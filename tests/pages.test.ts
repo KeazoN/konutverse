@@ -115,3 +115,57 @@ describe('navigasyon sözleşmesi', () => {
     });
   }
 });
+
+describe('ana sayfa hero', () => {
+  const doc = () => parseHTML(readFileSync('dist/index.html', 'utf8')).document;
+  const html = () => readFileSync('dist/index.html', 'utf8');
+
+  it('canlı sitedeki başlığı birebir taşır', () => {
+    const h1 = doc().querySelector('h1')!.textContent!.replace(/\s+/g, ' ').trim();
+    expect(h1).toBe('Alıcı daireyi gezip randevuya geliyor');
+  });
+
+  it('teknik künye şeridi gerçek proje verisini gösterir', () => {
+    const h = html();
+    // Kaynak metin DOĞAL halde; büyük harfi CSS text-transform yapar.
+    // JS ile büyütmek Türkçe 'i' harfini bozardı (MELİKGAZİ -> MELIKGAZI).
+    for (const s of ['DUMAN-ERSA ORT.', '12 kat', '48 daire', 'Melikgazi, Kayseri']) {
+      expect(h).toContain(s);
+    }
+  });
+
+  it('künye şeridi CSS ile büyütülür — kaynakta bozuk Türkçe yok', () => {
+    const cap = doc().querySelector('.techcap')!;
+    expect(cap.textContent).toContain('Melikgazi');
+    expect(cap.textContent).not.toContain('MELIKGAZI');
+  });
+
+  it('bina kesiti erişilebilir etiket taşıyan gerçek SVG', () => {
+    const svg = doc().querySelector('.hero__figure svg[role="img"]');
+    expect(svg).toBeTruthy();
+    expect(svg!.getAttribute('aria-label')).toContain('12 katlı');
+  });
+
+  it('kesit 12 katı da çizer, gezilebilir katlar işaretli', () => {
+    const d = doc();
+    expect(d.querySelectorAll('.hero__figure [data-floor]').length).toBe(12);
+    expect(d.querySelectorAll('.hero__figure .sec__floor--tourable').length).toBe(2);
+  });
+
+  it('kesit çizgileri pathLength ile normalize — çizim animasyonu kontrollü', () => {
+    const lines = [...doc().querySelectorAll('.hero__figure line')];
+    expect(lines.length).toBeGreaterThan(20);
+    for (const l of lines) expect(l.getAttribute('pathLength')).toBe('1');
+  });
+
+  it('başlık iki satır olarak kurulur — sarma tesadüfe bırakılmaz', () => {
+    expect(doc().querySelectorAll('h1 .hero__line').length).toBe(2);
+  });
+
+  it('kot rayı gerçek kot değerleri taşır', () => {
+    const h = html();
+    for (const kot of ['+35.20', '+25.60', '+16.00', '+6.40', '+0.00']) {
+      expect(h).toContain(kot);
+    }
+  });
+});

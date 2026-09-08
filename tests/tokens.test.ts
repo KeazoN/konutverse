@@ -10,7 +10,7 @@ const REQUIRED = [
   '--brick', '--brick-lit', '--line', '--line-dark',
   '--avail-free', '--avail-sold', '--avail-reserved',
   '--avail-free-tint', '--avail-sold-tint', '--avail-reserved-tint',
-  '--t-display-xl', '--t-display', '--t-h1', '--t-h2', '--t-h3',
+  '--t-hero', '--t-display-xl', '--t-display', '--t-h1', '--t-h2', '--t-h3',
   '--t-body', '--t-small', '--t-tech',
   '--font-display', '--font-tech', '--font-body',
   '--radius-structural', '--radius-control', '--radius-pill',

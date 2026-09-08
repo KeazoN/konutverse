@@ -39,6 +39,10 @@
   --font-tech:    "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
   --font-body:    "Inter Variable", "Inter", system-ui, sans-serif;
 
+  /* Hero: kesit çiziminin yanında 2 satırda kalması gereken başlık.
+     19 karakterlik satır ~990px'lik alana sığmak zorunda. */
+  --t-hero:       clamp(38px, 6.6vw, 104px);
+  /* Tam genişlik tipografik anlar (3 satıra sarabilen kısa cümleler) */
   --t-display-xl: clamp(48px, 9vw, 148px);
   --t-display:    clamp(38px, 5.5vw, 84px);
   --t-h1:         clamp(30px, 3.6vw, 54px);

@@ -1,11 +1,12 @@
 import { credits } from '../components/signature/credits';
+import { upperTr } from '../lib/turkish';
 
 /** İmza Sistemi — Katman 3: DevTools açan geliştiriciye künye.
  *  Tek blok, tek seferlik, gürültüsüz. */
 const mark = [
   '',
   '   /\    ___',
-  '  /––\  |   \    ' + credits.maker.name.toUpperCase(),
+  '  /––\  |   \    ' + upperTr(credits.maker.name),
   ' /    \ |___/    ' + credits.maker.city + ' · ' + credits.maker.since,
   '',
   '   ' + credits.project,

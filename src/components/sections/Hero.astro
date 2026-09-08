@@ -1,0 +1,163 @@
+---
+import { site } from '../../content/site';
+import { featuredProject } from '../../content/projects';
+import BuildingSection from '../viz/BuildingSection.astro';
+import TechCaption from '../site/TechCaption.astro';
+import Button from '../ui/Button.astro';
+import Arrow from '../ui/Arrow.astro';
+
+const { hero } = site.home;
+const p = featuredProject;
+
+// Büyük harf CSS'e bırakılır (.tech sınıfı). <html lang="tr"> sayesinde
+// tarayıcı 'i' harfini 'İ' yapar; JS'in toUpperCase()'i 'I' yapardı.
+const caption = [
+  p.name,
+  `${p.floors} kat`,
+  `${p.units} daire`,
+  `${p.district}, ${p.city}`,
+];
+---
+
+<section class="hero on-dark-deep">
+  <div class="shell shell--railed hero__inner">
+
+    <div class="hero__copy">
+      <p class="tech hero__kicker">{site.brand.tagline}</p>
+
+      <h1 class="display display--hero hero__title">
+        {hero.title.map((line, i) => (
+          <>{i > 0 && ' '}<span class="hero__line">{line}</span></>
+        ))}
+      </h1>
+
+      <p class="hero__body">{hero.body}</p>
+
+      <div class="hero__actions">
+        <Button href={hero.cta.href} variant="primary" size="lg">{hero.cta.label}</Button>
+        <Button href={site.ctaPrimary.href} variant="ghost" size="lg" arrow={false}>
+          {site.ctaPrimary.label}
+        </Button>
+      </div>
+    </div>
+
+    <div class="hero__figure" aria-hidden="false">
+      <BuildingSection
+        floors={p.floors}
+        unitsPerFloor={4}
+        tourableFloors={[0, 2]}
+        animate={true}
+        label={`${p.name} — ${p.floors} katlı bina kesiti, gezilebilir daireler işaretli`}
+      />
+    </div>
+  </div>
+
+  <div class="shell shell--railed hero__foot">
+    <hr class="rule" />
+    <div class="hero__footRow">
+      <TechCaption items={caption} />
+      <a class="tech hero__scroll" href="#kesit">
+        {hero.scrollHint}
+        <Arrow dir="down" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: calc(100dvh - 68px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-top: clamp(var(--s-12), 7vw, var(--s-24));
+  }
+
+  .hero__inner {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 9fr) minmax(0, 3fr);
+    gap: clamp(var(--s-6), 4vw, var(--s-16));
+    align-items: center;
+  }
+
+  .hero__copy { display: grid; gap: var(--s-6); align-content: center; }
+
+  .hero__kicker { color: var(--brick-lit); }
+
+  .hero__title { max-width: 18ch; }
+  .hero__line { display: block; }
+
+  .hero__body {
+    max-width: 52ch;
+    font-size: clamp(var(--t-small), 1.2vw, 19px);
+    opacity: 0.76;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-2);
+  }
+
+  /* Kesit çizimi — ince ve tam yükseklikte, tipografiyle yarışmaz */
+  .hero__figure {
+    align-self: stretch;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 0;
+    padding-block: var(--s-8);
+  }
+  .hero__figure :global(svg) { max-height: min(62vh, 560px); width: auto; }
+
+  /* ── Alt künye şeridi ────────────────────────────────────── */
+  .hero__foot { padding-bottom: var(--s-8); }
+  .hero__footRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-top: var(--s-4);
+  }
+
+  .hero__scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    text-decoration: none;
+    opacity: 0.55;
+    transition: opacity var(--dur-fast) var(--ease);
+  }
+  .hero__scroll:hover { opacity: 1; color: var(--brick-lit); }
+  .hero__scroll :global(.arrow) {
+    animation: hero-nudge 2.4s var(--ease) infinite;
+  }
+  @keyframes hero-nudge {
+    0%, 70%, 100% { transform: rotate(90deg) translateX(0); }
+    82%           { transform: rotate(90deg) translateX(4px); }
+  }
+
+  /* ── Dar ekran ───────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .hero__inner {
+      grid-template-columns: 1fr;
+      gap: var(--s-12);
+      align-items: start;
+    }
+    .hero__figure {
+      order: -1;
+      justify-content: flex-start;
+      padding-block: 0;
+    }
+    .hero__figure :global(svg) { max-height: 34vh; }
+    .hero__title { max-width: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__scroll :global(.arrow) { animation: none; }
+  }
+</style>
