@@ -1,0 +1,26 @@
+---
+/** Saç teli kural + isteğe bağlı pafta numarası ve etiket.
+ *  Bölüm başlıklarının üstünde teknik çizim antet çizgisi görevi görür. */
+interface Props { no?: string; kicker?: string; }
+const { no, kicker } = Astro.props;
+---
+<div class="sheet-rule">
+  {no && <span class="tech sheet-rule__no">{no}</span>}
+  {kicker && <span class="tech sheet-rule__kicker">{kicker}</span>}
+  <hr class="rule" />
+</div>
+
+<style>
+  .sheet-rule {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    width: 100%;
+  }
+  .sheet-rule .rule { flex: 1 1 auto; min-width: var(--s-8); }
+  .sheet-rule__no { color: var(--brick); }
+  .sheet-rule__kicker { opacity: 0.6; }
+
+  :global(.on-dark) .sheet-rule__no,
+  :global(.on-dark-deep) .sheet-rule__no { color: var(--brick-lit); }
+</style>

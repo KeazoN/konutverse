@@ -1,0 +1,71 @@
+---
+import Arrow from './Arrow.astro';
+
+interface Props {
+  href: string;
+  variant?: 'primary' | 'ghost';
+  size?: 'md' | 'lg';
+  arrow?: boolean;
+  external?: boolean;
+}
+const { href, variant = 'primary', size = 'md', arrow = true, external = false } = Astro.props;
+const rel = external ? 'noopener noreferrer' : undefined;
+const target = external ? '_blank' : undefined;
+---
+
+<a class:list={['btn', `btn--${variant}`, `btn--${size}`]} href={href} rel={rel} target={target}>
+  <span class="btn__label"><slot /></span>
+  {arrow && <Arrow />}
+</a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    border-radius: var(--radius-control);
+    border: var(--hairline) solid transparent;
+    text-decoration: none;
+    transition:
+      background-color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease);
+  }
+
+  .btn__label {
+    font-family: var(--font-tech);
+    font-size: var(--t-tech);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-tech);
+    line-height: 1;
+  }
+
+  .btn :global(.arrow) {
+    transition: transform var(--dur-fast) var(--ease);
+  }
+  .btn:hover :global(.arrow) { transform: translateX(4px); }
+
+  .btn--md { padding: 15px 20px; }
+  .btn--lg { padding: 19px 28px; }
+
+  /* Birincil — tuğla dolgu. Beyaz metin brick üstünde 5.48 ✓ */
+  .btn--primary { background: var(--brick); color: var(--paper); }
+  .btn--primary:hover { background: var(--brick-lit); color: var(--ink); }
+
+  /* İkincil — saç teli çerçeve, zemine göre ton değiştirir */
+  .btn--ghost { border-color: var(--line-dark); color: var(--ink); }
+  .btn--ghost:hover { border-color: var(--brick); color: var(--brick); }
+
+  :global(.on-dark) .btn--ghost,
+  :global(.on-dark-deep) .btn--ghost { border-color: var(--line); color: var(--chalk); }
+  :global(.on-dark) .btn--ghost:hover,
+  :global(.on-dark-deep) .btn--ghost:hover {
+    border-color: var(--brick-lit);
+    color: var(--brick-lit);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover :global(.arrow) { transform: none; }
+  }
+</style>

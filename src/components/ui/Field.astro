@@ -1,0 +1,61 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  type?: string;
+  required?: boolean;
+  as?: 'input' | 'textarea';
+  autocomplete?: string;
+}
+const { name, label, type = 'text', required = false, as = 'input', autocomplete } = Astro.props;
+const id = `f-${name}`;
+---
+
+<div class="field">
+  <label class="tech field__label" for={id}>
+    {label}{required && <span class="field__req" aria-hidden="true">*</span>}
+  </label>
+
+  {as === 'textarea' ? (
+    <textarea
+      class="field__control"
+      id={id}
+      name={name}
+      rows="5"
+      required={required}
+      autocomplete={autocomplete}
+    />
+  ) : (
+    <input
+      class="field__control"
+      id={id}
+      name={name}
+      type={type}
+      required={required}
+      autocomplete={autocomplete}
+    />
+  )}
+</div>
+
+<style>
+  .field { display: grid; gap: var(--s-2); }
+
+  .field__label { color: var(--ink); opacity: 0.72; }
+  .field__req { color: var(--brick); margin-left: 2px; }
+
+  .field__control {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--t-body);
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--paper);
+    border: var(--hairline) solid var(--line-dark);
+    border-radius: var(--radius-control);
+    padding: 14px 16px;
+    transition: border-color var(--dur-fast) var(--ease);
+  }
+  .field__control:hover { border-color: var(--ink); }
+  .field__control:focus-visible { border-color: var(--brick); outline-offset: 1px; }
+  textarea.field__control { resize: vertical; min-height: 128px; }
+</style>

@@ -1,0 +1,15 @@
+---
+/** Çizim tarzı ok ucu — jenerik → değil, teknik çizim terminali. */
+interface Props { dir?: 'right' | 'down'; }
+const { dir = 'right' } = Astro.props;
+---
+<svg class:list={['arrow', `arrow--${dir}`]} viewBox="0 0 16 8" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="1.25">
+  <line x1="0" y1="4" x2="14" y2="4" />
+  <polyline points="10.5,0.75 14,4 10.5,7.25" />
+</svg>
+
+<style>
+  .arrow { width: 16px; height: 8px; flex: none; overflow: visible; }
+  .arrow--down { transform: rotate(90deg); }
+</style>

@@ -1,0 +1,26 @@
+---
+/** Müsaitlik durumu. Zemin renkleri AA güvenli tonlar (beyaz metinle 6.3+). */
+interface Props { status: 'free' | 'sold' | 'reserved'; }
+const { status } = Astro.props;
+const LABEL = { free: 'Boş', sold: 'Satıldı', reserved: 'Rezerve' } as const;
+---
+<span class:list={['chip', `chip--${status}`]}>{LABEL[status]}</span>
+
+<style>
+  .chip {
+    display: inline-block;
+    border-radius: var(--radius-pill);
+    padding: 4px 11px;
+    font-family: var(--font-tech);
+    font-size: var(--t-tech);
+    font-weight: 500;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-tech);
+    color: var(--paper);
+    white-space: nowrap;
+  }
+  .chip--free     { background: var(--avail-free); }
+  .chip--sold     { background: var(--avail-sold); }
+  .chip--reserved { background: var(--avail-reserved); }
+</style>

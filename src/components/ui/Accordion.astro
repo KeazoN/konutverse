@@ -1,0 +1,68 @@
+---
+/** Native <details> — sıfır JS, klavye ve ekran okuyucu desteği yerleşik. */
+interface Props { items: readonly { readonly q: string; readonly a: string }[]; }
+const { items } = Astro.props;
+---
+
+<div class="acc">
+  {items.map((item, i) => (
+    <details class="acc__item" name="faq">
+      <summary class="acc__q">
+        <span class="tech acc__no">{String(i + 1).padStart(2, '0')}</span>
+        <span class="acc__text">{item.q}</span>
+        <span class="acc__sign" aria-hidden="true"></span>
+      </summary>
+      <div class="acc__body"><p>{item.a}</p></div>
+    </details>
+  ))}
+  <hr class="rule" />
+</div>
+
+<style>
+  .acc__item { border-top: var(--hairline) solid var(--line-dark); }
+
+  .acc__q {
+    display: grid;
+    grid-template-columns: 3ch 1fr var(--s-6);
+    align-items: baseline;
+    gap: var(--s-4);
+    padding: var(--s-6) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .acc__q::-webkit-details-marker { display: none; }
+
+  .acc__no { color: var(--brick); }
+
+  .acc__text {
+    font-family: var(--font-display);
+    font-stretch: 100%;
+    font-weight: 600;
+    font-size: var(--t-h3);
+    letter-spacing: var(--ls-h3);
+    line-height: var(--lh-tight);
+  }
+
+  /* Artı/eksi işareti — iki çizgi, çizim diliyle uyumlu */
+  .acc__sign {
+    position: relative;
+    width: var(--s-4);
+    height: var(--s-4);
+    align-self: center;
+    justify-self: end;
+  }
+  .acc__sign::before,
+  .acc__sign::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: var(--hairline);
+    background: var(--ink);
+    transition: transform var(--dur-fast) var(--ease);
+  }
+  .acc__sign::after { transform: rotate(90deg); }
+  .acc__item[open] .acc__sign::after { transform: rotate(0deg); }
+  .acc__item[open] .acc__text { color: var(--brick); }
+
+  .acc__body { padding: 0 var(--s-6) var(--s-8) calc(3ch + var(--s-4)); }
+</style>

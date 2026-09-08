@@ -1,0 +1,30 @@
+---
+/** Pafta etiketi. Dikdörtgen — çizimin yuvarlak köşesi yoktur. */
+interface Props { text: string; tone?: 'brick' | 'line' | 'invert'; }
+const { text, tone = 'brick' } = Astro.props;
+---
+<span class:list={['sheet-label', `sheet-label--${tone}`]}>{text}</span>
+
+<style>
+  .sheet-label {
+    display: inline-block;
+    border-radius: var(--radius-structural);
+    padding: 5px 10px;
+    font-family: var(--font-tech);
+    font-size: var(--t-tech);
+    font-weight: 500;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-tech);
+    white-space: nowrap;
+  }
+  .sheet-label--brick  { background: var(--brick); color: var(--paper); }
+  .sheet-label--line   { border: var(--hairline) solid var(--line-dark); color: var(--ink); }
+  .sheet-label--invert { background: var(--ink); color: var(--chalk); }
+
+  :global(.on-dark) .sheet-label--line,
+  :global(.on-dark-deep) .sheet-label--line {
+    border-color: var(--line);
+    color: var(--chalk);
+  }
+</style>

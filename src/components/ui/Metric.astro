@@ -1,0 +1,27 @@
+---
+/** Sıfır dolgulu sicil sayısı. "1 firma" küçüklüğü saklanmaz,
+ *  teknik kayıt biçiminde sunulur — şeffaf okunur, yetersiz değil. */
+interface Props { value: number; label: string; }
+const { value, label } = Astro.props;
+const padded = String(value).padStart(2, '0');
+---
+<div class="metric">
+  <span class="metric__value num">{padded}</span>
+  <span class="tech metric__label">{label}</span>
+</div>
+
+<style>
+  .metric { display: flex; flex-direction: column; gap: var(--s-3); }
+
+  .metric__value {
+    font-family: var(--font-display);
+    font-stretch: var(--wdth-display);
+    font-weight: 600;
+    font-size: var(--t-display);
+    line-height: 0.9;
+    letter-spacing: var(--ls-display);
+    color: var(--brick);   /* ≥24px — kontrast politikası uygun */
+  }
+  :global(.on-dark) .metric__label,
+  :global(.on-dark-deep) .metric__label { opacity: 0.66; }
+</style>
