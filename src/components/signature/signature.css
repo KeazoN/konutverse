@@ -21,10 +21,12 @@
 }
 
 /* Koyu zemin — açıkça ya da kapsayıcıdan devralarak */
+/* Koyu zemin: host sitenin .on-ink yüzeyi ya da açık .ad-mark--dark
+   seçimi. İmza bileşeni host token'larına bağımlı değildir; yalnızca
+   bu iki sınıf adını tanır. */
 .ad-mark--dark,
 .ad-mark--auto.is-on-dark,
-.on-dark .ad-mark--auto,
-.on-dark-deep .ad-mark--auto {
+.on-ink .ad-mark--auto {
   --ad-fg: #FFFFFF;
   --ad-muted: rgba(255, 255, 255, 0.55);
   --ad-accent: #ED5A34;          /* koyu zeminde AA ✓ (4.99) */
