@@ -1,0 +1,72 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/sections/PageHead.astro';
+import ElevationStack from '../components/viz/ElevationStack.astro';
+import HandoffPanel from '../components/viz/HandoffPanel.astro';
+import TechCaption from '../components/site/TechCaption.astro';
+import { site } from '../content/site';
+import { featuredProject } from '../content/projects';
+
+const d = site.demo;
+const p = featuredProject;
+
+const caption = [
+  p.firm,
+  `${p.floors} kat`,
+  `${p.units} daire`,
+  `${p.tourable} gezilebilir`,
+  `${p.district}, ${p.city}`,
+];
+---
+
+<Base title={d.meta.title} description={d.meta.description} route="/demo" surface="dark">
+  <PageHead kicker={d.kicker} title={p.name} lead={`${p.floors} kat · ${d.floorHint}`} />
+
+  <section class="demo">
+    <div class="shell shell--railed">
+      <div class="demo__caption">
+        <TechCaption items={caption} />
+      </div>
+
+      <ElevationStack project={p} unitsPerFloor={4} />
+
+      <p class="tech demo__legend">
+        <span class="demo__key demo__key--free"></span> Boş
+        <span class="demo__key demo__key--reserved"></span> Rezerve
+        <span class="demo__key demo__key--sold"></span> Satıldı
+        <span class="demo__key demo__key--tour"></span> 360° turu var
+      </p>
+    </div>
+  </section>
+
+  <HandoffPanel />
+
+  <script>
+    import '../scripts/demo-handoff.ts';
+  </script>
+</Base>
+
+<style>
+  .demo { padding-block: 0 clamp(var(--s-16), 8vw, var(--s-32)); }
+  .demo__caption { padding-bottom: var(--s-8); }
+
+  .demo__legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2) var(--s-6);
+    margin-top: var(--s-8);
+    opacity: 0.6;
+  }
+  .demo__key {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 2px;
+    vertical-align: -2px;
+  }
+  .demo__key--free { background: var(--avail-free); }
+  .demo__key--reserved { background: var(--avail-reserved); }
+  .demo__key--sold { background: var(--avail-sold); }
+  .demo__key--tour { border: 2px solid var(--brick); }
+</style>

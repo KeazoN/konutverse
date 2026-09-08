@@ -11,6 +11,7 @@ const PAGES = [
   'dist/pricing/index.html',
   'dist/contact/index.html',
   'dist/search/index.html',
+  'dist/demo/index.html',
   'dist/kunye/index.html',
 ];
 

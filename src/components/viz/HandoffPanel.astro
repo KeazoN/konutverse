@@ -1,0 +1,135 @@
+---
+/**
+ * Devir paneli — 360° görüntüleyici kapsam dışı (spec §7.7).
+ * Sahte bir görüntüleyici ÜRETİLMEZ. Panel seçilen dairenin künyesini
+ * gösterir, sınırı açıkça beyan eder ve gerçek sisteme çıkış verir.
+ */
+import { site } from '../../content/site';
+import StatusChip from '../ui/StatusChip.astro';
+import Arrow from '../ui/Arrow.astro';
+
+const h = site.demo.handoff;
+---
+
+<dialog class="hand" id="handoff" aria-labelledby="handoff-title">
+  <div class="hand__inner on-dark">
+
+    <header class="hand__head">
+      <span class="tech hand__boundary">{h.boundary}</span>
+      <button class="hand__close" type="button" data-handoff-close aria-label={h.close}>
+        <span aria-hidden="true">×</span>
+      </button>
+    </header>
+
+    <h2 class="hand__title" id="handoff-title">
+      <span data-unit-floor>—</span> · <span data-unit-id>—</span>
+    </h2>
+
+    <dl class="hand__specs">
+      <div class="hand__spec">
+        <dt class="tech">Kat</dt>
+        <dd data-spec-floor>—</dd>
+      </div>
+      <div class="hand__spec">
+        <dt class="tech">Daire</dt>
+        <dd data-spec-unit>—</dd>
+      </div>
+      <div class="hand__spec">
+        <dt class="tech">Alan</dt>
+        <dd><span data-spec-area>—</span> m²</dd>
+      </div>
+      <div class="hand__spec">
+        <dt class="tech">Durum</dt>
+        <dd data-spec-status>
+          <StatusChip status="free" />
+        </dd>
+      </div>
+    </dl>
+
+    <p class="hand__body">{h.body}</p>
+
+    <a class="hand__cta" href={h.href} target="_blank" rel="noopener noreferrer">
+      <span class="tech">{h.cta}</span>
+      <Arrow />
+    </a>
+  </div>
+</dialog>
+
+<style>
+  .hand {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    max-width: min(560px, calc(100vw - var(--s-8)));
+    width: 100%;
+  }
+  .hand::backdrop { background: rgba(10, 18, 36, 0.72); backdrop-filter: blur(3px); }
+
+  .hand__inner {
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-structural);
+    padding: clamp(var(--s-6), 4vw, var(--s-12));
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  .hand__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding-bottom: var(--s-4);
+    border-bottom: var(--hairline) solid var(--line);
+  }
+
+  /* Sınır beyanı — tuğla çerçeveli, kaçınılmaz */
+  .hand__boundary {
+    color: var(--brick-lit);
+    border: var(--hairline) solid var(--brick);
+    padding: 6px 9px;
+    line-height: 1.4;
+  }
+
+  .hand__close {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-control);
+    background: none;
+    color: var(--chalk);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .hand__close:hover { border-color: var(--brick-lit); color: var(--brick-lit); }
+
+  .hand__title { font-size: var(--t-h2); letter-spacing: var(--ls-h); }
+
+  .hand__specs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s-4) var(--s-6);
+    margin: 0;
+    padding-block: var(--s-4);
+    border-block: var(--hairline) solid var(--line);
+  }
+  .hand__spec { display: grid; gap: var(--s-1); }
+  .hand__spec dt { opacity: 0.45; }
+  .hand__spec dd { margin: 0; font-size: var(--t-body); }
+
+  .hand__body { font-size: var(--t-small); opacity: 0.74; }
+
+  .hand__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    justify-self: start;
+    padding: 15px 20px;
+    background: var(--brick);
+    color: var(--paper);
+    border-radius: var(--radius-control);
+    text-decoration: none;
+  }
+  .hand__cta:hover { background: var(--brick-lit); color: var(--ink); }
+</style>

@@ -18,7 +18,7 @@ function bundledCss(): string {
     .join('\n');
 }
 
-const ROUTES = ['index', 'features', 'about', 'pricing', 'contact', 'search'];
+const ROUTES = ['index', 'features', 'about', 'pricing', 'contact', 'search', 'demo'];
 
 /** Ana menüde yer alan rotalar — aria-current yalnızca bunlarda beklenir. */
 const NAV_HREFS = ['/', '/features', '/pricing', '/about', '/contact'];
@@ -458,6 +458,62 @@ describe('/search', () => {
   it('JS olmadan tum projeler gorunur — asamali iyilestirme', () => {
     for (const card of doc().querySelectorAll('[data-project]')) {
       expect(card.hasAttribute('hidden')).toBe(false);
+    }
+  });
+});
+
+describe('/demo', () => {
+  const doc = () => parseHTML(readFileSync('dist/demo/index.html', 'utf8')).document;
+  const html = () => readFileSync('dist/demo/index.html', 'utf8');
+
+  it('12 kati cephe olarak dizer', () => {
+    expect(doc().querySelectorAll('[data-elevation-floor]').length).toBe(12);
+  });
+
+  it('kat basina 4 daire hucresi — 48 daire, hepsi klavye erisilebilir', () => {
+    const cells = doc().querySelectorAll('[data-elevation-floor] button[data-unit]');
+    expect(cells.length).toBe(48);
+    for (const c of cells) {
+      expect(c.getAttribute('type')).toBe('button');
+      expect(c.getAttribute('aria-label')?.length).toBeGreaterThan(10);
+    }
+  });
+
+  it('en ust kat once dizilir — gercek cephe sirasi', () => {
+    const first = doc().querySelector('[data-elevation-floor]');
+    expect(first?.getAttribute('data-elevation-floor')).toBe('11');
+  });
+
+  it('3 gezilebilir daire isaretli — proje verisiyle tutarli', () => {
+    const tourable = doc().querySelectorAll('[data-unit][data-tourable="true"]');
+    expect(tourable.length).toBe(3);
+  });
+
+  it('SAHTE 360° goruntuleyici URETMEZ — sinir acikca beyan edilir', () => {
+    const h = html();
+    expect(h).toContain('360° GÖRÜNTÜLEYİCİ · MEVCUT SİSTEM · KAPSAM DIŞI');
+    expect(h).toContain('https://konutverse.com/demo');
+    // Hicbir panorama/viewer kutuphanesi yuklenmemeli
+    expect(h).not.toMatch(/pannellum|photo-sphere|marzipano|krpano/i);
+  });
+
+  it('devir paneli native <dialog> — odak tuzagi ve Escape yerlesik', () => {
+    const dlg = doc().querySelector('dialog#handoff');
+    expect(dlg).toBeTruthy();
+    expect(dlg!.getAttribute('aria-labelledby')).toBe('handoff-title');
+    expect(doc().querySelector('#handoff-title')).toBeTruthy();
+  });
+
+  it('gercek siteye cikis guvenli acilir', () => {
+    const a = doc().querySelector('a[href="https://konutverse.com/demo"]');
+    expect(a?.getAttribute('rel')).toContain('noopener');
+    expect(a?.getAttribute('target')).toBe('_blank');
+  });
+
+  it('musaitlik lejandi var', () => {
+    const h = html();
+    for (const s of ['Boş', 'Rezerve', 'Satıldı', '360° turu var']) {
+      expect(h).toContain(s);
     }
   });
 });
