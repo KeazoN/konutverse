@@ -2,13 +2,11 @@
  * Gereken font alt kümelerini node_modules'tan public/fonts'a SABİT
  * adlarla kopyalar.
  *
- * Neden: Astro hash'li dosya adları üretir; sabit ad olmadan
+ * Sabit ad şart: Astro hash'li ad üretir ve hash'li yola
  * <link rel="preload"> yazılamaz. Preload olmadan font ilk boyamadan
- * sonra geliyor, başlık yeniden sarıyor ve hero butonları zıplıyordu
- * (ölçülen CLS 0.108).
+ * sonra gelir, metin yeniden sarar, sayfa zıplar (ölçülen CLS 0.104).
  *
- * Ayrıca yalnızca Türkçe için gereken alt kümeler kopyalanır:
- * vietnamese ve cyrillic hiç yayınlanmaz.
+ * Yalnızca Türkçe için gereken latin + latin-ext kopyalanır.
  */
 import { copyFileSync, mkdirSync, existsSync } from 'node:fs';
 
@@ -16,12 +14,17 @@ const OUT = 'public/fonts';
 mkdirSync(OUT, { recursive: true });
 
 const FILES = [
-  ['@fontsource-variable/archivo/files/archivo-latin-standard-normal.woff2', 'archivo-latin.woff2'],
-  ['@fontsource-variable/archivo/files/archivo-latin-ext-standard-normal.woff2', 'archivo-latin-ext.woff2'],
-  ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2', 'plex-mono-400-latin.woff2'],
-  ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-ext-400-normal.woff2', 'plex-mono-400-latin-ext.woff2'],
-  ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2', 'plex-mono-500-latin.woff2'],
-  ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-ext-500-normal.woff2', 'plex-mono-500-latin-ext.woff2'],
+  // Display — Fraunces (opsz + SOFT + WONK + wght eksenleri)
+  ['@fontsource-variable/fraunces/files/fraunces-latin-standard-normal.woff2', 'fraunces-latin.woff2'],
+  ['@fontsource-variable/fraunces/files/fraunces-latin-ext-standard-normal.woff2', 'fraunces-latin-ext.woff2'],
+  // Gövde / arayüz — Instrument Sans (wght ekseni)
+  ['@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2', 'sans-latin.woff2'],
+  ['@fontsource-variable/instrument-sans/files/instrument-sans-latin-ext-wght-normal.woff2', 'sans-latin-ext.woff2'],
+  // Teknik katman — IBM Plex Mono
+  ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2', 'mono-400-latin.woff2'],
+  ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-ext-400-normal.woff2', 'mono-400-latin-ext.woff2'],
+  ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2', 'mono-500-latin.woff2'],
+  ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-ext-500-normal.woff2', 'mono-500-latin-ext.woff2'],
 ];
 
 for (const [from, to] of FILES) {

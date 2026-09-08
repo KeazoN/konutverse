@@ -164,10 +164,30 @@ describe('hareket erişilebilirliği', () => {
     expect(css).toContain('prefers-reduced-motion');
   });
 
-  it('hareketli scriptler reduced-motion kontrolü yapıyor', () => {
+  it('reduced-motion kontrolü tek bir yardımcıda toplanmış', () => {
+    const helper = readFileSync('src/scripts/on-page.ts', 'utf8');
+    expect(helper).toContain('prefers-reduced-motion');
+  });
+
+  it('hareketli scriptler o yardımcıyı kullanıyor', () => {
     for (const f of ['reveal.ts', 'lenis-init.ts']) {
       const src = readFileSync(`src/scripts/${f}`, 'utf8');
-      expect(src, `${f} reduced-motion kontrolü yok`).toContain('prefers-reduced-motion');
+      expect(src, `${f} reduced-motion kontrolü yok`).toContain('prefersReducedMotion');
+    }
+  });
+
+  it('CSS hareket katmanı reduced-motion ayrımı yapıyor', () => {
+    const m = readFileSync('src/styles/motion.css', 'utf8');
+    expect(m).toContain('prefers-reduced-motion: no-preference');
+    expect(m).toContain('prefers-reduced-motion: reduce');
+  });
+
+  it('sayfaya bağlı scriptler geçişten sonra yeniden bağlanıyor', () => {
+    // ClientRouter içeriği JS yeniden yüklenmeden değiştirir;
+    // onPage() kullanılmazsa form ve filtreler ilk gezinmeden sonra ölür.
+    for (const f of ['contact-form.ts', 'search-filter.ts', 'demo-handoff.ts', 'reveal.ts']) {
+      const src = readFileSync(`src/scripts/${f}`, 'utf8');
+      expect(src, `${f} onPage() kullanmıyor`).toContain('onPage(');
     }
   });
 });

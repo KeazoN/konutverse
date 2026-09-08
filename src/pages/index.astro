@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/sections/Hero.astro';
+import Statement from '../components/sections/Statement.astro';
 import Capabilities from '../components/sections/Capabilities.astro';
 import Status from '../components/sections/Status.astro';
 import Steps from '../components/sections/Steps.astro';
@@ -12,6 +13,7 @@ const { meta } = site.home;
 
 <Base title={meta.title} description={meta.description} route="/">
   <Hero />
+  <Statement />
   <Capabilities />
   <Status />
   <Steps />

@@ -77,19 +77,19 @@ describe('layout sözleşmesi', () => {
 });
 
 describe('tipografi yüklemesi', () => {
-  it('Archivo GENİŞLİK ekseniyle yüklenir — standard.css, index.css değil', () => {
+  it('display fontu değişken eksenlerle yüklenir', () => {
     const css = bundledCss();
-    expect(css).toContain('Archivo Variable');
-    // font-stretch bildirimi yoksa wdth ekseni yüklenmemiş demektir
-    expect(css).toContain('font-stretch');
+    expect(css).toContain('woff2-variations');
+    // Minify boşlukları siler; karşılaştırmadan önce normalize et
+    const flat = css.replace(/\s+/g, '');
+    expect(flat).toContain('font-weight:100900');
   });
 
-  it('iki superaile yüklenir; gereksiz üçüncü gövde ailesi yok', () => {
+  it('üç ses de yüklenir — display serif, gövde sans, teknik mono', () => {
     const css = bundledCss();
-    expect(css).toContain('Archivo Variable');
+    expect(css).toContain('Fraunces');
+    expect(css).toContain('Instrument Sans');
     expect(css).toContain('IBM Plex Mono');
-    // Inter kaldırıldı: ayrım genişlik ekseninden geliyor, 130 KB tasarruf
-    expect(css).not.toContain('Inter Variable');
   });
 
   /**
@@ -101,7 +101,7 @@ describe('tipografi yüklemesi', () => {
   it('font yükü mobil bütçe içinde (< 260 KB)', () => {
     const dir = `${DIST}/fonts`;
     const files = readdirSync(dir).filter((f) => f.endsWith('.woff2'));
-    expect(files.length).toBe(6);
+    expect(files.length).toBe(8);
     const total = files.reduce((n, f) => n + statSync(`${dir}/${f}`).size, 0);
     const kb = total / 1024;
     expect(kb, `${kb.toFixed(0)} KB`).toBeLessThan(260);
@@ -453,9 +453,11 @@ describe('ana sayfa — açık tema, fotoğraf öncelikli', () => {
     expect(imgs.length).toBe(3);
     for (const img of imgs) {
       expect(img.getAttribute('src')).toMatch(/^\/img\//);
-      expect(img.getAttribute('loading')).toBe('lazy');
       expect(img.getAttribute('alt')?.length).toBeGreaterThan(10);
     }
+    // İlki katlamaya yakın: eager. Diğerleri lazy.
+    expect(imgs[0].getAttribute('loading')).toBe('eager');
+    expect(imgs.slice(1).map((i) => i.getAttribute('loading'))).toEqual(['lazy', 'lazy']);
   });
 
   it('yayın durumu tarihli sicil damgası ve sıfır dolgulu sayılar', () => {

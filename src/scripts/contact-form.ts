@@ -1,42 +1,47 @@
-/**
- * Demo formu — istemci tarafı doğrulama ve görsel durumlar.
- * Gerçek gönderim kapsam dışıdır (spec §3); backend yok.
- *
- * KVKK onayı işaretlenmeden gönderim yapılamaz — ürünün kendi
- * taahhüdü ("KVKK onayı olmadan kayıt yok") arayüzde de geçerli.
- */
 import { site } from '../content/site';
+import { onPage } from './on-page';
 
-const form = document.querySelector<HTMLFormElement>('#demo-form');
-const status = document.querySelector<HTMLElement>('#form-status');
+onPage(() => {
+  /**
+   * Demo formu — istemci tarafı doğrulama ve görsel durumlar.
+   * Gerçek gönderim kapsam dışıdır (spec §3); backend yok.
+   *
+   * KVKK onayı işaretlenmeden gönderim yapılamaz — ürünün kendi
+   * taahhüdü ("KVKK onayı olmadan kayıt yok") arayüzde de geçerli.
+   */
 
-if (form && status) {
-  const setStatus = (message: string, state: 'error' | 'success') => {
-    status.textContent = message;
-    status.dataset.state = state;
-  };
+  const form = document.querySelector<HTMLFormElement>('#demo-form');
+  const status = document.querySelector<HTMLElement>('#form-status');
 
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
+  if (form && status) {
+    const setStatus = (message: string, state: 'error' | 'success') => {
+      status.textContent = message;
+      status.dataset.state = state;
+    };
 
-    // Tarayıcının kendi doğrulaması — mesajlar Türkçe ve yerleşik
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      const firstInvalid = form.querySelector<HTMLElement>(':invalid');
-      firstInvalid?.focus();
-      setStatus('Lütfen zorunlu alanları doldurun ve KVKK onayını işaretleyin.', 'error');
-      return;
-    }
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
 
-    setStatus(site.contact.successMessage, 'success');
-    form.reset();
-  });
+      // Tarayıcının kendi doğrulaması — mesajlar Türkçe ve yerleşik
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        const firstInvalid = form.querySelector<HTMLElement>(':invalid');
+        firstInvalid?.focus();
+        setStatus('Lütfen zorunlu alanları doldurun ve KVKK onayını işaretleyin.', 'error');
+        return;
+      }
 
-  // Kullanıcı düzeltmeye başlayınca hata mesajını temizle
-  form.addEventListener('input', () => {
-    if (status.dataset.state === 'error') {
-      status.textContent = '';
-      delete status.dataset.state;
-    }
-  });
-}
+      setStatus(site.contact.successMessage, 'success');
+      form.reset();
+    });
+
+    // Kullanıcı düzeltmeye başlayınca hata mesajını temizle
+    form.addEventListener('input', () => {
+      if (status.dataset.state === 'error') {
+        status.textContent = '';
+        delete status.dataset.state;
+      }
+    });
+  }
+
+});

@@ -15,7 +15,6 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-body);
-  font-stretch: 100%;
   font-size: var(--t-body);
   line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
@@ -29,7 +28,7 @@ body {
 
 h1, h2, h3, .display {
   font-family: var(--font-display);
-  font-stretch: var(--wdth-display);
+  font-variation-settings: var(--fraunces-display);
   font-weight: 600;
   line-height: var(--lh-display);
   color: var(--ink);
@@ -42,7 +41,8 @@ h2 { font-size: var(--t-h2); letter-spacing: var(--ls-h); line-height: var(--lh-
 h3 {
   font-size: var(--t-h3);
   letter-spacing: var(--ls-h3);
-  font-stretch: 100%;
+  /* Küçük başlıkta optik boy düşürülür: ince tırnaklar kaybolmasın */
+  font-variation-settings: var(--fraunces-text);
   line-height: var(--lh-tight);
 }
 

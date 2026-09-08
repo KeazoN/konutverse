@@ -1,20 +1,21 @@
 ---
 // Fontlar self-host (Fontsource). Üçüncü taraf CDN yok.
 //
-// İKİ superaile, ÜÇ ses:
-//   Archivo geniş (wdth 112, 600) -> display
-//   Archivo normal (wdth 100, 400) -> gövde
-//   IBM Plex Mono -> teknik katman
-// Üçüncü bir gövde ailesi (Inter) kaldırıldı: ayrım zaten genişlik
-// ekseninden geliyordu ve 130 KB font yükü ekliyordu.
+// ÜÇ SES, üç ayrı aile:
+//   Fraunces        -> display (yüksek kontrastlı editoryal serif)
+//   Instrument Sans -> gövde ve arayüz
+//   IBM Plex Mono   -> teknik katman
 //
-// standard.css şart: index.css yalnız wght yükler, geniş kurulum
-// sessizce çalışmazdı.
+// Önceki kurulum başlık ve gövdede aynı aileyi (Archivo) kullanıyordu;
+// bu bir tasarım kararı değil performans taviziydi ve düz görünüyordu.
 import '../styles/fonts.css';
 
 import '../styles/tokens.css';
 import '../styles/base.css';
 import '../styles/utilities.css';
+import '../styles/motion.css';
+
+import { ClientRouter } from 'astro:transitions';
 
 import { THEME_COLOR } from '../lib/brand';
 import Header from '../components/site/Header.astro';
@@ -85,15 +86,15 @@ const jsonLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content={THEME_COLOR} />
 
-    <!-- İKİ Archivo alt kümesi de ön yüklenir.
+    <!-- İki Fraunces alt kümesi de ön yüklenir.
          Preload olmadan font ilk boyamadan sonra geliyor, metin yeniden
          sarıyor ve hero butonları zıplıyor (ölçülen CLS 0.108).
          latin-ext ŞART: Türkçe ş/ğ/İ harfleri orada; yalnız latin
          preload edildiğinde CLS 0.104'e geri dönüyor (ölçüldü). -->
     <link rel="preload" as="font" type="font/woff2" crossorigin
-          href="/fonts/archivo-latin.woff2" />
+          href="/fonts/fraunces-latin.woff2" />
     <link rel="preload" as="font" type="font/woff2" crossorigin
-          href="/fonts/archivo-latin-ext.woff2" />
+          href="/fonts/fraunces-latin-ext.woff2" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="mask-icon" href="/favicon.svg" color={THEME_COLOR} />
@@ -114,6 +115,9 @@ const jsonLd = {
     <meta name="author" content={credits.maker.name} />
     <link rel="author" href={credits.maker.url} />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+
+    {/* Sayfalar arası yumuşak geçiş — tam sayfa yeniden boyama yok */}
+    <ClientRouter />
 
     <slot name="head" />
   </head>

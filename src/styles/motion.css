@@ -1,0 +1,78 @@
+/* ============================================================
+   Hareket katmanı.
+
+   TEMEL KURAL: içeriğin GÖRÜNÜRLÜĞÜ hiçbir zaman bir animasyonun
+   tetiklenmesine bağlı olamaz. Scroll-driven animasyonlar yalnızca
+   `transform` oynatır; animasyon hiç çalışmazsa içerik yine
+   yerindedir ve görünürdür. (Önce opacity animasyonlanıyordu ve
+   ekran altındaki fotoğraflar görünmez kalıyordu — gerçek hataydı.)
+
+   Katmanlar:
+   1) CSS scroll-driven animation — sıfır JS, scroll'la kusursuz senkron.
+   2) IntersectionObserver — desteklemeyen tarayıcıda solma + kayma.
+   3) prefers-reduced-motion — hiçbiri.
+   ============================================================ */
+
+/* ── Görsel içi parallax: çerçeve sabit, fotoğraf kayar ─────── */
+@keyframes drift {
+  from { transform: translateY(-3.5%) scale(1.08); }
+  to   { transform: translateY(3.5%)  scale(1.08); }
+}
+
+/* ── Görsel oturması: hafif zoom-out, ağırlık hissi ─────────── */
+@keyframes settle {
+  from { transform: scale(1.07); }
+  to   { transform: none; }
+}
+
+/* ── Bölüm yükselmesi ───────────────────────────────────────── */
+@keyframes rise {
+  from { transform: translateY(26px); }
+  to   { transform: none; }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* JS yolu devre dışı: CSS yolu her şeyi yönetiyor */
+    .reveal {
+      opacity: 1;
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 24%;
+    }
+
+    .media > img {
+      animation: settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 26%;
+    }
+
+    /* Hero fotoğrafı scroll boyunca yavaşça kayar */
+    .hero__media > img {
+      animation: drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+/* ── Sayfa geçişleri (View Transitions) ──────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: vt-out 220ms cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  ::view-transition-new(root) {
+    animation: vt-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in  { from { opacity: 0; transform: translateY(8px); } }
+
+/* Çerçeve geçiş boyunca yerinde kalır — sayfa değişir, kabuk değil */
+.head { view-transition-name: site-header; }
+.foot { view-transition-name: site-footer; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
+}

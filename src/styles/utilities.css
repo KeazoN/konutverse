@@ -79,14 +79,19 @@
 }
 
 /* ── Görsel ─────────────────────────────────────────────────── */
+/* En-boy oranı KAPSAYICIYA DEĞİL doğrudan <img>'e verilir.
+   Kapsayıcıya verildiğinde yüzde yükseklik grid içinde güvenilir
+   çözülmüyor ve görsel boyanmıyordu. Bu haliyle img kendi kutusunu
+   kurar; hesap zincirine gerek yok. */
 .media {
   position: relative;
   overflow: hidden;
   background: var(--linen);
 }
-.media img {
+.media > img {
+  display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: cover;
 }
 

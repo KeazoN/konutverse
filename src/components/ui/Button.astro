@@ -3,7 +3,7 @@ import Arrow from './Arrow.astro';
 
 interface Props {
   href: string;
-  variant?: 'primary' | 'ghost' | 'quiet';
+  variant?: 'primary' | 'ghost' | 'quiet' | 'onmedia';
   size?: 'md' | 'lg';
   arrow?: boolean;
   external?: boolean;
@@ -66,6 +66,17 @@ const { href, variant = 'primary', size = 'md', arrow = true, external = false }
     box-shadow: 0 1px 0 currentColor;
   }
   .btn--quiet:hover { color: var(--brick-ink); }
+
+  /* Fotoğraf üstünde: cam kenar, tam beyaz metin */
+  .btn--onmedia {
+    border-color: rgba(252, 251, 249, 0.45);
+    color: var(--paper);
+    backdrop-filter: blur(6px);
+  }
+  .btn--onmedia:hover {
+    border-color: var(--paper);
+    background: rgba(252, 251, 249, 0.12);
+  }
 
   :global(.on-ink) .btn--ghost {
     border-color: rgba(252, 251, 249, 0.28);

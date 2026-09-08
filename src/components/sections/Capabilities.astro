@@ -12,7 +12,7 @@ const MEDIA = [
 ];
 ---
 
-<section class="caps section" id="nasil">
+<section class="caps on-sand" id="nasil">
   <div class="shell">
     {items.map((item, i) => (
       <article class="cap reveal" style={`--reveal-delay:${i * 60}ms`}>
@@ -33,7 +33,7 @@ const MEDIA = [
             alt={MEDIA[i].alt}
             width={MEDIA[i].w}
             height={MEDIA[i].h}
-            loading="lazy"
+            loading={i === 0 ? "eager" : "lazy"}
             decoding="async"
           />
           <span class="tech cap__no num">{item.no}</span>
@@ -44,19 +44,43 @@ const MEDIA = [
 </section>
 
 <style>
+  /* Metin kartı görselin üstüne biner: derinlik ve "tasarlanmış"
+     hissi verir; şablon gibi durmaz. */
   .cap {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     align-items: center;
-    gap: clamp(var(--s-8), 5vw, var(--s-24));
-    padding-block: clamp(var(--s-12), 5vw, var(--s-24));
+    padding-block: clamp(var(--s-16), 7vw, var(--s-32));
   }
-  /* Çift sıralarda görsel sola geçer — ritim */
-  .cap:nth-child(even) .cap__media { order: -1; }
+
+  .cap__copy {
+    grid-row: 1;
+    grid-column: 1 / span 5;
+    z-index: 1;
+    background: var(--paper);
+    padding: clamp(var(--s-6), 3vw, var(--s-12));
+    box-shadow: var(--shadow-soft);
+  }
+  .cap__media {
+    grid-row: 1;
+    grid-column: 5 / span 8;
+  }
+
+  /* Çift sıralarda taraf değişir */
+  .cap:nth-child(even) .cap__copy { grid-column: 8 / span 5; }
+  .cap:nth-child(even) .cap__media { grid-column: 1 / span 8; }
 
   @media (max-width: 900px) {
-    .cap { grid-template-columns: 1fr; gap: var(--s-8); }
-    .cap:nth-child(even) .cap__media { order: 0; }
+    .cap { grid-template-columns: 1fr; gap: 0; }
+    .cap__copy,
+    .cap:nth-child(even) .cap__copy {
+      grid-row: 2;
+      grid-column: 1;
+      margin: calc(var(--s-12) * -1) var(--s-4) 0;
+      box-shadow: var(--shadow-lift);
+    }
+    .cap__media,
+    .cap:nth-child(even) .cap__media { grid-row: 1; grid-column: 1; }
   }
 
   .cap__title {
@@ -74,12 +98,12 @@ const MEDIA = [
     margin-bottom: var(--s-6);
   }
 
-  .cap__media { aspect-ratio: 16 / 11; box-shadow: var(--shadow-soft); }
+  .cap__media > :global(img) { aspect-ratio: 16 / 11; }
 
   .cap__no {
     position: absolute;
     top: var(--s-5);
-    left: var(--s-5);
+    right: var(--s-5);
     background: var(--paper);
     color: var(--brick);
     padding: 8px 12px;

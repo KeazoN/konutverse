@@ -1,0 +1,54 @@
+---
+/**
+ * Durup baktıran an. Metin uydurma değil: Konutverse'ün kendi
+ * /about sayfasındaki cümle. Ürünün tezi tek cümlede.
+ */
+import { site } from '../../content/site';
+---
+
+<section class="stm on-sand">
+  <div class="shell stm__inner">
+    <span class="stm__quote" aria-hidden="true">“</span>
+    <blockquote class="stm__body">
+      <p class="stm__text display display--lg">{site.about.keyline}</p>
+    </blockquote>
+    <p class="tech stm__attr">Konutverse — ürünün çıkış noktası</p>
+  </div>
+</section>
+
+<style>
+  .stm { padding-block: clamp(var(--s-24), 11vw, var(--s-48)); }
+
+  .stm__inner {
+    position: relative;
+    max-width: 1040px;
+    text-align: center;
+  }
+
+  /* Dev tırnak — dekoratif, metnin arkasında */
+  .stm__quote {
+    position: absolute;
+    top: -0.42em;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-display);
+    font-size: clamp(140px, 20vw, 300px);
+    line-height: 1;
+    color: var(--brick);
+    opacity: 0.1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .stm__body { margin: 0; }
+  .stm__text {
+    position: relative;
+    text-wrap: balance;
+    font-style: italic;
+  }
+
+  .stm__attr {
+    margin-top: var(--s-10);
+    color: var(--ink-3);
+  }
+</style>

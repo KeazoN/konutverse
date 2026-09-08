@@ -4,7 +4,7 @@ import { site } from '../../content/site';
 const { status } = site.home;
 ---
 
-<section class="status on-sand section--tight">
+<section class="status on-sand section">
   <div class="shell">
     <div class="status__head">
       <p class="tech eyebrow">{status.kicker}</p>
@@ -35,9 +35,8 @@ const { status } = site.home;
   .status__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--gutter);
     margin: 0;
-    border-top: var(--hairline) solid var(--stone);
+    border-top: 2px solid var(--ink);
   }
   @media (max-width: 720px) { .status__grid { grid-template-columns: 1fr; } }
 
@@ -45,16 +44,25 @@ const { status } = site.home;
     display: flex;
     flex-direction: column-reverse;   /* sayı üstte görünür */
     justify-content: flex-end;
-    gap: var(--s-2);
-    padding-top: var(--s-8);
+    gap: var(--s-3);
+    padding: var(--s-10) var(--s-6) var(--s-10) 0;
+    border-right: var(--hairline) solid var(--stone);
+  }
+  .status__cell:last-child { border-right: 0; }
+  @media (max-width: 720px) {
+    .status__cell {
+      border-right: 0;
+      border-bottom: var(--hairline) solid var(--stone);
+      padding-right: 0;
+    }
   }
   .status__value {
     margin: 0;
     font-family: var(--font-display);
-    font-stretch: var(--wdth-display);
+    font-variation-settings: var(--fraunces-display);
     font-weight: 600;
-    font-size: var(--t-display);
-    line-height: 0.9;
+    font-size: var(--t-display-xl);
+    line-height: 0.82;
     letter-spacing: var(--ls-display);
     color: var(--brick);
   }

@@ -44,14 +44,20 @@
   --avail-reserved: #8A5210;
 
   /* ── Tipografi ────────────────────────────────────────────── */
-  --font-display: "Archivo Variable", "Archivo", system-ui, sans-serif;
+  /* ÜÇ SES — üç ayrı aile, üç ayrı iş */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body:    "Instrument Sans", system-ui, -apple-system, sans-serif;
   --font-tech:    "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-body:    "Archivo Variable", "Archivo", system-ui, sans-serif;
+
+  /* Fraunces eksenleri: optik boy yüksek, WONK/SOFT kapalı ->
+     ciddi ve otoriter kalır, "el yapımı kahve" tonuna kaymaz. */
+  --fraunces-display: "opsz" 144, "SOFT" 0, "WONK" 0;
+  --fraunces-text:    "opsz" 48,  "SOFT" 0, "WONK" 0;
 
   /* Sert sıçramalı ölçek — hiyerarşi boyuttan gelir, griden değil */
-  /* Hero başlığı sol kolona (~636px) 2 satırda sığmak zorunda.
-     17 karakterlik satır x ~0.54em -> tavan 64px. */
-  --t-hero:       clamp(38px, 4.8vw, 64px);
+  /* Hero tam genişlikte fotoğrafın üstünde; başlık kolona sıkışmıyor.
+     14ch x ~0.39em -> 100px rahat sığar. */
+  --t-hero:       clamp(44px, 7.2vw, 100px);
   --t-display-xl: clamp(44px, 8vw, 132px);
   --t-display:    clamp(32px, 4.6vw, 68px);
   --t-h1:         clamp(28px, 3.2vw, 46px);
@@ -66,12 +72,11 @@
   --lh-tight:   1.14;
   --lh-body:    1.62;
 
-  --ls-display: -0.032em;
-  --ls-h:       -0.02em;
+  --ls-display: -0.022em;   /* serif daha az sıkıştırma ister */
+  --ls-h:       -0.014em;
   --ls-h3:      -0.008em;
   --ls-tech:    0.1em;
 
-  --wdth-display: 112%;
 
   /* ── Form ─────────────────────────────────────────────────── */
   --radius-structural: 0;

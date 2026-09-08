@@ -56,15 +56,28 @@ describe('tokens.css', () => {
     expect(declarationOf('--font-tech')).not.toBe(declarationOf('--font-body'));
   });
 
-  it('display ve gövde Archivo, ayrım genişlik ekseninde', () => {
-    expect(declarationOf('--font-display')).toContain('Archivo');
-    expect(declarationOf('--font-body')).toContain('Archivo');
-    expect(declarationOf('--wdth-display')).toBe('112%');
+  it('display serif, gövde sans — üç ayrı aile', () => {
+    expect(declarationOf('--font-display')).toContain('Fraunces');
+    expect(declarationOf('--font-body')).toContain('Instrument Sans');
+    expect(declarationOf('--font-tech')).toContain('Plex Mono');
   });
 
-  it('mevcut sitenin tek-Inter problemi geri gelmemiş', () => {
+  it('üç ses gerçekten üç AYRI aile', () => {
+    const fams = ['--font-display', '--font-tech', '--font-body']
+      .map((n) => declarationOf(n)!.split(',')[0].trim());
+    expect(new Set(fams).size).toBe(3);
+  });
+
+  it('Fraunces eksenleri ciddi tonda sabitlenmiş — WONK kapalı', () => {
+    const display = declarationOf('--fraunces-display')!;
+    expect(display).toContain('"WONK" 0');
+    expect(display).toContain('"opsz" 144');
+  });
+
+  it('mevcut sitenin tek-aile problemi geri gelmemiş', () => {
     const fams = ['--font-display', '--font-tech', '--font-body'].map((n) => declarationOf(n));
     expect(fams.every((f) => f && f.includes('Inter'))).toBe(false);
+    expect(fams.every((f) => f && f.includes('Archivo'))).toBe(false);
   });
 
   it('gövde metni 15px değil 17px — mevcut sitenin çekingen ölçeği düzeltildi', () => {
@@ -142,7 +155,7 @@ describe('opaklıkla soldurma yasağı', () => {
    * geçiş katmanları serbesttir — onlar metin değildir.
    */
   const GRAPHIC = /(stroke[a-z-]*|fill|background)\s*:/;
-  const LAYER = /(reveal|watermark|__layer|__plane|__light|\[slot=)/;
+  const LAYER = /(reveal|watermark|__layer|__plane|__light|__quote|\[slot=)/;
 
   const files = walk('src').filter((f) => /\.astro$/.test(f));
 

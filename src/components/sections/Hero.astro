@@ -8,111 +8,131 @@ const p = featuredProject;
 ---
 
 <section class="hero">
-  <div class="hero__grid">
+  <div class="hero__media">
+    <img
+      src="/img/hero-poster.jpg"
+      alt="360° turla gezilebilen bir dairenin oturma odası"
+      width="1920"
+      height="1013"
+      fetchpriority="high"
+      decoding="async"
+    />
+    <div class="hero__scrim" aria-hidden="true"></div>
+  </div>
 
-    <div class="hero__copy">
-      <p class="tech eyebrow">{site.brand.tagline}</p>
+  <div class="shell hero__inner">
+    <p class="tech hero__eyebrow">{site.brand.tagline}</p>
 
-      <h1 class="display display--hero hero__title">
-        {hero.title.map((line, i) => (
-          <>{i > 0 && ' '}<span class="hero__line">{line}</span></>
-        ))}
-      </h1>
+    <h1 class="display display--hero hero__title">
+      {hero.title.map((line, i) => (
+        <>{i > 0 && ' '}<span class="hero__line">{line}</span></>
+      ))}
+    </h1>
 
-      <p class="lead hero__lead">{hero.body}</p>
+    <p class="hero__lead">{hero.body}</p>
 
-      <div class="hero__actions">
-        <Button href={hero.cta.href} variant="primary" size="lg">{hero.cta.label}</Button>
-        <Button href={site.ctaPrimary.href} variant="ghost" size="lg" arrow={false}>
-          {site.ctaPrimary.label}
-        </Button>
-      </div>
+    <div class="hero__actions">
+      <Button href={hero.cta.href} variant="primary" size="lg">{hero.cta.label}</Button>
+      <Button href={site.ctaPrimary.href} variant="onmedia" size="lg" arrow={false}>
+        {site.ctaPrimary.label}
+      </Button>
     </div>
+  </div>
 
-    <figure class="hero__figure">
-      <div class="media hero__media">
-        <img
-          src="/img/hero-poster.jpg"
-          alt="360° turla gezilebilen bir dairenin oturma odası"
-          width="1920"
-          height="1013"
-          fetchpriority="high"
-          decoding="async"
-        />
-        <span class="tech hero__badge">360° gezilebilir</span>
-      </div>
-
-      <figcaption class="hero__caption">
-        <span class="tech hero__project">{p.name}</span>
-        <span class="tech hero__meta">
-          {p.floors} kat · {p.units} daire · {p.district}, {p.city}
-        </span>
-      </figcaption>
-    </figure>
-
+  <div class="hero__foot">
+    <div class="shell hero__footRow">
+      <span class="tech hero__badge">360° gezilebilir</span>
+      <span class="tech hero__meta">
+        {p.name} · {p.floors} kat · {p.units} daire · {p.district}, {p.city}
+      </span>
+    </div>
   </div>
 </section>
 
 <style>
-  .hero { padding-top: clamp(var(--s-12), 6vw, var(--s-32)); }
+  .hero {
+    position: relative;
+    min-height: min(92svh, 900px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    isolation: isolate;
+    color: var(--on-ink);
+    overflow: hidden;
+  }
 
-  .hero__grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  /* ── Fotoğraf ekranı doldurur — hero bir kutu değil, bir mekân ── */
+  .hero__media { position: absolute; inset: 0; z-index: -1; }
+  .hero__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* Sıcak perde: metin okunur kalsın, fotoğraf boğulmasın */
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        to top,
+        rgba(24, 20, 17, 0.88) 0%,
+        rgba(24, 20, 17, 0.62) 26%,
+        rgba(24, 20, 17, 0.16) 56%,
+        rgba(24, 20, 17, 0.02) 100%
+      );
+  }
+
+  .hero__inner { padding-block: clamp(var(--s-16), 8vw, var(--s-32)) var(--s-8); }
+
+  .hero__eyebrow {
+    display: inline-flex;
     align-items: center;
-    gap: clamp(var(--s-8), 5vw, var(--s-24));
-    /* Sol kolon kabuk içinde hizalı; sağdaki fotoğraf ekran kenarına taşar */
-    padding-left: max(var(--gutter), calc((100vw - var(--max-w)) / 2 + var(--gutter)));
+    gap: var(--s-3);
+    color: var(--brick-lit);
+    margin-bottom: var(--s-6);
+  }
+  .hero__eyebrow::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    background: var(--brick-lit);
   }
 
-  .hero__copy {
-    max-width: 640px;
-    padding-block: clamp(var(--s-8), 4vw, var(--s-20));
-  }
-
-  .hero__title { margin-bottom: var(--s-6); }
+  .hero__title { color: var(--on-ink); max-width: 14ch; }
   .hero__line { display: block; }
 
-  .hero__lead { margin-bottom: var(--s-10, 40px); max-width: 46ch; }
-
-  .hero__actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
-
-  /* ── Fotoğraf: hero'nun ağırlık merkezi ─────────────────────── */
-  .hero__figure { margin: 0; }
-
-  .hero__media {
-    aspect-ratio: 4 / 3.9;
-    box-shadow: var(--shadow-lift);
+  .hero__lead {
+    margin-top: var(--s-6);
+    max-width: 46ch;
+    font-size: var(--t-lead);
+    line-height: 1.55;
+    color: var(--on-ink);
   }
 
-  .hero__badge {
-    position: absolute;
-    left: var(--s-5);
-    bottom: var(--s-5);
-    background: var(--brick);
-    color: var(--paper);
-    padding: 8px 12px;
-  }
-
-  .hero__caption {
+  .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--s-2) var(--s-4);
-    padding-top: var(--s-4);
+    gap: var(--s-3);
+    margin-top: var(--s-10);
   }
-  .hero__project { color: var(--ink); }
-  .hero__meta { color: var(--text-3); }
 
-  @media (max-width: 900px) {
-    .hero { padding-top: var(--s-8); }
-    .hero__grid {
-      grid-template-columns: 1fr;
-      gap: var(--s-12);
-      padding-left: var(--gutter);
-      padding-right: var(--gutter);
-    }
-    .hero__copy { max-width: none; padding-block: 0; }
-    .hero__media { aspect-ratio: 4 / 3; }
+  /* ── Alt künye şeridi ─────────────────────────────────────── */
+  .hero__foot {
+    border-top: var(--hairline) solid rgba(252, 251, 249, 0.22);
+    padding-block: var(--s-5);
+  }
+  .hero__footRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4) var(--s-6);
+  }
+  .hero__badge {
+    background: var(--brick);
+    color: var(--paper);
+    padding: 7px 11px;
+  }
+  .hero__meta { color: rgba(252, 251, 249, 0.72); }
+
+  @media (max-width: 720px) {
+    .hero { min-height: min(88svh, 720px); }
+    .hero__lead { font-size: var(--t-body); }
   }
 </style>
