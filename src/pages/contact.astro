@@ -1,0 +1,189 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/sections/PageHead.astro';
+import Field from '../components/ui/Field.astro';
+import Button from '../components/ui/Button.astro';
+import Arrow from '../components/ui/Arrow.astro';
+import { site } from '../content/site';
+
+const c = site.contact;
+
+const AUTOCOMPLETE: Record<string, string> = {
+  ad: 'name',
+  firma: 'organization',
+  eposta: 'email',
+  telefon: 'tel',
+};
+---
+
+<Base title={c.meta.title} description={c.meta.description} route="/contact">
+  <PageHead kicker={c.kicker} title={c.title} lead={c.lead} />
+
+  <section class="contact">
+    <div class="shell shell--railed contact__inner">
+
+      <form class="form" id="demo-form" novalidate>
+        <div class="form__grid">
+          {c.fields.map((f) => (
+            <div class:list={['form__cell', f.as === 'textarea' && 'form__cell--wide']}>
+              <Field
+                name={f.name}
+                label={f.label}
+                type={f.type}
+                required={f.required}
+                as={f.as}
+                autocomplete={AUTOCOMPLETE[f.name]}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div class="form__kvkk">
+          <input class="form__check" type="checkbox" id="f-kvkk" name="kvkk" required />
+          <label class="form__kvkkLabel" for="f-kvkk">
+            <a class="form__kvkkLink" href={c.kvkk.href}>{c.kvkk.linkLabel}</a>{c.kvkk.rest}
+          </label>
+        </div>
+
+        <div class="form__foot">
+          <button class="form__submit" type="submit">
+            <span class="form__submitLabel">{c.submit}</span>
+            <Arrow />
+          </button>
+          <p class="tech form__note">{c.reassurance}</p>
+        </div>
+
+        <p class="form__status tech" id="form-status" role="status" aria-live="polite"></p>
+      </form>
+
+      <aside class="block">
+        <dl class="block__list">
+          {c.details.map((d) => (
+            <div class="block__row">
+              <dt class="tech block__label">{d.label}</dt>
+              <dd class="block__value">
+                {'href' in d && d.href
+                  ? <a class="block__link" href={d.href}>{d.value}</a>
+                  : d.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <div class="block__see">
+          <p class="block__seeTitle">{c.seeFirst.title}</p>
+          <Button href={c.seeFirst.href} variant="ghost">{c.seeFirst.cta}</Button>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contact { padding-block: clamp(var(--s-8), 4vw, var(--s-16)) clamp(var(--s-16), 8vw, var(--s-32)); }
+
+  .contact__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(var(--s-8), 5vw, var(--s-24));
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .contact__inner { grid-template-columns: 1fr; }
+  }
+
+  /* ── Form ───────────────────────────────────────────────── */
+  .form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s-6);
+  }
+  @media (max-width: 620px) { .form__grid { grid-template-columns: 1fr; } }
+  .form__cell--wide { grid-column: 1 / -1; }
+
+  .form__kvkk {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-3);
+    align-items: start;
+    margin-top: var(--s-8);
+    padding-top: var(--s-6);
+    border-top: var(--hairline) solid var(--line-dark);
+  }
+  .form__check {
+    width: 18px;
+    height: 18px;
+    margin: 3px 0 0;
+    accent-color: var(--brick);
+  }
+  .form__kvkkLabel { font-size: var(--t-small); opacity: 0.8; }
+  .form__kvkkLink { color: var(--brick); text-decoration: none; box-shadow: 0 1px 0 currentColor; }
+
+  .form__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-6);
+    margin-top: var(--s-8);
+  }
+
+  .form__submit {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: 19px 28px;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: var(--brick);
+    color: var(--paper);
+    cursor: pointer;
+    font: inherit;
+    transition: background-color var(--dur-fast) var(--ease);
+  }
+  .form__submit:hover { background: var(--brick-lit); color: var(--ink); }
+  .form__submitLabel {
+    font-family: var(--font-tech);
+    font-size: var(--t-tech);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-tech);
+  }
+
+  .form__note { opacity: 0.5; max-width: 40ch; }
+
+  .form__status { margin-top: var(--s-6); min-height: 1.4em; }
+  .form__status[data-state='success'] { color: var(--brick); }
+
+  /* ── Antet bloğu ────────────────────────────────────────── */
+  .block {
+    background: var(--ink);
+    color: var(--chalk);
+    padding: clamp(var(--s-8), 3vw, var(--s-12));
+  }
+
+  .block__list { margin: 0; display: grid; }
+  .block__row {
+    display: grid;
+    gap: var(--s-2);
+    padding-block: var(--s-6);
+    border-bottom: var(--hairline) solid var(--line);
+  }
+  .block__row:first-child { padding-top: 0; }
+  .block__label { opacity: 0.45; margin: 0; }
+  .block__value { margin: 0; font-size: var(--t-body); }
+  .block__link { text-decoration: none; box-shadow: 0 1px 0 var(--line); }
+  .block__link:hover { color: var(--brick-lit); }
+
+  .block__see { margin-top: var(--s-8); display: grid; gap: var(--s-4); justify-items: start; }
+  .block__seeTitle {
+    font-family: var(--font-display);
+    font-stretch: 100%;
+    font-weight: 600;
+    font-size: var(--t-h3);
+  }
+</style>
+
+<script>
+  import '../scripts/contact-form.ts';
+</script>

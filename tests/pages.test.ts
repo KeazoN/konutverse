@@ -17,7 +17,7 @@ function bundledCss(): string {
     .join('\n');
 }
 
-const ROUTES = ['index', 'features', 'about', 'pricing'];
+const ROUTES = ['index', 'features', 'about', 'pricing', 'contact'];
 
 describe('build çıktısı', () => {
   it('ana sayfayı üretir', () => {
@@ -340,5 +340,51 @@ describe('/pricing', () => {
 
   it('tam olarak bir plan one cikarilmis', () => {
     expect(doc().querySelectorAll('.plan--featured').length).toBe(1);
+  });
+});
+
+describe('/contact formu', () => {
+  const doc = () => parseHTML(readFileSync('dist/contact/index.html', 'utf8')).document;
+
+  it('her alanin bagli bir labelı var', () => {
+    const d = doc();
+    const controls = [...d.querySelectorAll('input, textarea')]
+      .filter((c) => c.getAttribute('type') !== 'checkbox');
+    expect(controls.length).toBe(5);
+    for (const c of controls) {
+      const id = c.getAttribute('id');
+      expect(id, 'kontrolde id yok').toBeTruthy();
+      expect(d.querySelector(`label[for="${id}"]`), `${id} icin label yok`).toBeTruthy();
+    }
+  });
+
+  it('KVKK onay kutusu var ve zorunlu', () => {
+    const kvkk = doc().querySelector('input[type="checkbox"][name="kvkk"]');
+    expect(kvkk).toBeTruthy();
+    expect(kvkk!.hasAttribute('required')).toBe(true);
+    expect(doc().querySelector('label[for="f-kvkk"]')).toBeTruthy();
+  });
+
+  it('durum bolgesi ekran okuyucuya duyurulur', () => {
+    const s = doc().querySelector('#form-status');
+    expect(s).toBeTruthy();
+    expect(s!.getAttribute('aria-live')).toBe('polite');
+  });
+
+  it('mono antet blogu iletisim bilgilerini tasir', () => {
+    const h = readFileSync('dist/contact/index.html', 'utf8');
+    expect(h).toContain('merhaba@konutverse.com');
+    expect(h).toContain('Maslak, Sarıyer / İstanbul');
+    expect(h).toContain('09:00 – 18:00');
+  });
+
+  it('autocomplete ipuclari tanimli', () => {
+    const d = doc();
+    expect(d.querySelector('#f-eposta')?.getAttribute('autocomplete')).toBe('email');
+    expect(d.querySelector('#f-ad')?.getAttribute('autocomplete')).toBe('name');
+  });
+
+  it('e-posta alani type=email', () => {
+    expect(doc().querySelector('#f-eposta')?.getAttribute('type')).toBe('email');
   });
 });
