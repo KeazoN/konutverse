@@ -1,0 +1,80 @@
+---
+/** Bir kattaki daire hücreleri. Her hücre klavye erişilebilir <button>. */
+export type Unit = {
+  id: string;
+  status: 'free' | 'sold' | 'reserved';
+  tourable: boolean;
+  area?: number;
+};
+
+interface Props { units: readonly Unit[]; floorLabel: string; floorIndex: number; }
+const { units, floorLabel, floorIndex } = Astro.props;
+
+const STATUS_TR = { free: 'boş', sold: 'satıldı', reserved: 'rezerve' } as const;
+---
+
+<div class="avail">
+  {units.map((u) => (
+    <button
+      class:list={['avail__cell', `is-${u.status}`, u.tourable && 'is-tourable']}
+      type="button"
+      data-unit={u.id}
+      data-floor={String(floorIndex)}
+      data-floor-label={floorLabel}
+      data-status={u.status}
+      data-tourable={String(u.tourable)}
+      data-area={u.area ? String(u.area) : undefined}
+      aria-label={`${floorLabel}, ${u.id} numaralı daire — ${STATUS_TR[u.status]}${u.tourable ? ', 360° turu var' : ''}`}
+    >
+      <span class="tech avail__id">{u.id}</span>
+      {u.tourable && <span class="tech avail__tour" aria-hidden="true">360°</span>}
+    </button>
+  ))}
+</div>
+
+<style>
+  .avail { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+
+  .avail__cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s-2);
+    min-height: 58px;
+    padding: var(--s-2) var(--s-3);
+    border: var(--hairline) solid transparent;
+    border-radius: var(--radius-structural);
+    color: var(--paper);
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    transition:
+      transform var(--dur-fast) var(--ease),
+      filter var(--dur-fast) var(--ease);
+  }
+  .avail__cell:hover { filter: brightness(1.18); }
+  .avail__cell:active { transform: translateY(1px); }
+
+  /* Zeminler AA güvenli tonlar — beyaz metinle 6.3+ */
+  .is-free     { background: var(--avail-free); }
+  .is-sold     { background: var(--avail-sold); }
+  .is-reserved { background: var(--avail-reserved); }
+
+  .avail__id { opacity: 0.85; }
+
+  /* Gezilebilir daire — tuğla çerçeve, çizim işareti */
+  .is-tourable { border-color: var(--brick); }
+  .avail__tour {
+    align-self: flex-end;
+    background: var(--brick);
+    color: var(--paper);
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .avail__cell:active { transform: none; }
+  }
+</style>

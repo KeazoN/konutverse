@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { site } from '../src/content/site';
-import { projects, kotOf, formatPrice, featuredProject } from '../src/content/projects';
+import {
+  projects, kotOf, formatPrice, featuredProject, unitsOfFloor, floorLabel,
+} from '../src/content/projects';
 
 describe('site içeriği', () => {
   it('5 navigasyon öğesi taşır ve rotalar canlı siteyle aynı', () => {
@@ -99,5 +101,46 @@ describe('biçimlendirme yardımcıları', () => {
   it('fiyatları Türkçe biçimde basar', () => {
     expect(formatPrice(5_750_000)).toBe('5.750.000');
     expect(formatPrice(4_450_000)).toBe('4.450.000');
+  });
+});
+
+describe('daire dağılımı', () => {
+  it('gezilebilir daire toplamı proje verisiyle tutarlı', () => {
+    const p = featuredProject;
+    let total = 0;
+    for (let f = 0; f < p.floors; f++) {
+      total += unitsOfFloor(f, 4, p.floors).filter((u) => u.tourable).length;
+    }
+    expect(total).toBe(p.tourable);
+  });
+
+  it('canlı sitedeki kat dağılımını korur: 0. kat 1, 2. kat 2', () => {
+    expect(unitsOfFloor(0, 4, 12).filter((u) => u.tourable)).toHaveLength(1);
+    expect(unitsOfFloor(2, 4, 12).filter((u) => u.tourable)).toHaveLength(2);
+    expect(unitsOfFloor(5, 4, 12).filter((u) => u.tourable)).toHaveLength(0);
+  });
+
+  it('gezilebilir daire her zaman boş — satılmışa tur linki verilmez', () => {
+    for (let f = 0; f < 12; f++) {
+      for (const u of unitsOfFloor(f, 4, 12)) {
+        if (u.tourable) expect(u.status).toBe('free');
+      }
+    }
+  });
+
+  it('deterministik — aynı girdi aynı çıktı', () => {
+    expect(unitsOfFloor(3, 4, 12)).toEqual(unitsOfFloor(3, 4, 12));
+  });
+
+  it('daire numaraları kat içinde benzersiz', () => {
+    for (let f = 0; f < 12; f++) {
+      const ids = unitsOfFloor(f, 4, 12).map((u) => u.id);
+      expect(new Set(ids).size).toBe(ids.length);
+    }
+  });
+
+  it('kat adları canlı siteyle uyumlu', () => {
+    expect(floorLabel(0)).toBe('Zemin Kat');
+    expect(floorLabel(11)).toBe('11. Kat');
   });
 });

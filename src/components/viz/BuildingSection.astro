@@ -1,0 +1,163 @@
+---
+/**
+ * Mimari kesit çizimi — sanat yönünün merkezi.
+ * Ürünün veri modelinin (bina → kat → daire) birebir görsel karşılığı.
+ *
+ * Her kat bir <g data-floor="i">; kesit scrub'ı (kesit-scrub.ts)
+ * bu nitelikleri hedefler. Zemin altı toprak taraması ve parapet
+ * gerçek pafta detaylarıdır — çizimi grid olmaktan çıkarır.
+ *
+ * Yükleme animasyonu stroke-dashoffset ile: çizgiler gerçekten
+ * KENDİNİ ÇİZER. Solma değil — konsept bunu gerektiriyor.
+ * pathLength="1" her çizgiyi normalize eder, uzunluk hesabı gerekmez.
+ */
+import { kotOf } from '../../content/projects';
+
+interface Props {
+  floors: number;
+  unitsPerFloor: number;
+  /** 360° turu yayında olan kat indeksleri (0 = zemin kat). */
+  tourableFloors?: readonly number[];
+  animate?: boolean;
+  label?: string;
+}
+
+const {
+  floors,
+  unitsPerFloor,
+  tourableFloors = [],
+  animate = false,
+  label = `${floors} katlı bina kesiti`,
+} = Astro.props;
+
+const FH = 26;
+const X0 = 22;
+const X1 = 150;
+const GROUND_PAD = 34;
+const PARAPET = 10;
+const W = 200;
+const H = floors * FH + GROUND_PAD + PARAPET;
+
+const groundY = H - GROUND_PAD;
+const roofY = groundY - floors * FH;
+const unitW = (X1 - X0) / unitsPerFloor;
+
+const floorTop = (i: number) => groundY - (i + 1) * FH;
+
+const hatch = Array.from({ length: 14 }, (_, i) => {
+  const x = 4 + i * 14;
+  return { x1: x, y1: groundY + 2, x2: x - 12, y2: groundY + 16 };
+});
+---
+
+<svg
+  class:list={['sec', animate && 'sec--animate']}
+  viewBox={`0 0 ${W} ${H}`}
+  role="img"
+  aria-label={label}
+  preserveAspectRatio="xMidYMax meet"
+>
+  {Array.from({ length: floors }, (_, i) => {
+    const y = floorTop(i);
+    const tourable = tourableFloors.includes(i);
+    return (
+      <g
+        class:list={['sec__floor', tourable && 'sec__floor--tourable']}
+        data-floor={i}
+        style={`--i:${i}`}
+      >
+        <line class="sec__slab" pathLength="1" x1={X0} y1={y} x2={X1} y2={y} />
+
+        {Array.from({ length: unitsPerFloor - 1 }, (_, u) => (
+          <line
+            class="sec__party" pathLength="1"
+            x1={X0 + unitW * (u + 1)} y1={y}
+            x2={X0 + unitW * (u + 1)} y2={y + FH}
+          />
+        ))}
+
+        <line class="sec__kotTick" pathLength="1" x1={X1} y1={y + FH} x2={X1 + 6} y2={y + FH} />
+        <text class="sec__kot" x={X1 + 10} y={y + FH - 8}>{kotOf(i)}</text>
+      </g>
+    );
+  })}
+
+  <g class="sec__frame">
+    <line class="sec__shell" pathLength="1" x1={X0} y1={roofY} x2={X0} y2={groundY} />
+    <line class="sec__shell" pathLength="1" x1={X1} y1={roofY} x2={X1} y2={groundY} />
+    <line class="sec__shell" pathLength="1" x1={X0 - 5} y1={roofY} x2={X1 + 5} y2={roofY} />
+
+    <line class="sec__parapet" pathLength="1" x1={X0 - 5} y1={roofY - PARAPET + 4} x2={X0 - 5} y2={roofY} />
+    <line class="sec__parapet" pathLength="1" x1={X1 + 5} y1={roofY - PARAPET + 4} x2={X1 + 5} y2={roofY} />
+    <line class="sec__parapet" pathLength="1" x1={X0 - 5} y1={roofY - PARAPET + 4} x2={X1 + 5} y2={roofY - PARAPET + 4} />
+
+    <line class="sec__ground" pathLength="1" x1="2" y1={groundY} x2={W - 2} y2={groundY} />
+    <g class="sec__hatch">
+      {hatch.map((h) => <line pathLength="1" x1={h.x1} y1={h.y1} x2={h.x2} y2={h.y2} />)}
+    </g>
+  </g>
+</svg>
+
+<style>
+  .sec { width: 100%; height: auto; overflow: visible; }
+
+  .sec__slab,
+  .sec__party { stroke: var(--line); stroke-width: 0.7; }
+
+  .sec__shell   { stroke: var(--chalk); stroke-width: 1.1; opacity: 0.55; }
+  .sec__parapet { stroke: var(--chalk); stroke-width: 0.9; opacity: 0.35; }
+  .sec__ground  { stroke: var(--chalk); stroke-width: 1.3; opacity: 0.5; }
+  .sec__hatch line { stroke: var(--chalk); stroke-width: 0.5; opacity: 0.18; }
+
+  .sec__kot {
+    font-family: var(--font-tech);
+    font-size: 5.5px;
+    letter-spacing: 0.06em;
+    fill: var(--chalk);
+    opacity: 0.34;
+  }
+  .sec__kotTick { stroke: var(--line); stroke-width: 0.7; }
+
+  /* Gezilebilir kat — grafik öğe, kontrast politikası uygun */
+  .sec__floor--tourable .sec__slab { stroke: var(--brick); stroke-width: 1.2; }
+  .sec__floor--tourable .sec__kot { fill: var(--brick-lit); opacity: 1; }
+
+  /* Aktif kat — kesit scrub'ı işaretler */
+  .sec__floor[data-active='true'] .sec__slab { stroke: var(--brick); stroke-width: 1.4; }
+  .sec__floor[data-active='true'] .sec__party { stroke: var(--brick); opacity: 0.55; }
+  .sec__floor[data-active='true'] .sec__kot { fill: var(--brick-lit); opacity: 1; }
+
+  .sec__floor line,
+  .sec__floor text {
+    transition:
+      stroke var(--dur-fast) var(--ease),
+      stroke-width var(--dur-fast) var(--ease),
+      fill var(--dur-fast) var(--ease),
+      opacity var(--dur-fast) var(--ease);
+  }
+
+  /* ── Yükleme: çizgiler kendini çizer ─────────────────────── */
+  .sec--animate line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: sec-draw var(--dur-draw) var(--ease) forwards;
+  }
+  @keyframes sec-draw { to { stroke-dashoffset: 0; } }
+
+  /* Zeminden yukarı doğru, kat kat */
+  .sec--animate .sec__floor line { animation-delay: calc(var(--i, 0) * 52ms + 180ms); }
+  .sec--animate .sec__frame line { animation-delay: 60ms; }
+
+  /* Metin çizilemez — kendi opaklığına doğru belirir.
+     Yalnız `from` verilir; bitiş değeri elemanın kendi opaklığıdır. */
+  .sec--animate .sec__kot {
+    animation: sec-kot var(--dur-base) var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 52ms + 520ms);
+  }
+  @keyframes sec-kot { from { opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sec--animate line { stroke-dashoffset: 0; animation: none; }
+    .sec--animate .sec__kot { animation: none; }
+  }
+</style>

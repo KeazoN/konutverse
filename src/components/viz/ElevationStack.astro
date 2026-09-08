@@ -1,0 +1,91 @@
+---
+/**
+ * Dikey cephe — /demo sayfasının gövdesi.
+ * Katlar gerçek bir cephe gibi yukarıdan aşağı dizilir (en üst kat üstte).
+ * Canlı sitedeki düz liste yerine mekânsal okuma sağlar.
+ */
+import type { Project } from '../../content/projects';
+import { unitsOfFloor, floorLabel, kotOf } from '../../content/projects';
+import AvailabilityGrid from './AvailabilityGrid.astro';
+
+interface Props { project: Project; unitsPerFloor?: number; }
+const { project, unitsPerFloor = 4 } = Astro.props;
+
+// En üst kat başta — gerçek cephe sırası
+const rows = Array.from({ length: project.floors }, (_, i) => project.floors - 1 - i).map((i) => ({
+  index: i,
+  kot: kotOf(i),
+  label: floorLabel(i),
+  units: unitsOfFloor(i, unitsPerFloor, project.floors),
+}));
+---
+
+<div class="elev">
+  {rows.map((row) => {
+    const tourables = row.units.filter((u) => u.tourable).length;
+    return (
+      <div class="elev__row" data-elevation-floor={String(row.index)}>
+        <div class="elev__meta">
+          <span class="tech elev__kot num">{row.kot}</span>
+          <span class="elev__label">{row.label}</span>
+          <span class="tech elev__count">
+            {row.units.length} daire{tourables > 0 && ` · ${tourables} gezilebilir`}
+          </span>
+        </div>
+        <AvailabilityGrid
+          units={row.units}
+          floorLabel={row.label}
+          floorIndex={row.index}
+        />
+      </div>
+    );
+  })}
+
+  <div class="elev__ground" aria-hidden="true">
+    <hr class="rule" />
+    <span class="tech elev__groundLabel">Zemin · {project.district}, {project.city}</span>
+  </div>
+</div>
+
+<style>
+  .elev { display: grid; gap: 3px; }
+
+  .elev__row {
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    gap: var(--s-6);
+    align-items: center;
+    padding-block: var(--s-2);
+    border-top: var(--hairline) solid var(--line);
+  }
+  @media (max-width: 720px) {
+    .elev__row { grid-template-columns: 1fr; gap: var(--s-3); }
+  }
+
+  .elev__meta {
+    display: grid;
+    grid-template-columns: 6ch 1fr;
+    align-items: baseline;
+    gap: var(--s-1) var(--s-3);
+  }
+  @media (max-width: 720px) {
+    .elev__meta { grid-template-columns: 6ch 1fr auto; }
+  }
+
+  .elev__kot { color: var(--brick-lit); }
+  .elev__label {
+    font-family: var(--font-display);
+    font-stretch: 100%;
+    font-weight: 600;
+    font-size: var(--t-h3);
+    letter-spacing: var(--ls-h3);
+  }
+  .elev__count { grid-column: 2; opacity: 0.5; }
+  @media (max-width: 720px) {
+    .elev__count { grid-column: auto; }
+  }
+
+  .elev__ground { padding-top: var(--s-4); }
+  .elev__ground .rule { border-top-width: 2px; border-top-color: var(--line); }
+  .elev__groundLabel { display: block; margin-top: var(--s-2); opacity: 0.4; }
+</style>

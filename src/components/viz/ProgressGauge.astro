@@ -1,0 +1,39 @@
+---
+/** "Boya %75" — yuvarlak progress bar değil, bölmeli teknik gösterge. */
+interface Props { label: string; pct: number; ticks?: number; }
+const { label, pct, ticks = 20 } = Astro.props;
+const filled = Math.round((pct / 100) * ticks);
+---
+
+<div class="gauge">
+  <div class="gauge__head">
+    <span class="tech gauge__label">{label}</span>
+    <span class="tech gauge__pct num">%{pct}</span>
+  </div>
+  <div class="gauge__rail" role="img" aria-label={`${label}: yüzde ${pct} tamamlandı`}>
+    {Array.from({ length: ticks }, (_, i) => (
+      <span class:list={['gauge__tick', i < filled && 'is-filled']}></span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .gauge__head {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-bottom: var(--s-2);
+  }
+  .gauge__label { opacity: 0.55; }
+  .gauge__pct { color: var(--brick); }
+  :global(.on-dark) .gauge__pct,
+  :global(.on-dark-deep) .gauge__pct { color: var(--brick-lit); }
+
+  .gauge__rail { display: flex; gap: 2px; }
+  .gauge__tick { flex: 1; height: 9px; background: var(--line-dark); }
+  .gauge__tick.is-filled { background: var(--brick); }
+  :global(.on-dark) .gauge__tick,
+  :global(.on-dark-deep) .gauge__tick { background: var(--line); }
+  :global(.on-dark) .gauge__tick.is-filled,
+  :global(.on-dark-deep) .gauge__tick.is-filled { background: var(--brick); }
+</style>

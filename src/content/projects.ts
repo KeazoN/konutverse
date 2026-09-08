@@ -63,3 +63,46 @@ export const kotOf = (floorIndex: number): string =>
 /** Türkçe fiyat biçimi: 5.750.000 */
 export const formatPrice = (value: number): string =>
   new Intl.NumberFormat('tr-TR').format(value);
+
+// ── Daire dağılımı ──────────────────────────────────────────
+export type UnitStatusMap = { id: string; status: UnitStatus; tourable: boolean; area: number };
+
+/**
+ * DUMAN-ERSA ORT. için gezilebilir daireler — canlı siteden doğrulandı:
+ * "0. Kat · 1 gezilebilir", "2. Kat · 2 gezilebilir" = toplam 3.
+ */
+const TOURABLE: Record<number, number[]> = { 0: [1], 2: [1, 3] };
+
+/** Daire tipine göre metrekare. */
+const AREAS = [96, 128, 128, 112];
+
+/**
+ * Deterministik durum dağılımı: alt katlar daha çok satılmış,
+ * üst katlar daha boş — gerçek bir satış eğrisi. Rastgelelik yok,
+ * böylece testler ve build'ler kararlı kalır.
+ */
+function statusOf(floor: number, unit: number, floors: number): UnitStatus {
+  const height = floor / Math.max(1, floors - 1); // 0 = zemin, 1 = en üst
+  const seed = (floor * 7 + unit * 3) % 10;
+  if (height < 0.35) return seed < 7 ? 'sold' : seed < 9 ? 'reserved' : 'free';
+  if (height < 0.7) return seed < 4 ? 'sold' : seed < 7 ? 'reserved' : 'free';
+  return seed < 2 ? 'sold' : seed < 4 ? 'reserved' : 'free';
+}
+
+/** Bir katın daireleri. Gezilebilir daireler her zaman 'free' olur. */
+export function unitsOfFloor(floor: number, perFloor: number, floors: number): UnitStatusMap[] {
+  const tourableUnits = TOURABLE[floor] ?? [];
+  return Array.from({ length: perFloor }, (_, u) => {
+    const unitNo = u + 1;
+    const tourable = tourableUnits.includes(unitNo);
+    return {
+      id: `${floor}${String(unitNo).padStart(2, '0')}`,
+      status: tourable ? ('free' as UnitStatus) : statusOf(floor, unitNo, floors),
+      tourable,
+      area: AREAS[u % AREAS.length],
+    };
+  });
+}
+
+/** Kat adı — canlı sitedeki biçim. */
+export const floorLabel = (i: number): string => (i === 0 ? 'Zemin Kat' : `${i}. Kat`);
