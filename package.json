@@ -9,7 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "test": "vitest run",
-    "verify": "npm run build && npm run test"
+    "verify": "npm run build && npm run test",
+    "prebuild": "node scripts/sync-signature.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",

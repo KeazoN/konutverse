@@ -130,3 +130,93 @@ describe('Katman 3 — konsol imzası', () => {
     expect(src).toContain('credits.maker.url');
   });
 });
+
+// ── Katman 4 ────────────────────────────────────────────────
+describe('Katman 4 — web component portatifliği', () => {
+  const SOURCE = readFileSync('src/components/signature/signature.js', 'utf8');
+
+  it('boş bir HTML sayfasında Astro/framework olmadan render eder', () => {
+    const w = parseHTML('<!doctype html><html><body></body></html>');
+    const { document, customElements, HTMLElement } = w as any;
+
+    // Bileşenin ihtiyaç duyduğu global ortam — başka hiçbir şey yok
+    const sandbox = { customElements, HTMLElement, Reflect, Object, console };
+    // eslint-disable-next-line no-new-func
+    new Function(...Object.keys(sandbox), SOURCE)(...Object.values(sandbox));
+
+    document.body.innerHTML = '<alis-signature variant="inline"></alis-signature>';
+    const el = document.querySelector('alis-signature') as any;
+    customElements.upgrade(el);
+
+    expect(el.shadowRoot, 'shadow root oluşmadı').toBeTruthy();
+    const html = el.shadowRoot.innerHTML;
+    expect(html).toContain('Alis Dijital');
+    expect(el.shadowRoot.querySelector('svg')).toBeTruthy();
+    expect(el.shadowRoot.querySelector('a')?.getAttribute('href')).toBe('/kunye');
+  });
+
+  it('href niteliği künye yolunu değiştirebilir', () => {
+    const w = parseHTML('<!doctype html><html><body></body></html>');
+    const { document, customElements, HTMLElement } = w as any;
+    const sandbox = { customElements, HTMLElement, Reflect, Object, console };
+    // eslint-disable-next-line no-new-func
+    new Function(...Object.keys(sandbox), SOURCE)(...Object.values(sandbox));
+
+    document.body.innerHTML = '<alis-signature href="/credits"></alis-signature>';
+    const el = document.querySelector('alis-signature') as any;
+    customElements.upgrade(el);
+    expect(el.shadowRoot.querySelector('a')?.getAttribute('href')).toBe('/credits');
+  });
+
+  it('stil host sayfaya sızmaz — shadow DOM kullanır', () => {
+    expect(SOURCE).toContain('attachShadow');
+  });
+
+  it('host token bağımlılığı taşımaz — yalnız kendi --ad-* değişkenleri', () => {
+    const vars = SOURCE.match(/var\(--[a-z0-9-]+/gi) ?? [];
+    expect(vars.length).toBeGreaterThan(0);
+    for (const v of vars) expect(v).toMatch(/var\(--ad-/);
+  });
+
+  it('hiçbir şey import/require etmez — tek dosya, sıfır bağımlılık', () => {
+    expect(SOURCE).not.toMatch(/^\s*import\s/m);
+    expect(SOURCE).not.toMatch(/\brequire\s*\(/);
+  });
+
+  it('monogramı Astro sürümüyle aynı yolları taşır', () => {
+    const astro = readFileSync('src/components/signature/Monogram.astro', 'utf8');
+    for (const d of ['M1 21 L7 3 L13 21', 'M3.2 16 H10.8', 'M17 3 H20 A9 9 0 0 1 20 21 H17 Z']) {
+      expect(astro, `Astro monogramında ${d} yok`).toContain(d);
+      expect(SOURCE, `web component monogramında ${d} yok`).toContain(d);
+    }
+  });
+
+  it('reduced-motion ve print stilleri taşır', () => {
+    expect(SOURCE).toContain('prefers-reduced-motion');
+    expect(SOURCE).toContain('@media print');
+  });
+
+  it('üç varyantı da destekler', () => {
+    for (const v of ['inline', 'compact', 'stacked']) expect(SOURCE).toContain(v);
+  });
+});
+
+describe('Katman 4 — yayın', () => {
+  it('public/signature.js kaynakla birebir aynı — tek kaynak korunuyor', () => {
+    const src = readFileSync('src/components/signature/signature.js', 'utf8');
+    const pub = readFileSync('public/signature.js', 'utf8');
+    expect(pub).toBe(src);
+  });
+
+  it('build çıktısında /signature.js yayınlanır', () => {
+    expect(existsSync('dist/signature.js')).toBe(true);
+  });
+
+  it('taşınabilirlik demosu framework kullanmadan bileşeni yükler', () => {
+    const demo = readFileSync('public/signature-demo.html', 'utf8');
+    expect(demo).toContain('src="/signature.js"');
+    expect(demo).toContain('<alis-signature');
+    // Hiçbir framework/CDN yüklenmemeli
+    expect(demo).not.toMatch(/react|vue|jquery|tailwind|cdn\./i);
+  });
+});

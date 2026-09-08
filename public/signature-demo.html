@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alis Dijital — İmza Sistemi, taşınabilirlik testi</title>
+  <style>
+    body { margin:0; font:14px/1.6 system-ui, sans-serif; }
+    section { padding:48px 32px; }
+    .light { background:#F7F8FA; color:#16203A; }
+    .dark  { background:#0F1B33; color:#FFFFFF; }
+    h2 { font:500 11px/1.4 ui-monospace, monospace; text-transform:uppercase;
+         letter-spacing:.11em; opacity:.5; margin:0 0 20px; }
+    .row { display:flex; flex-wrap:wrap; gap:44px; align-items:center; }
+    p.note { max-width:60ch; opacity:.6; margin-top:32px; }
+  </style>
+</head>
+<body>
+  <!-- Astro yok. Build yok. Framework yok. Tek script etiketi. -->
+  <script src="/signature.js" defer></script>
+
+  <section class="light">
+    <h2>Açık zemin · stacked / inline / compact</h2>
+    <div class="row">
+      <alis-signature variant="stacked" theme="light"></alis-signature>
+      <alis-signature variant="inline"  theme="light"></alis-signature>
+      <alis-signature variant="compact" theme="light"></alis-signature>
+    </div>
+  </section>
+
+  <section class="dark">
+    <h2>Koyu zemin · stacked / inline / compact</h2>
+    <div class="row">
+      <alis-signature variant="stacked" theme="dark"></alis-signature>
+      <alis-signature variant="inline"  theme="dark"></alis-signature>
+      <alis-signature variant="compact" theme="dark"></alis-signature>
+    </div>
+    <p class="note">
+      Bu sayfa hiçbir CSS framework'ü, build adımı veya bileşen kütüphanesi
+      kullanmıyor. İmza sistemi Next.js, WordPress, Shopify ya da düz HTML —
+      her yerde aynı şekilde çalışır.
+    </p>
+  </section>
+</body>
+</html>
