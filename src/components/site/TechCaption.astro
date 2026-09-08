@@ -1,0 +1,24 @@
+---
+/** Mono teknik künye şeridi. Pafta antet bilgisi gibi okunur. */
+interface Props { items: readonly string[]; }
+const { items } = Astro.props;
+---
+<div class="techcap">
+  {items.map((item, i) => (
+    <>
+      {i > 0 && <span class="techcap__sep" aria-hidden="true">·</span>}
+      <span class="tech">{item}</span>
+    </>
+  ))}
+</div>
+
+<style>
+  .techcap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3);
+    opacity: 0.62;
+  }
+  .techcap__sep { opacity: 0.5; }
+</style>

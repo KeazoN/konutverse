@@ -1,0 +1,109 @@
+---
+import { site } from '../../content/site';
+import Wordmark from './Wordmark.astro';
+
+const year = site.footer.copyright;
+---
+
+<footer class="foot on-dark-deep">
+  <div class="shell">
+    <hr class="rule" />
+
+    <div class="foot__grid">
+      <div class="foot__brand">
+        <Wordmark size="lg" />
+        <p class="foot__blurb">{site.footer.blurb}</p>
+      </div>
+
+      {site.footer.columns.map((col) => (
+        <div class="foot__col">
+          <p class="tech foot__head">{col.head}</p>
+          <ul class="foot__list">
+            {col.links.map((link) => (
+              <li><a class="foot__link" href={link.href}>{link.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <hr class="rule" />
+
+    <div class="foot__bottom">
+      <span class="tech foot__meta">{year}</span>
+      <span class="tech foot__meta">{site.brand.tagline}</span>
+      <div class="foot__maker"><slot name="maker" /></div>
+    </div>
+  </div>
+
+  <!-- Filigran: görsel değil, tipografi. Kesilerek taşar. -->
+  <div class="foot__watermark" aria-hidden="true">
+    <Wordmark size="lg" />
+  </div>
+</footer>
+
+<style>
+  .foot { position: relative; overflow: hidden; padding-top: var(--s-16); }
+
+  .foot__grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: var(--s-12) var(--gutter);
+    padding-block: var(--s-12);
+  }
+  @media (max-width: 900px) {
+    .foot__grid { grid-template-columns: repeat(2, 1fr); }
+    .foot__brand { grid-column: 1 / -1; }
+  }
+
+  .foot__blurb {
+    margin-top: var(--s-4);
+    font-size: var(--t-small);
+    max-width: 42ch;
+    opacity: 0.7;
+  }
+
+  .foot__head { opacity: 0.45; margin-bottom: var(--s-4); }
+  .foot__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+
+  .foot__link {
+    text-decoration: none;
+    font-size: var(--t-small);
+    opacity: 0.78;
+    transition: opacity var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  }
+  .foot__link:hover { opacity: 1; color: var(--brick-lit); }
+
+  .foot__bottom {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-6);
+    padding-block: var(--s-8) var(--s-24);
+  }
+  .foot__meta { opacity: 0.45; }
+  .foot__maker { margin-left: auto; }
+  @media (max-width: 700px) {
+    .foot__maker { margin-left: 0; width: 100%; }
+  }
+
+  /* Filigran — alt kenardan kesilir, mimari kesit hissi */
+  .foot__watermark {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--s-16) * -1);
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: var(--max-w);
+    padding-inline: var(--gutter);
+    font-size: clamp(80px, 22vw, 320px);
+    opacity: 0.045;
+    pointer-events: none;
+    user-select: none;
+    line-height: 0.8;
+  }
+  .foot__watermark :global(.wordmark) { font-size: inherit; }
+</style>

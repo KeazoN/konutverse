@@ -87,3 +87,31 @@ describe('tipografi yüklemesi', () => {
     }
   });
 });
+
+describe('navigasyon sözleşmesi', () => {
+  for (const route of ROUTES) {
+    const doc = () => parseHTML(readFileSync(pathFor(route), 'utf8')).document;
+
+    it(`/${route}: beş nav linkinin tamamı var`, () => {
+      const hrefs = [...doc().querySelectorAll('nav a[href]')].map((a) => a.getAttribute('href'));
+      for (const href of ['/', '/features', '/pricing', '/about', '/contact']) {
+        expect(hrefs).toContain(href);
+      }
+    });
+
+    it(`/${route}: aktif sayfa aria-current ile işaretli`, () => {
+      const current = doc().querySelector('nav a[aria-current="page"]');
+      expect(current).toBeTruthy();
+    });
+
+    it(`/${route}: header ve footer landmark'ları var`, () => {
+      const d = doc();
+      expect(d.querySelector('header')).toBeTruthy();
+      expect(d.querySelector('footer')).toBeTruthy();
+    });
+
+    it(`/${route}: mobil menü native details — JS gerektirmez`, () => {
+      expect(doc().querySelector('header details')).toBeTruthy();
+    });
+  }
+});

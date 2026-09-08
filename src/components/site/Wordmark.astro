@@ -1,0 +1,25 @@
+---
+import { site } from '../../content/site';
+interface Props { size?: 'sm' | 'lg'; }
+const { size = 'sm' } = Astro.props;
+const [a, b] = site.brand.wordmark;
+---
+<span class:list={['wordmark', `wordmark--${size}`]}>
+  <span class="wordmark__a">{a}</span><span class="wordmark__b">{b}</span>
+</span>
+
+<style>
+  .wordmark {
+    font-family: var(--font-display);
+    font-stretch: var(--wdth-display);
+    letter-spacing: var(--ls-h);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .wordmark--sm { font-size: 20px; }
+  .wordmark--lg { font-size: var(--t-h2); }
+
+  /* İki ağırlık: "Konut" taşıyıcı, "verse" hafif — mimari vurgu */
+  .wordmark__a { font-weight: 700; }
+  .wordmark__b { font-weight: 400; opacity: 0.72; }
+</style>

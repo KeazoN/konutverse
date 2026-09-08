@@ -1,0 +1,115 @@
+---
+import { site } from '../../content/site';
+import Wordmark from './Wordmark.astro';
+import Nav from './Nav.astro';
+import Button from '../ui/Button.astro';
+
+interface Props { current: string; }
+const { current } = Astro.props;
+---
+
+<header class="head">
+  <div class="shell head__inner">
+    <a class="head__brand" href="/" aria-label={site.brand.name}>
+      <Wordmark />
+    </a>
+
+    <Nav current={current} />
+
+    <div class="head__actions">
+      <Button href={site.ctaPrimary.href} variant="ghost" arrow={false}>
+        {site.ctaPrimary.label}
+      </Button>
+
+      <details class="menu">
+        <summary class="menu__toggle" aria-label="Menüyü aç">
+          <span class="menu__bar" aria-hidden="true"></span>
+          <span class="menu__bar" aria-hidden="true"></span>
+        </summary>
+        <div class="menu__panel">
+          <ul class="menu__list">
+            {site.nav.map((item) => (
+              <li>
+                <a
+                  class="menu__link"
+                  href={item.href}
+                  aria-current={item.href === current ? 'page' : undefined}
+                >{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+  <hr class="rule" />
+</header>
+
+<style>
+  .head {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--ink-deep) 88%, transparent);
+    backdrop-filter: blur(14px);
+    color: var(--chalk);
+  }
+  .head .rule { border-top-color: var(--line); }
+
+  .head__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-6);
+    min-height: 68px;
+  }
+
+  .head__brand { text-decoration: none; color: var(--chalk); }
+  .head__actions { display: flex; align-items: center; gap: var(--s-4); }
+
+  /* ── Mobil menü — native <details>, sıfır JS ───────────── */
+  .menu { display: none; position: relative; }
+  @media (max-width: 900px) { .menu { display: block; } }
+
+  .menu__toggle {
+    display: grid;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    place-content: center;
+    cursor: pointer;
+    list-style: none;
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-control);
+  }
+  .menu__toggle::-webkit-details-marker { display: none; }
+  .menu__bar { display: block; width: 18px; height: var(--hairline); background: var(--chalk); }
+  .menu[open] .menu__bar:first-child { transform: translateY(3px) rotate(45deg); }
+  .menu[open] .menu__bar:last-child { transform: translateY(-3px) rotate(-45deg); }
+  .menu__bar { transition: transform var(--dur-fast) var(--ease); }
+
+  .menu__panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + var(--s-3));
+    min-width: 220px;
+    background: var(--ink);
+    border: var(--hairline) solid var(--line);
+    border-radius: var(--radius-structural);
+    padding: var(--s-3);
+  }
+  .menu__list { list-style: none; margin: 0; padding: 0; display: grid; }
+  .menu__link {
+    display: block;
+    padding: var(--s-3) var(--s-4);
+    text-decoration: none;
+    font-family: var(--font-tech);
+    font-size: var(--t-tech);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-tech);
+    color: var(--chalk);
+    opacity: 0.72;
+  }
+  .menu__link:hover { opacity: 1; }
+  .menu__link[aria-current='page'] { opacity: 1; color: var(--brick-lit); }
+</style>

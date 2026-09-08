@@ -10,15 +10,20 @@ import '@fontsource-variable/inter';
 import '../styles/tokens.css';
 import '../styles/base.css';
 import '../styles/utilities.css';
+
 import { THEME_COLOR } from '../lib/brand';
+import Header from '../components/site/Header.astro';
+import Footer from '../components/site/Footer.astro';
 
 interface Props {
   title: string;
   description: string;
   route: string;
+  /** Sayfanın kendi zemini koyuysa gövdeye koyu yüzey sınıfı uygulanır. */
+  surface?: 'light' | 'dark';
 }
 
-const { title, description, route } = Astro.props;
+const { title, description, route, surface = 'light' } = Astro.props;
 const canonical = new URL(route, Astro.site).href;
 ---
 
@@ -47,13 +52,15 @@ const canonical = new URL(route, Astro.site).href;
   <body>
     <a class="skip" href="#main">İçeriğe atla</a>
 
-    <slot name="chrome-top" />
+    <Header current={route} />
 
-    <main id="main">
+    <slot name="rail" />
+
+    <main id="main" class:list={[surface === 'dark' && 'on-dark-deep']}>
       <slot />
     </main>
 
-    <slot name="chrome-bottom" />
+    <Footer />
 
     <script>
       import '../scripts/reveal.ts';

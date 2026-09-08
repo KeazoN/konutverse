@@ -1,0 +1,44 @@
+---
+import { site } from '../../content/site';
+interface Props { current: string; }
+const { current } = Astro.props;
+---
+<nav class="nav" aria-label="Ana menü">
+  <ul class="nav__list">
+    {site.nav.map((item) => (
+      <li>
+        <a
+          class="tech nav__link"
+          href={item.href}
+          aria-current={item.href === current ? 'page' : undefined}
+        >{item.label}</a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .nav__list {
+    display: flex;
+    gap: var(--s-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav__link {
+    display: inline-block;
+    padding: var(--s-2) 0;
+    text-decoration: none;
+    opacity: 0.66;
+    transition: opacity var(--dur-fast) var(--ease);
+  }
+  .nav__link:hover { opacity: 1; }
+
+  /* Aktif sayfa: kot rayının işaret dilinden — altta tuğla çentik */
+  .nav__link[aria-current='page'] {
+    opacity: 1;
+    box-shadow: 0 2px 0 var(--brick-lit);
+  }
+
+  @media (max-width: 900px) { .nav { display: none; } }
+</style>
