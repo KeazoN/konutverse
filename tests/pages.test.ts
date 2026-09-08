@@ -17,7 +17,7 @@ function bundledCss(): string {
     .join('\n');
 }
 
-const ROUTES = ['index', 'features', 'about'];
+const ROUTES = ['index', 'features', 'about', 'pricing'];
 
 describe('build çıktısı', () => {
   it('ana sayfayı üretir', () => {
@@ -298,5 +298,47 @@ describe('ana sayfa — kalan bölümler', () => {
 
   it('#nasil çapası var — footer linki kırık değil', () => {
     expect(doc().querySelector('#nasil')).toBeTruthy();
+  });
+});
+
+describe('/pricing', () => {
+  const doc = () => parseHTML(readFileSync('dist/pricing/index.html', 'utf8')).document;
+  const html = () => readFileSync('dist/pricing/index.html', 'utf8');
+
+  it('uc plani ve fiyatlari canli siteyle ayni tasir', () => {
+    const h = html();
+    for (const s of ['Baslangic', 'Profesyonel', 'Kurumsal']) {
+      expect(h).toContain(s.replace('Baslangic', 'Başlangıç'));
+    }
+    for (const s of ['₺2.900', '₺7.900']) expect(h).toContain(s);
+  });
+
+  it('En populer rozeti pafta etiketi — yuvarlak pill DEGIL', () => {
+    const badge = [...doc().querySelectorAll('.sheet-label')]
+      .find((e) => e.textContent?.includes('En popüler'));
+    expect(badge, 'pafta etiketi bulunamadi').toBeTruthy();
+    expect(badge!.getAttribute('class')).not.toContain('chip');
+  });
+
+  it('SSS native details — JS gerektirmez', () => {
+    expect(doc().querySelectorAll('details').length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('alti SSS sorusunun tamami var', () => {
+    const h = html();
+    expect(h).toContain('Turu kurmak için 360° kamera şart mı?');
+    expect(h).toContain('Sözleşme ve iptal nasıl işliyor?');
+  });
+
+  it('KDV notu ve uc guvence var', () => {
+    const h = html();
+    expect(h).toContain('Fiyatlara KDV dahil değildir.');
+    for (const s of ['Taahhüt yok', 'Kurulum ücreti yok', 'Kart bilgisi istenmez']) {
+      expect(h).toContain(s);
+    }
+  });
+
+  it('tam olarak bir plan one cikarilmis', () => {
+    expect(doc().querySelectorAll('.plan--featured').length).toBe(1);
   });
 });

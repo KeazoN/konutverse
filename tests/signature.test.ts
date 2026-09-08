@@ -8,6 +8,7 @@ const PAGES = [
   'dist/index.html',
   'dist/features/index.html',
   'dist/about/index.html',
+  'dist/pricing/index.html',
   'dist/kunye/index.html',
 ];
 

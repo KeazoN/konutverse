@@ -1,0 +1,182 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/sections/PageHead.astro';
+import SheetRule from '../components/ui/SheetRule.astro';
+import SheetLabel from '../components/ui/SheetLabel.astro';
+import Button from '../components/ui/Button.astro';
+import Accordion from '../components/ui/Accordion.astro';
+import { site } from '../content/site';
+
+const p = site.pricing;
+---
+
+<Base title={p.meta.title} description={p.meta.description} route="/pricing">
+  <PageHead kicker={p.kicker} title={p.title} lead={p.lead} />
+
+  <section class="plans">
+    <div class="shell shell--railed">
+      <div class="plans__grid">
+        {p.plans.map((plan) => (
+          <article class:list={['plan', plan.featured && 'plan--featured']}>
+            {'badge' in plan && (
+              <div class="plan__badge"><SheetLabel text={plan.badge} tone="brick" /></div>
+            )}
+
+            <h2 class="plan__name">{plan.name}</h2>
+            <p class="plan__blurb">{plan.blurb}</p>
+
+            <p class="plan__price">
+              <span class="plan__amount num">{plan.price}</span>
+              <span class="tech plan__period">{plan.period}</span>
+            </p>
+
+            <hr class="rule" />
+
+            <ul class="plan__list">
+              {plan.items.map((item) => (
+                <li class="plan__item">
+                  <span class="tech plan__mark" aria-hidden="true">+</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div class="plan__cta">
+              <Button
+                href={site.ctaPrimary.href}
+                variant={plan.featured ? 'primary' : 'ghost'}
+                arrow={false}
+              >{site.ctaPrimary.label}</Button>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <p class="tech plans__vat">{p.vatNote}</p>
+    </div>
+  </section>
+
+  <section class="assure">
+    <div class="shell shell--railed">
+      <div class="assure__grid">
+        {p.assurances.map((a, i) => (
+          <div class="assure__item">
+            <span class="tech assure__no num">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="assure__title">{a.title}</h3>
+            <p class="assure__body">{a.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="faq">
+    <div class="shell shell--railed faq__inner">
+      <div class="faq__aside">
+        <SheetRule no=". 02" />
+        <h2 class="faq__title">{p.faqTitle}</h2>
+      </div>
+      <div class="faq__body">
+        <Accordion items={p.faq} />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ── Planlar ────────────────────────────────────────────── */
+  .plans { padding-block: clamp(var(--s-8), 4vw, var(--s-16)); }
+
+  .plans__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: var(--hairline) solid var(--line-dark);
+  }
+  @media (max-width: 900px) {
+    .plans__grid { grid-template-columns: 1fr; }
+  }
+
+  .plan {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--s-4);
+    padding: var(--s-12) var(--s-8);
+    border-right: var(--hairline) solid var(--line-dark);
+    border-bottom: var(--hairline) solid var(--line-dark);
+  }
+  .plan:last-child { border-right: 0; }
+  @media (max-width: 900px) { .plan { border-right: 0; } }
+
+  /* Öne çıkan plan: kutu değil, kenar vurgusu — çizim dili */
+  .plan--featured { background: var(--paper); }
+  .plan--featured::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: var(--brick);
+  }
+
+  .plan__badge { position: absolute; top: var(--s-4); right: var(--s-8); }
+
+  .plan__name { font-size: var(--t-h2); }
+  .plan__blurb { font-size: var(--t-small); opacity: 0.7; max-width: 34ch; }
+
+  .plan__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-3);
+    margin-top: var(--s-4);
+  }
+  .plan__amount {
+    font-family: var(--font-display);
+    font-stretch: var(--wdth-display);
+    font-weight: 600;
+    font-size: var(--t-h1);
+    letter-spacing: var(--ls-h);
+    line-height: 1;
+  }
+  .plan__period { opacity: 0.55; }
+
+  .plan__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-3); }
+  .plan__item {
+    display: grid;
+    grid-template-columns: 2ch 1fr;
+    gap: var(--s-3);
+    align-items: baseline;
+    font-size: var(--t-small);
+  }
+  .plan__mark { color: var(--brick); }
+  .plan__cta { margin-top: var(--s-4); }
+
+  .plans__vat { margin-top: var(--s-6); opacity: 0.5; }
+
+  /* ── Güvenceler ─────────────────────────────────────────── */
+  .assure { padding-block: clamp(var(--s-12), 5vw, var(--s-24)); }
+  .assure__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gutter);
+  }
+  @media (max-width: 720px) { .assure__grid { grid-template-columns: 1fr; } }
+  .assure__item { display: grid; gap: var(--s-2); align-content: start; }
+  .assure__no { color: var(--brick); }
+  .assure__title { font-size: var(--t-h3); }
+  .assure__body { font-size: var(--t-small); opacity: 0.72; }
+
+  /* ── SSS ────────────────────────────────────────────────── */
+  .faq { padding-block: clamp(var(--s-12), 6vw, var(--s-32)); }
+  .faq__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(var(--s-6), 4vw, var(--s-16));
+  }
+  @media (max-width: 900px) { .faq__inner { grid-template-columns: 1fr; } }
+  .faq__title {
+    font-size: var(--t-h1);
+    letter-spacing: var(--ls-h);
+    margin-top: var(--s-6);
+  }
+</style>
