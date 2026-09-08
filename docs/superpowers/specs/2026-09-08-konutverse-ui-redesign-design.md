@@ -144,15 +144,33 @@ Palet **tamamen mevcut siteden türetildi**; hiçbir renk atılmadı, roller yen
 --avail-reserved: #CE7C1B;
 ```
 
-**Kontrast kararı (hesaplanmış, WCAG 2.2):**
+**Kontrast kararı — ölçülmüş değerler** (`src/lib/contrast.ts`, WCAG 2.2):
 
-| Çift | Oran | Karar |
-|---|---|---|
-| `--brick` #C23616 üzerine `--ink` #0F1B33 | **3.13:1** | Yalnızca ≥24px metin, grafik öğe ve çizgi. Küçük metin **yasak**. |
-| `--brick-lit` #ED5A34 üzerine `--ink` #0F1B33 | **4.99:1** | Küçük metin dahil serbest (AA ✓). |
-| `--chalk` #F7F8FA üzerine `--ink` #0F1B33 | ~16.9:1 | Serbest (AAA ✓). |
+| Metin | Zemin | Oran | Karar |
+|---|---|---|---|
+| `--brick` #C23616 | `--ink` #0F1B33 | **3.13** | Yalnızca ≥24px metin, grafik, çizgi |
+| `--brick` #C23616 | `--chalk` #F7F8FA | **5.16** | Açık zeminde küçük metin serbest ✓ |
+| `--brick-lit` #ED5A34 | `--ink` #0F1B33 | **4.99** | Koyu zeminde küçük metin serbest ✓ |
+| `--brick-lit` #ED5A34 | `--chalk` #F7F8FA | **3.23** | Açık zeminde metin **yasak** |
+| `--chalk` #F7F8FA | `--ink` #0F1B33 | **16.13** | Serbest (AAA ✓) |
+| `--ink` #0F1B33 | `--plaster` #E6E1D6 | **13.15** | Serbest (AAA ✓) |
 
-Bu ayrım token seviyesinde zorunludur: koyu zeminde 24px altı hiçbir metin `--brick` kullanamaz.
+**İki tonlu kural, her iki yönde de geçerlidir:** koyu zeminde küçük metin `--brick-lit`, açık zeminde küçük metin `--brick` kullanır. Yanlış eşleşme her iki yönde de AA'dan kalır.
+
+**Uygulama sırasında yakalanan hata — müsaitlik renkleri.** Mevcut sitenin `--avail-*` değerleri üzerinde beyaz 12px metin AA'dan kalıyordu (`free` 4.19, `reserved` 3.22). Durum renkleri ikiye ayrıldı:
+
+| Token | Değer | Beyaz metinle | Kullanım |
+|---|---|---|---|
+| `--avail-free` | #3F5D8A | **6.68** ✓ | Metin taşıyan yüzey (çip, hücre) |
+| `--avail-sold` | #A8392F | **6.38** ✓ | Metin taşıyan yüzey |
+| `--avail-reserved` | #8A5210 | **6.37** ✓ | Metin taşıyan yüzey |
+| `--avail-free-tint` | #5B7DB1 | 4.19 ✗ | **Yalnızca grafik dolgu**, üstünde metin yasak |
+| `--avail-sold-tint` | #C6443A | 4.90 | Yalnızca grafik dolgu |
+| `--avail-reserved-tint` | #CE7C1B | 3.22 ✗ | Yalnızca grafik dolgu |
+
+`--avail-free` değeri #3F5D8A, mevcut sitenin kendi `--avail-free-strong` token'ıdır — palet yine dışarıdan renk almıyor.
+
+Bu ayrımların tamamı `tests/contrast.test.ts` içinde kilitlidir; ihlal build'i değil test paketini kırar.
 
 ### 5.3 Form dili
 

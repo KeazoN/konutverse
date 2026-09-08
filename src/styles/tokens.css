@@ -1,0 +1,85 @@
+/* ============================================================
+   Konutverse — Tasarım Token'ları
+   TEK KAYNAK. Bu dosya ve signature.css dışında ham değer yok.
+   Palet tamamen mevcut konutverse.com token'larından türetildi;
+   hiçbir renk atılmadı, roller yeniden dağıtıldı.
+   ============================================================ */
+
+:root {
+  /* ── Renk ─────────────────────────────────────────────────── */
+  --ink:        #0F1B33;   /* blueprint laciverti  (eski --surface-3) */
+  --ink-deep:   #0A1222;   /* hero zemini          (eski --glass-bg-strong tabanı) */
+  --ink-raised: #182A4A;   /* yükseltilmiş yüzey   (eski --navy-raised) */
+  --chalk:      #F7F8FA;   /* çizgi & kâğıt        (eski --bg) */
+  --paper:      #FFFFFF;
+  --plaster:    #E6E1D6;   /* "gerçek" tarafın sıcaklığı (eski --rail-empty) */
+
+  /* Vurgu — İKİ TONLU, kontrast politikası gereği.
+     ölçüm: brick/ink 3.13 · brick/chalk 5.16
+            brick-lit/ink 4.99 · brick-lit/chalk 3.23          */
+  --brick:      #C23616;   /* AÇIK zeminde metin ✓ · KOYU zeminde yalnız ≥24px ve grafik */
+  --brick-lit:  #ED5A34;   /* KOYU zeminde küçük metin ✓ · açık zeminde metin YASAK */
+
+  --line:       rgba(255, 255, 255, 0.14);
+  --line-dark:  rgba(22, 32, 58, 0.12);
+
+  /* Müsaitlik — metin taşıyan yüzeyler (beyaz metin, hepsi AA ✓)
+     ölçüm: free 6.68 · sold 6.38 · reserved 6.37                */
+  --avail-free:     #3F5D8A;
+  --avail-sold:     #A8392F;
+  --avail-reserved: #8A5210;
+
+  /* Müsaitlik — YALNIZCA grafik dolgu, üstünde metin bulunamaz */
+  --avail-free-tint:     #5B7DB1;
+  --avail-sold-tint:     #C6443A;
+  --avail-reserved-tint: #CE7C1B;
+
+  /* ── Tipografi ────────────────────────────────────────────── */
+  --font-display: "Archivo Variable", "Archivo", system-ui, sans-serif;
+  --font-tech:    "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-body:    "Inter Variable", "Inter", system-ui, sans-serif;
+
+  --t-display-xl: clamp(48px, 9vw, 148px);
+  --t-display:    clamp(38px, 5.5vw, 84px);
+  --t-h1:         clamp(30px, 3.6vw, 54px);
+  --t-h2:         clamp(23px, 2.4vw, 34px);
+  --t-h3:         19px;
+  --t-body:       17px;
+  --t-small:      15px;
+  --t-tech:       12px;
+
+  --lh-display:   0.98;
+  --lh-body:      1.65;
+  --ls-display:   -0.03em;
+  --ls-tech:      0.08em;
+  --wdth-display: 112;
+
+  /* ── Form ─────────────────────────────────────────────────── */
+  --radius-structural: 0;      /* çizimin yuvarlak köşesi yoktur */
+  --radius-control:    2px;
+  --radius-pill:       999px;  /* yalnızca durum çipleri */
+  --hairline:          1px;
+
+  /* ── Uzay ─────────────────────────────────────────────────── */
+  --s-1:  4px;   --s-2:  8px;   --s-3:  12px;  --s-4:  16px;
+  --s-6:  24px;  --s-8:  32px;  --s-12: 48px;  --s-16: 64px;
+  --s-24: 96px;  --s-32: 128px; --s-48: 192px;
+
+  --max-w:  1440px;
+  --gutter: 24px;
+  --rail-w: 72px;
+
+  /* ── Hareket ──────────────────────────────────────────────── */
+  --ease:     cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 220ms;
+  --dur-base: 400ms;
+  --dur-draw: 900ms;
+}
+
+@media (max-width: 768px) {
+  :root { --gutter: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-draw: 0ms; }
+}
