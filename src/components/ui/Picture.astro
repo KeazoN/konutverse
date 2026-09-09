@@ -1,0 +1,69 @@
+---
+/**
+ * Responsive görsel — WebP + JPEG, iki genişlik.
+ *
+ * Kaynaklar scripts/optimize-images.py ile üretilir. Orijinaller
+ * 1920px ve 250–700 KB idi; mobilde LCP'yi bu yük belirliyordu.
+ * Telefon artık 900w/560w WebP indiriyor.
+ */
+interface Props {
+  name: string;              // 'hero-poster' gibi taban ad
+  alt: string;
+  small: number;             // küçük genişlik (px)
+  large: number;             // büyük genişlik (px)
+  ratio: string;             // '1600/844' — CLS için oran
+  sizes: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'auto';
+  className?: string;
+  /** Dar ekranda ayrı kadraj: { name, small, large, media } */
+  portrait?: { name: string; small: number; large: number; media: string };
+}
+
+const {
+  name, alt, small, large, ratio, sizes,
+  loading = 'lazy', fetchpriority = 'auto', className, portrait,
+} = Astro.props;
+
+const [rw, rh] = ratio.split('/').map(Number);
+---
+
+<picture>
+  {portrait && (
+    <>
+      <source
+        type="image/webp"
+        media={portrait.media}
+        srcset={`/img/${portrait.name}-${portrait.small}.webp ${portrait.small}w, /img/${portrait.name}-${portrait.large}.webp ${portrait.large}w`}
+        sizes={sizes}
+      />
+      <source
+        type="image/jpeg"
+        media={portrait.media}
+        srcset={`/img/${portrait.name}-${portrait.small}.jpg ${portrait.small}w, /img/${portrait.name}-${portrait.large}.jpg ${portrait.large}w`}
+        sizes={sizes}
+      />
+    </>
+  )}
+  <source
+    type="image/webp"
+    srcset={`/img/${name}-${small}.webp ${small}w, /img/${name}-${large}.webp ${large}w`}
+    sizes={sizes}
+  />
+  <img
+    class={className}
+    src={`/img/${name}-${large}.jpg`}
+    srcset={`/img/${name}-${small}.jpg ${small}w, /img/${name}-${large}.jpg ${large}w`}
+    sizes={sizes}
+    alt={alt}
+    width={rw}
+    height={rh}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    decoding="async"
+  />
+</picture>
+
+<style>
+  picture { display: contents; }
+</style>

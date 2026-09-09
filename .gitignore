@@ -4,3 +4,6 @@ dist/
 *.log
 lh-*.json
 public/fonts/
+public/img/*.jpg
+public/img/*.webp
+!public/img/_src/

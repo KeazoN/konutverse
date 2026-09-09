@@ -1,14 +1,15 @@
 ---
 import { site } from '../../content/site';
 import Button from '../ui/Button.astro';
+import Picture from '../ui/Picture.astro';
 
 const items = site.home.capabilities;
 
 /** Her kabiliyet gerçek bir daire fotoğrafıyla eşlenir. */
 const MEDIA = [
-  { src: '/img/living.jpg',  w: 1920, h: 1694, alt: 'Oturma odası — 360° turda gezilebilen daire' },
-  { src: '/img/kitchen.jpg', w: 1920, h: 1151, alt: 'Mutfak — 360° turda gezilebilen daire' },
-  { src: '/img/bedroom.jpg', w: 1920, h: 1280, alt: 'Yatak odası — 360° turda gezilebilen daire' },
+  { name: 'living',  ratio: '1000/667', alt: 'Oturma odası — 360° turda gezilebilen daire' },
+  { name: 'kitchen', ratio: '1000/667', alt: 'Mutfak — 360° turda gezilebilen daire' },
+  { name: 'bedroom', ratio: '1000/667', alt: 'Yatak odası — 360° turda gezilebilen daire' },
 ];
 ---
 
@@ -28,13 +29,14 @@ const MEDIA = [
         </div>
 
         <div class="media cap__media">
-          <img
-            src={MEDIA[i].src}
+          <Picture
+            name={MEDIA[i].name}
             alt={MEDIA[i].alt}
-            width={MEDIA[i].w}
-            height={MEDIA[i].h}
-            loading={i === 0 ? "eager" : "lazy"}
-            decoding="async"
+            small={560}
+            large={1000}
+            ratio={MEDIA[i].ratio}
+            sizes="(max-width: 900px) 100vw, 58vw"
+            loading={i === 0 ? 'eager' : 'lazy'}
           />
           <span class="tech cap__no num">{item.no}</span>
         </div>
@@ -71,16 +73,24 @@ const MEDIA = [
   .cap:nth-child(even) .cap__media { grid-column: 1 / span 8; }
 
   @media (max-width: 900px) {
-    .cap { grid-template-columns: 1fr; gap: 0; }
+    .cap {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding-block: var(--s-10) var(--s-12);
+    }
     .cap__copy,
     .cap:nth-child(even) .cap__copy {
       grid-row: 2;
       grid-column: 1;
-      margin: calc(var(--s-12) * -1) var(--s-4) 0;
+      /* Kart görselin altından yukarı biner — masaüstündeki
+         üst üste binme fikri telefonda da korunur */
+      margin: calc(var(--s-10) * -1) var(--s-3) 0;
+      padding: var(--s-6);
       box-shadow: var(--shadow-lift);
     }
     .cap__media,
     .cap:nth-child(even) .cap__media { grid-row: 1; grid-column: 1; }
+
   }
 
   .cap__title {
@@ -98,7 +108,7 @@ const MEDIA = [
     margin-bottom: var(--s-6);
   }
 
-  .cap__media > :global(img) { aspect-ratio: 16 / 11; }
+
 
   .cap__no {
     position: absolute;

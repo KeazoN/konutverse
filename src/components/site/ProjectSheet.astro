@@ -6,9 +6,10 @@ import { formatPrice } from '../../content/projects';
 import { site } from '../../content/site';
 import ProgressGauge from '../viz/ProgressGauge.astro';
 import Arrow from '../ui/Arrow.astro';
+import Picture from '../ui/Picture.astro';
 
-interface Props { project: Project; image: string; imageAlt: string; }
-const { project: p, image, imageAlt } = Astro.props;
+interface Props { project: Project; image: string; imageAlt: string; ratio: string; }
+const { project: p, image, imageAlt, ratio } = Astro.props;
 const u = site.search.units;
 ---
 
@@ -21,7 +22,14 @@ const u = site.search.units;
 >
   <a class="card__link" href="/demo">
     <div class="media card__media">
-      <img src={image} alt={imageAlt} width="1920" height="1280" loading="lazy" decoding="async" />
+      <Picture
+        name={image}
+        alt={imageAlt}
+        small={560}
+        large={1000}
+        ratio={ratio}
+        sizes="(max-width: 900px) 100vw, 45vw"
+      />
       <span class="tech card__badge">{site.search.tourBadge}</span>
     </div>
 
@@ -61,7 +69,7 @@ const u = site.search.units;
 
   .card__link { display: block; text-decoration: none; color: inherit; height: 100%; }
 
-  .card__media > :global(img) { aspect-ratio: 16 / 10; }
+
   .card__badge {
     position: absolute;
     top: var(--s-4);

@@ -437,11 +437,31 @@ describe('ana sayfa — açık tema, fotoğraf öncelikli', () => {
   it('hero GERÇEK fotoğrafla açılır — soyut çizim değil', () => {
     const img = doc().querySelector('.hero__media img');
     expect(img, 'hero fotoğrafı yok').toBeTruthy();
-    expect(img!.getAttribute('src')).toBe('/img/hero-poster.jpg');
+    expect(img!.getAttribute('src')).toMatch(/^\/img\/hero-poster-\d+\.jpg$/);
     expect(img!.getAttribute('alt')?.length).toBeGreaterThan(10);
     // Boyut verilmeli: yoksa görsel yüklenince sayfa zıplar
     expect(img!.getAttribute('width')).toBeTruthy();
     expect(img!.getAttribute('height')).toBeTruthy();
+  });
+
+  it('görseller responsive sunulur — WebP + iki genişlik', () => {
+    const d = doc();
+    const webp = [...d.querySelectorAll('.hero__media source[type="image/webp"]')];
+    expect(webp.length, 'WebP kaynağı yok').toBeGreaterThan(0);
+    const all = webp.map((s) => s.getAttribute('srcset')).join(' ');
+    expect(all).toContain('900w');
+    expect(all).toContain('1600w');
+    expect(d.querySelector('.hero__media img')!.getAttribute('sizes')).toBeTruthy();
+  });
+
+
+  it('yayınlanan görseller mobil bütçe içinde — en büyük tek dosya < 260 KB', () => {
+    const files = readdirSync(`${DIST}/img`).filter((f) => /\.(jpg|webp)$/.test(f));
+    expect(files.length).toBeGreaterThan(0);
+    for (const f of files) {
+      const kb = statSync(`${DIST}/img/${f}`).size / 1024;
+      expect(kb, `${f} ${kb.toFixed(0)} KB`).toBeLessThan(260);
+    }
   });
 
   it('hero görseli öncelikli yüklenir — LCP öğesi', () => {

@@ -44,8 +44,14 @@
 .on-ink .rule { border-top-color: rgba(252, 251, 249, 0.16); }
 
 /* ── Bölüm ritmi — cömert ama yapılı ────────────────────────── */
-.section        { padding-block: clamp(var(--s-20), 9vw, var(--s-40)); }
-.section--tight { padding-block: clamp(var(--s-12), 5vw, var(--s-24)); }
+.section        { padding-block: clamp(var(--s-16), 9vw, var(--s-40)); }
+.section--tight { padding-block: clamp(var(--s-10), 5vw, var(--s-24)); }
+
+/* Telefonda cömert dolgu israfa dönüşür: ekran zaten dar */
+@media (max-width: 720px) {
+  .section        { padding-block: var(--s-16); }
+  .section--tight { padding-block: var(--s-10); }
+}
 
 /* ── Bölüm başlığı: mono etiket + iri başlık ────────────────── */
 .eyebrow {
@@ -79,20 +85,21 @@
 }
 
 /* ── Görsel ─────────────────────────────────────────────────── */
-/* En-boy oranı KAPSAYICIYA DEĞİL doğrudan <img>'e verilir.
-   Kapsayıcıya verildiğinde yüzde yükseklik grid içinde güvenilir
-   çözülmüyor ve görsel boyanmıyordu. Bu haliyle img kendi kutusunu
-   kurar; hesap zincirine gerek yok. */
+/* Oran kaynakta kırpılır (scripts/optimize-images.py); CSS oran
+   dayatmaz. img kendi kutusunu width/height niteliklerinden kurar.
+
+   DİKKAT: seçici TORUN olmalı. <picture> sarmalayıcısı eklendiğinde
+   `.media > img` eşleşmeyi bıraktı ve görseller nitelikteki piksel
+   yüksekliğine gerildi (mobilde 372x667). */
 .media {
   position: relative;
   overflow: hidden;
   background: var(--linen);
 }
-.media > img {
+.media img {
   display: block;
   width: 100%;
   height: auto;
-  object-fit: cover;
 }
 
 /* ── Erişilebilirlik ────────────────────────────────────────── */

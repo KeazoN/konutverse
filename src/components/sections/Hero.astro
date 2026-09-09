@@ -2,6 +2,7 @@
 import { site } from '../../content/site';
 import { featuredProject } from '../../content/projects';
 import Button from '../ui/Button.astro';
+import Picture from '../ui/Picture.astro';
 
 const { hero } = site.home;
 const p = featuredProject;
@@ -9,13 +10,15 @@ const p = featuredProject;
 
 <section class="hero">
   <div class="hero__media">
-    <img
-      src="/img/hero-poster.jpg"
+    <Picture
+      name="hero-poster"
       alt="360° turla gezilebilen bir dairenin oturma odası"
-      width="1920"
-      height="1013"
+      small={900}
+      large={1600}
+      ratio="1600/900"
+      sizes="100vw"
+      loading="eager"
       fetchpriority="high"
-      decoding="async"
     />
     <div class="hero__scrim" aria-hidden="true"></div>
   </div>
@@ -52,7 +55,7 @@ const p = featuredProject;
 <style>
   .hero {
     position: relative;
-    min-height: min(92svh, 900px);
+    min-height: min(82svh, 820px);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -63,43 +66,56 @@ const p = featuredProject;
 
   /* ── Fotoğraf ekranı doldurur — hero bir kutu değil, bir mekân ── */
   .hero__media { position: absolute; inset: 0; z-index: -1; }
-  .hero__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .hero__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Kadraj aşağı kaydırılır: üstteki boş tavan yerine oturma grubu
+       görünür. Hero'nun üst %40'ı ölü alandı. */
+    object-position: center 68%;
+  }
 
   /* Sıcak perde: metin okunur kalsın, fotoğraf boğulmasın */
   .hero__scrim {
     position: absolute;
     inset: 0;
     background:
+      /* Üstte hafif katman: header ve fotoğrafın parlak kısmı çakışmasın */
+      linear-gradient(
+        to bottom,
+        rgba(24, 20, 17, 0.30) 0%,
+        rgba(24, 20, 17, 0.04) 20%,
+        rgba(24, 20, 17, 0) 36%
+      ),
+      /* Altta metin bölgesi: neredeyse opak */
       linear-gradient(
         to top,
-        rgba(24, 20, 17, 0.88) 0%,
-        rgba(24, 20, 17, 0.62) 26%,
-        rgba(24, 20, 17, 0.16) 56%,
-        rgba(24, 20, 17, 0.02) 100%
+        rgba(24, 20, 17, 0.90) 0%,
+        rgba(24, 20, 17, 0.74) 26%,
+        rgba(24, 20, 17, 0.20) 54%,
+        rgba(24, 20, 17, 0) 78%
       );
   }
 
-  .hero__inner { padding-block: clamp(var(--s-16), 8vw, var(--s-32)) var(--s-8); }
+  .hero__inner { padding-block: clamp(var(--s-12), 5vw, var(--s-20)) var(--s-6); }
 
+  /* Fotoğrafın üstünde çıplak metin okunmuyordu (aydınlık duvar).
+     Dolu şerit her kadrajda okunur ve kasıtlı görünür. */
   .hero__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-3);
-    color: var(--brick-lit);
+    display: inline-block;
+    background: var(--brick);
+    color: var(--paper);
+    padding: 8px 14px;
     margin-bottom: var(--s-6);
-  }
-  .hero__eyebrow::before {
-    content: '';
-    width: 28px;
-    height: 2px;
-    background: var(--brick-lit);
+    white-space: nowrap;
   }
 
-  .hero__title { color: var(--on-ink); max-width: 14ch; }
+  .hero__title { color: var(--on-ink); max-width: 14ch; margin-bottom: var(--s-5); }
   .hero__line { display: block; }
 
   .hero__lead {
-    margin-top: var(--s-6);
+    margin-top: var(--s-5);
     max-width: 46ch;
     font-size: var(--t-lead);
     line-height: 1.55;
@@ -110,7 +126,7 @@ const p = featuredProject;
     display: flex;
     flex-wrap: wrap;
     gap: var(--s-3);
-    margin-top: var(--s-10);
+    margin-top: var(--s-8);
   }
 
   /* ── Alt künye şeridi ─────────────────────────────────────── */
@@ -132,7 +148,26 @@ const p = featuredProject;
   .hero__meta { color: rgba(252, 251, 249, 0.72); }
 
   @media (max-width: 720px) {
-    .hero { min-height: min(88svh, 720px); }
-    .hero__lead { font-size: var(--t-body); }
+    /* Daha kısa hero: dikey kırpma azalır, oda görünür kalır.
+       (3:5 dikey kadraj denendi — 16:9'dan dar bir dilim çıkıyor,
+       odayı gösteremiyordu; yatay kadraj + kısa yükseklik daha iyi.) */
+    .hero { min-height: min(74svh, 620px); }
+
+    .hero__inner { padding-block: var(--s-8) var(--s-6); }
+
+    /* Uzun etiket telefonda 3 satıra sarıyor ve fotoğrafın üstünde
+       okunaksızlaşıyordu. Başlık zaten mesajı taşıyor; etiket
+       dekoratif olduğu için dar ekranda gösterilmez. */
+    .hero__eyebrow { display: none; }
+
+    .hero__title { max-width: none; }
+    .hero__lead { font-size: var(--t-body); max-width: none; }
+
+    /* İki buton eşit ve tam genişlik — dağınık görünmüyor */
+    .hero__actions { gap: var(--s-2); }
+    .hero__actions > :global(.btn) { flex: 1 1 100%; justify-content: center; }
+
+    .hero__footRow { gap: var(--s-3); }
+    .hero__meta { font-size: 10px; line-height: 1.5; }
   }
 </style>

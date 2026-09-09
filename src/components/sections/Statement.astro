@@ -17,7 +17,7 @@ import { site } from '../../content/site';
 </section>
 
 <style>
-  .stm { padding-block: clamp(var(--s-24), 11vw, var(--s-48)); }
+  .stm { padding-block: clamp(var(--s-16), 10vw, var(--s-48)); }
 
   .stm__inner {
     position: relative;
@@ -32,7 +32,7 @@ import { site } from '../../content/site';
     left: 50%;
     transform: translateX(-50%);
     font-family: var(--font-display);
-    font-size: clamp(140px, 20vw, 300px);
+    font-size: clamp(96px, 18vw, 300px);
     line-height: 1;
     color: var(--brick);
     opacity: 0.1;
@@ -41,14 +41,16 @@ import { site } from '../../content/site';
   }
 
   .stm__body { margin: 0; }
+  /* İTALİK YOK: Fraunces'in italik dosyası yüklenmiyor, tarayıcı
+     sahte eğim üretiyordu ve ucuz duruyordu. Dik kesim zaten daha
+     otoriter; tek dekoratif kullanım için +90 KB font yükü değmez. */
   .stm__text {
     position: relative;
     text-wrap: balance;
-    font-style: italic;
   }
 
   .stm__attr {
-    margin-top: var(--s-10);
+    margin-top: clamp(var(--s-6), 3vw, var(--s-10));
     color: var(--ink-3);
   }
 </style>
