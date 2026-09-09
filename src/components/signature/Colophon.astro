@@ -1,64 +1,89 @@
 ---
 /** İmza Sistemi — Katman 2: yapım künyesi.
- *  Pafta antet bloğu olarak kurulur — sanat yönünün tam içinde.
- *  Ajansın ağırlığı müşterinin ana sayfasında bağırmadan taşınır. */
+ *
+ *  Pafta ANTET BLOĞU olarak kurulur — sanat yönünün tam içinde.
+ *  Önceki hâli düz bir <dl> listesiydi: ajansın imza sayfası, sitedeki
+ *  en sıradan sayfaydı. Artık üç parça var:
+ *    1) antet başlığı — iri monogram + pafta numarası
+ *    2) hücreli künye ızgarası — teknik çizim anteti gibi
+ *    3) ÖLÇÜM bandı — iddia değil tarihli kanıt
+ *
+ *  Ajansın ağırlığı müşterinin sitesinde bağırmadan taşınır. */
 import { credits } from './credits';
 import Monogram from './Monogram.astro';
 import './signature.css';
 
 const L = credits.labels.rows;
 
-const groups = [
-  [
-    { label: L.project, value: credits.project },
-    { label: L.client, value: credits.client },
-    { label: L.year, value: credits.year },
-    { label: L.artDirection, value: credits.artDirection },
-  ],
-  [
-    { label: L.design, value: credits.design },
-    { label: L.development, value: credits.development },
-  ],
-  [
-    { label: L.typography, value: credits.typography.join(' · ') },
-    { label: L.technology, value: credits.technology.join(' · ') },
-    { label: L.accessibility, value: credits.accessibility },
-  ],
+/** Antet hücreleri. Sıra, okunma sırası: iş → kim → nasıl. */
+const cells = [
+  { label: L.project, value: credits.project, wide: true },
+  { label: L.client, value: credits.client },
+  { label: L.year, value: credits.year },
+  { label: L.artDirection, value: credits.artDirection },
+  { label: L.design, value: credits.design },
+  { label: L.development, value: credits.development },
+  { label: L.accessibility, value: credits.accessibility },
+  { label: L.typography, value: credits.typography.join(' · '), wide: true },
+  { label: L.technology, value: credits.technology.join(' · '), wide: true },
 ];
 ---
 
 <section class="colo on-ink">
-  <div class="shell colo__inner">
+  <div class="shell">
 
     <header class="colo__head">
-      <h1 class="colo__title">{credits.labels.sheetTitle}</h1>
-      <span class="tech colo__no num">{credits.labels.sheetNo}</span>
-    </header>
-
-    <hr class="rule" />
-
-    {groups.map((group) => (
-      <>
-        <dl class="colo__group">
-          {group.map((row) => (
-            <div class="colo__row">
-              <dt class="tech colo__label">{row.label}</dt>
-              <dd class="colo__value">{row.value}</dd>
-            </div>
-          ))}
-        </dl>
-        <hr class="rule" />
-      </>
-    ))}
-
-    <div class="colo__maker">
-      <div class="colo__makerGlyph" data-ad-signature-static>
+      <div class="colo__glyph" data-ad-signature-static>
         <Monogram />
       </div>
 
+      <div class="colo__headText">
+        <p class="tech colo__kicker">{credits.labels.kicker} · {credits.maker.name}</p>
+        <h1 class="colo__title">{credits.labels.sheetTitle}</h1>
+      </div>
+
+      <span class="tech colo__no num">{credits.labels.sheetNo}</span>
+    </header>
+
+    {/* Hücreli ızgara: satır listesi değil, antet. Kenarlıklar
+        `gap` + arka planla kuruluyor, böylece hücreler arasında
+        çift çizgi oluşmuyor. */}
+    <dl class="colo__grid">
+      {cells.map((c) => (
+        <div class:list={['colo__cell', c.wide && 'colo__cell--wide']}>
+          <dt class="tech colo__label">{c.label}</dt>
+          <dd class="colo__value">{c.value}</dd>
+        </div>
+      ))}
+    </dl>
+
+    {/* ── Ölçüm: künyenin kanıt bölümü ───────────────────────── */}
+    <section class="colo__proof">
+      <p class="tech colo__proofHead">
+        {credits.labels.measured} · {credits.measuredOn}
+      </p>
+      <ul class="colo__metrics">
+        {credits.metrics.map((m) => (
+          <li class="colo__metric">
+            <span class="colo__metricValue num">{m.value}</span>
+            <span class="colo__metricLabel">{m.label}</span>
+            <span class="tech colo__metricNote">{m.note}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* ── Ajans kimlik bloğu ─────────────────────────────────── */}
+    <div class="colo__maker">
       <div class="colo__makerBody">
         <p class="tech colo__label">{L.maker}</p>
-        <p class="colo__makerLoc">{credits.maker.city}, {credits.maker.country} · {credits.maker.since}</p>
+        <p class="colo__makerName">{credits.maker.name}</p>
+        <p class="colo__makerLoc">
+          {credits.maker.city}, {credits.maker.country} · {credits.maker.since}
+        </p>
+      </div>
+
+      <div class="colo__makerSide">
         <ul class="colo__creds">
           {credits.maker.credentials.map((c) => <li class="tech">{c}</li>)}
         </ul>
@@ -72,73 +97,148 @@ const groups = [
 </section>
 
 <style>
-  .colo { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
-  @media (max-width: 720px) {
-    /* Telefonda alt boşluk 64px + footer'ın kendi üst boşluğu = künye
-       ile footer arasında yarım ekran boşluk. Alt tarafı kısaltıyoruz. */
-    .colo { padding-block: var(--s-12) var(--s-6); }
-  }
-  .colo__inner { max-width: 900px; }
+  .colo { padding-block: clamp(var(--s-12), 6vw, var(--s-24)); }
 
+  /* ── Antet başlığı ──────────────────────────────────────── */
   .colo__head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--s-6);
-    margin-bottom: var(--s-6);
-  }
-  .colo__title {
-    font-size: var(--t-h2);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-  .colo__no { color: var(--brick-lit); }
-
-  .colo__group { margin: 0; padding-block: var(--s-6); display: grid; gap: var(--s-4); }
-
-  .colo__row {
     display: grid;
-    grid-template-columns: 15ch 1fr;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
     gap: var(--s-6);
-    align-items: baseline;
+    padding-bottom: var(--s-8);
+    border-bottom: 2px solid var(--brick-lit);
   }
-  @media (max-width: 640px) {
-    .colo__row { grid-template-columns: 1fr; gap: var(--s-1); }
+  .colo__glyph { color: var(--brick-lit); }
+  /* Monogram 48px'ti ve ajansın imza sayfasında kayboluyordu. */
+  .colo__glyph :global(.ad-mark__glyph) {
+    width: clamp(64px, 8vw, 104px);
+    height: auto;
+  }
+  .colo__kicker { color: var(--text-3); margin: 0 0 var(--s-2); }
+  .colo__title {
+    font-size: var(--t-display);
+    letter-spacing: var(--ls-display);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .colo__no {
+    color: var(--brick-lit);
+    font-size: clamp(20px, 3vw, 34px);
+    align-self: start;
+  }
+
+  /* ── Künye ızgarası ─────────────────────────────────────── */
+  /* Hücre kenarlığı `gap` üstünden: her hücreye border verilirse
+     komşu kenarlar üst üste binip çift kalınlıkta çizgi oluyor. */
+  .colo__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--hairline);
+    background: rgba(252, 251, 249, 0.16);
+    border-bottom: var(--hairline) solid rgba(252, 251, 249, 0.16);
+    margin: 0;
+  }
+  .colo__cell {
+    background: var(--ink-surface);
+    padding: var(--s-6) var(--s-6) var(--s-8);
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+  }
+  .colo__cell--wide { grid-column: span 3; }
+  @media (max-width: 900px) {
+    .colo__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .colo__cell--wide { grid-column: span 2; }
+  }
+  @media (max-width: 560px) {
+    .colo__grid { grid-template-columns: 1fr; }
+    .colo__cell--wide { grid-column: span 1; }
+    .colo__cell { padding: var(--s-5) 0 var(--s-6); }
   }
 
   .colo__label { color: var(--text-3); margin: 0; }
-  .colo__value { margin: 0; font-size: var(--t-body); }
+  .colo__value {
+    margin: 0;
+    font-size: clamp(var(--t-body), 1.3vw, 21px);
+    line-height: 1.35;
+  }
+
+  /* ── Ölçüm bandı ────────────────────────────────────────── */
+  .colo__proof { padding-block: var(--s-12) var(--s-8); }
+  .colo__proofHead { color: var(--brick-lit); margin: 0 0 var(--s-6); }
+
+  .colo__metrics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-8) var(--s-6);
+  }
+  @media (max-width: 720px) {
+    .colo__metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-6); }
+  }
+  .colo__metric {
+    display: grid;
+    gap: var(--s-1);
+    align-content: start;
+    padding-top: var(--s-4);
+    border-top: var(--hairline) solid rgba(252, 251, 249, 0.22);
+  }
+  .colo__metricValue {
+    font-family: var(--font-display);
+    font-size: clamp(38px, 5vw, 64px);
+    line-height: 0.9;
+    letter-spacing: var(--ls-display);
+  }
+  .colo__metricLabel { font-size: var(--t-small); }
+  .colo__metricNote {
+    color: var(--text-3);
+    /* Not satırı iki kelimeden uzun; teknik ölçekte sarması gerekiyor */
+    line-height: 1.6;
+  }
 
   /* ── Ajans kimlik bloğu ─────────────────────────────────── */
   .colo__maker {
-    display: flex;
-    gap: var(--s-6);
-    padding-top: var(--s-12);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: var(--s-8);
+    padding-top: var(--s-10);
+    border-top: 2px solid var(--brick-lit);
   }
-  .colo__makerGlyph { color: var(--brick-lit); flex: none; }
-  .colo__makerGlyph :global(.ad-mark__glyph) { width: 48px; height: 38px; }
+  @media (max-width: 720px) {
+    .colo__maker { grid-template-columns: 1fr; align-items: start; }
+  }
 
   .colo__makerBody { display: grid; gap: var(--s-2); }
+  .colo__makerName {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--t-h1);
+    letter-spacing: var(--ls-h);
+    line-height: 1;
+  }
   .colo__makerLoc { font-size: var(--t-body); color: var(--text-2); margin: 0; }
+
+  .colo__makerSide { display: grid; justify-items: start; gap: var(--s-4); }
 
   .colo__creds {
     list-style: none;
-    margin: var(--s-2) 0 0;
+    margin: 0;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
     gap: var(--s-2);
   }
   .colo__creds li {
-    border: var(--hairline) solid var(--stone);
+    border: var(--hairline) solid rgba(252, 251, 249, 0.28);
     border-radius: var(--radius-structural);
     padding: 5px 10px;
     color: var(--text-2);
   }
 
   .colo__link {
-    justify-self: start;
-    margin-top: var(--s-4);
     font-family: var(--font-tech);
     font-size: var(--t-tech);
     text-transform: uppercase;

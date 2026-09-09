@@ -510,6 +510,70 @@ describe('ana sayfa — açık tema, fotoğraf öncelikli', () => {
     expect(d.querySelectorAll('h1').length).toBe(1);
     expect(d.querySelectorAll('h2').length).toBeGreaterThanOrEqual(4);
   });
+
+  /**
+   * Hero'da TEK dolu buton. İkincisi "Demo isteyin"di ve header'da
+   * zaten 40px yukarıda duruyordu; iki eylem birbirini dengeleyip
+   * hiyerarşiyi düzleştiriyordu.
+   */
+  it('hero tek birincil eylem taşır — ikincisi sessiz bağlantı', () => {
+    const d = doc();
+    const hero = d.querySelector('.hero')!;
+    expect(hero.querySelectorAll('.btn--primary').length).toBe(1);
+    expect(hero.querySelector('.hero__quiet'), 'sessiz bağlantı yok').toBeTruthy();
+  });
+
+  it('hero alt künye şeridi kaldırıldı', () => {
+    expect(doc().querySelector('.hero__foot')).toBeNull();
+  });
+
+  it('360° işareti tamamen dekoratif — ekran okuyucuda yok', () => {
+    const spot = doc().querySelector('.hero__spot');
+    expect(spot, '360° işareti yok').toBeTruthy();
+    expect(spot!.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  /**
+   * Perde SOLDAN sağa. Alttan yukarı kurulduğunda fotoğrafın %55'i
+   * kararıyordu: gerçek fotoğraf bulup üstünü örtmüş oluyorduk.
+   */
+  it('hero perdesi yatay — fotoğrafın sağ yarısı açık kalır', () => {
+    expect(bundledCss()).toContain('100deg');
+  });
+
+  it('hero hareketi reduced-motion altında tamamen duruyor', () => {
+    // Minify boşlukları siler; aramadan önce tamamen normalize et.
+    const css = bundledCss().replace(/\s+/g, '');
+    // Ken-burns yalnız "no-preference" bloğunun İÇİNDE tanımlı olmalı.
+    const guard = css.indexOf('prefers-reduced-motion:no-preference');
+    const pan = css.indexOf('animation:hero-pan');
+    expect(guard, 'hareket muhafızı yok').toBeGreaterThan(-1);
+    expect(pan, 'ken-burns yok').toBeGreaterThan(guard);
+  });
+
+  /**
+   * İşaretin başlangıç yeri iki dosyada birden yazılı: CSS'te
+   * (JS gelmeden önceki hâl) ve hero-pointer.ts'te (imleç çıkınca
+   * dönülecek yer). Kayarlarsa imleç ayrılınca işaret zıplıyor.
+   */
+  it('360° işaretinin başlangıç yeri CSS ile JS arasında aynı', () => {
+    const hero = readFileSync('src/components/sections/Hero.astro', 'utf8');
+    const js = readFileSync('src/scripts/hero-pointer.ts', 'utf8');
+    const cssX = hero.match(/--spot-x,\s*(\d+)%/)![1];
+    const cssY = hero.match(/--spot-y,\s*(\d+)%/)![1];
+    expect(js).toContain(`curX = ${cssX}`);
+    expect(js).toContain(`curY = ${cssY}`);
+    expect(js).toContain(`aimX = ${cssX}`);
+    expect(js).toContain(`aimY = ${cssY}`);
+  });
+
+  it('imleç betiği yalnız hero taşıyan sayfaya giriyor', () => {
+    const kunye = readFileSync(pathFor('kunye'), 'utf8');
+    const scripts = [...parseHTML(kunye).document.querySelectorAll('script[src]')]
+      .map((el) => readFileSync(`${DIST}${el.getAttribute('src')}`, 'utf8'))
+      .join('');
+    expect(scripts).not.toContain('--spot-x');
+  });
 });
 
 describe('/search — fotoğraflı proje kartları', () => {

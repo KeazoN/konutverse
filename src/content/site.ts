@@ -37,6 +37,10 @@ export const site = {
       title: ['Alıcı daireyi gezip', 'randevuya geliyor'],
       body: 'Dairelerinizin fotoğraflarını gönderin; alıcı bina, kat ve daireyi seçip 360° içeride gezsin. Şehir dışındaki alıcı da aynı bağlantıdan girer.',
       cta: { label: 'Sanal Tura Başla', href: '/demo' },
+      /* Hero'da tek dolu buton var. İkinci eylem sessiz bir bağlantı:
+         "Demo isteyin" zaten header'da duruyor, hero'da tekrar edince
+         iki eylem birbirini dengeleyip hiyerarşiyi düzleştiriyordu. */
+      ctaQuiet: { label: '15 dakikalık demo', href: '/contact' },
       scrollHint: 'Aşağı kaydır',
     },
 

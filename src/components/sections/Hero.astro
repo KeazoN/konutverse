@@ -1,14 +1,12 @@
 ---
 import { site } from '../../content/site';
-import { featuredProject } from '../../content/projects';
 import Button from '../ui/Button.astro';
 import Picture from '../ui/Picture.astro';
 
 const { hero } = site.home;
-const p = featuredProject;
 ---
 
-<section class="hero">
+<section class="hero" data-hero>
   <div class="hero__media">
     <Picture
       name="hero-poster"
@@ -21,6 +19,14 @@ const p = featuredProject;
       fetchpriority="high"
     />
     <div class="hero__scrim" aria-hidden="true"></div>
+
+    {/* Ürünün gerçek geçiş noktası gibi bir işaret. Fotoğrafın PARLAK
+        yarısında durur; masaüstünde imleci gecikmeli takip eder.
+        Tamamen dekoratif — klavye sırasında yok, ekran okuyucuda yok. */}
+    <div class="hero__spot" aria-hidden="true">
+      <span class="hero__spotPulse"></span>
+      <span class="hero__spotDot"><span class="tech">360°</span></span>
+    </div>
   </div>
 
   <div class="shell hero__inner">
@@ -36,29 +42,27 @@ const p = featuredProject;
 
     <div class="hero__actions">
       <Button href={hero.cta.href} variant="primary" size="lg">{hero.cta.label}</Button>
-      <Button href={site.ctaPrimary.href} variant="onmedia" size="lg" arrow={false}>
-        {site.ctaPrimary.label}
-      </Button>
-    </div>
-  </div>
-
-  <div class="hero__foot">
-    <div class="shell hero__footRow">
-      <span class="tech hero__badge">360° gezilebilir</span>
-      <span class="tech hero__meta">
-        {p.name} · {p.floors} kat · {p.units} daire · {p.district}, {p.city}
-      </span>
+      {/* Tek dolu buton. İkincisi sessiz: "Demo isteyin" header'da zaten var. */}
+      <a class="hero__quiet" href={hero.ctaQuiet.href}>
+        <span class="tech">veya {hero.ctaQuiet.label}</span>
+        <span aria-hidden="true">&#8594;</span>
+      </a>
     </div>
   </div>
 </section>
 
+<script>
+  /* Bu betik yalnız Hero kullanan sayfaya giriyor: Base'e konsaydı
+     dokuz sayfanın hepsi indirecekti. */
+  import '../../scripts/hero-pointer.ts';
+</script>
+
 <style>
   .hero {
     position: relative;
-    min-height: min(82svh, 820px);
+    min-height: min(86svh, 860px);
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
     isolation: isolate;
     color: var(--on-ink);
     overflow: hidden;
@@ -66,7 +70,7 @@ const p = featuredProject;
 
   /* ── Fotoğraf ekranı doldurur — hero bir kutu değil, bir mekân ── */
   .hero__media { position: absolute; inset: 0; z-index: -1; }
-  .hero__media img {
+  .hero__media :global(img) {
     display: block;
     width: 100%;
     height: 100%;
@@ -74,31 +78,79 @@ const p = featuredProject;
     /* Kadraj aşağı kaydırılır: üstteki boş tavan yerine oturma grubu
        görünür. Hero'nun üst %40'ı ölü alandı. */
     object-position: center 68%;
+    transform-origin: 62% 60%;
   }
 
-  /* Sıcak perde: metin okunur kalsın, fotoğraf boğulmasın */
+  /* Sıcak perde SOLDAN sağa. Alttan yukarı kurulduğunda fotoğrafın
+     %55'i kararıyordu — gerçek fotoğraf bulup üstünü örtmüş oluyorduk.
+     Yatay gradyanda metnin arkası okunur kalırken oda görünüyor. */
   .hero__scrim {
     position: absolute;
     inset: 0;
     background:
-      /* Üstte hafif katman: header ve fotoğrafın parlak kısmı çakışmasın */
+      /* Header ile fotoğrafın parlak kısmı çakışmasın */
       linear-gradient(
         to bottom,
-        rgba(24, 20, 17, 0.30) 0%,
-        rgba(24, 20, 17, 0.04) 20%,
-        rgba(24, 20, 17, 0) 36%
+        rgba(24, 20, 17, 0.34) 0%,
+        rgba(24, 20, 17, 0.06) 18%,
+        rgba(24, 20, 17, 0) 32%
       ),
-      /* Altta metin bölgesi: neredeyse opak */
+      /* Alt kenar bir sonraki bölüme yumuşak bağlansın */
       linear-gradient(
         to top,
-        rgba(24, 20, 17, 0.90) 0%,
-        rgba(24, 20, 17, 0.74) 26%,
-        rgba(24, 20, 17, 0.20) 54%,
-        rgba(24, 20, 17, 0) 78%
+        rgba(24, 20, 17, 0.34) 0%,
+        rgba(24, 20, 17, 0) 18%
+      ),
+      /* Metin bölgesi — sol kenardan sağa açılır */
+      linear-gradient(
+        100deg,
+        rgba(24, 20, 17, 0.86) 0%,
+        rgba(24, 20, 17, 0.78) 24%,
+        rgba(24, 20, 17, 0.30) 48%,
+        rgba(24, 20, 17, 0.03) 68%,
+        rgba(24, 20, 17, 0) 80%
       );
   }
 
-  .hero__inner { padding-block: clamp(var(--s-12), 5vw, var(--s-20)) var(--s-6); }
+  /* ── 360° işareti ───────────────────────────────────────────── */
+  .hero__spot {
+    position: absolute;
+    /* Başlangıç yeri: fotoğrafın parlak yarısı. İmleç girince
+       hero-pointer.ts bu iki değişkeni günceller. */
+    left: var(--spot-x, 78%);
+    top: var(--spot-y, 34%);
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+  /* Çıplak nokta + üstünde yazı denendi: fotoğrafın aydınlık
+     duvarında kayboluyordu. Cam bir düğme hem her kadrajda okunuyor
+     hem de üründeki geçiş noktasına benziyor. */
+  .hero__spotDot,
+  .hero__spotPulse {
+    grid-area: 1 / 1;
+    width: 54px;
+    height: 54px;
+    border-radius: var(--radius-pill);
+  }
+  .hero__spotDot {
+    display: grid;
+    place-items: center;
+    border: var(--hairline) solid rgba(252, 251, 249, 0.72);
+    background: rgba(24, 20, 17, 0.52);
+    backdrop-filter: blur(8px);
+    color: var(--paper);
+  }
+  .hero__spotPulse {
+    border: var(--hairline) solid rgba(252, 251, 249, 0.5);
+  }
+
+  /* Metin artık dibe yaslı değil: otomatik kenar boşlukları onu
+     kalan alanda ortalıyor, künye şeridi akışta en altta kalıyor.
+     Eskiden her şey alt 300px'e sıkışmıştı, sağ %45 ölü alandı.
+     (Şerit `absolute` da denendi — mobilde metnin üstüne biniyordu.) */
+  .hero__inner { margin-block: auto; padding-block: var(--s-8); }
 
   /* Fotoğrafın üstünde çıplak metin okunmuyordu (aydınlık duvar).
      Dolu şerit her kadrajda okunur ve kasıtlı görünür. */
@@ -111,63 +163,119 @@ const p = featuredProject;
     white-space: nowrap;
   }
 
-  .hero__title { color: var(--on-ink); max-width: 14ch; margin-bottom: var(--s-5); }
+  .hero__title {
+    color: var(--on-ink);
+    max-width: 13ch;
+    margin-bottom: var(--s-6);
+    /* Perdenin en koyu bölgesinde bile kenarlar yumuşamasın */
+    text-shadow: 0 1px 24px rgba(24, 20, 17, 0.45);
+  }
   .hero__line { display: block; }
 
+  /* Başlığın altındaki tuğla çizgi: gövdeye geçmeden önce bir durak */
   .hero__lead {
-    margin-top: var(--s-5);
-    max-width: 46ch;
+    position: relative;
+    padding-top: var(--s-6);
+    max-width: 44ch;
     font-size: var(--t-lead);
     line-height: 1.55;
     color: var(--on-ink);
+  }
+  .hero__lead::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 56px;
+    border-top: 2px solid var(--brick-lit);
   }
 
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--s-3);
+    align-items: center;
+    gap: var(--s-5) var(--s-8);
     margin-top: var(--s-8);
   }
 
-  /* ── Alt künye şeridi ─────────────────────────────────────── */
-  .hero__foot {
-    border-top: var(--hairline) solid rgba(252, 251, 249, 0.22);
-    padding-block: var(--s-5);
-  }
-  .hero__footRow {
-    display: flex;
-    flex-wrap: wrap;
+  .hero__quiet {
+    display: inline-flex;
     align-items: center;
-    gap: var(--s-4) var(--s-6);
-  }
-  .hero__badge {
-    background: var(--brick);
+    gap: var(--s-2);
     color: var(--paper);
-    padding: 7px 11px;
+    text-decoration: none;
+    box-shadow: 0 1px 0 rgba(252, 251, 249, 0.4);
+    transition: box-shadow var(--dur-fast) var(--ease);
   }
-  .hero__meta { color: rgba(252, 251, 249, 0.72); }
+  .hero__quiet:hover { box-shadow: 0 1px 0 var(--paper); }
+
+  /* ── Hareket ────────────────────────────────────────────────
+     Ken-burns: fotoğraf 28 saniyede çok yavaş yaklaşıp kayar.
+     Yalnız transform animasyonu — opaklık DEĞİL: opaklık birikimli,
+     çocuk ebeveyninin opaklığını aşamıyor ve vurgu rengi soluyordu. */
+  @keyframes hero-pan {
+    from { transform: scale(1.04) translate3d(-1.1%, 0.6%, 0); }
+    to   { transform: scale(1.10) translate3d(1.1%, -0.6%, 0); }
+  }
+  @keyframes hero-pulse {
+    0%   { transform: scale(1);   opacity: 0.7; }
+    70%  { transform: scale(2.1); opacity: 0; }
+    100% { transform: scale(2.1); opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__media :global(img) {
+      animation: hero-pan 28s var(--ease) infinite alternate;
+    }
+    .hero__spotPulse {
+      animation: hero-pulse 2.6s var(--ease) infinite;
+    }
+  }
+
+  @media (max-width: 900px) {
+    /* Yatay gradyan dar ekranda işe yaramıyor: metin sütunu ekranın
+       tamamını kaplıyor, sağda parlak kalacak yer kalmıyor.
+       Burada perde yine alttan kuruluyor. */
+    .hero__scrim {
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(24, 20, 17, 0.34) 0%,
+          rgba(24, 20, 17, 0.04) 22%,
+          rgba(24, 20, 17, 0) 38%
+        ),
+        linear-gradient(
+          to top,
+          rgba(24, 20, 17, 0.88) 0%,
+          rgba(24, 20, 17, 0.72) 30%,
+          rgba(24, 20, 17, 0.20) 58%,
+          rgba(24, 20, 17, 0) 80%
+        );
+    }
+    /* Boş duran üst yarı iş yapsın */
+    .hero__spot { left: 64%; top: 20%; }
+  }
 
   @media (max-width: 720px) {
     /* Daha kısa hero: dikey kırpma azalır, oda görünür kalır.
        (3:5 dikey kadraj denendi — 16:9'dan dar bir dilim çıkıyor,
        odayı gösteremiyordu; yatay kadraj + kısa yükseklik daha iyi.) */
-    .hero { min-height: min(74svh, 620px); }
+    .hero { min-height: min(76svh, 640px); }
 
-    .hero__inner { padding-block: var(--s-8) var(--s-6); }
+    /* Perde burada alttan kuruluyor, metin de aşağıda durmalı. */
+    .hero__inner { margin-block: auto 0; padding-block: var(--s-8) var(--s-10); }
 
     /* Uzun etiket telefonda 3 satıra sarıyor ve fotoğrafın üstünde
        okunaksızlaşıyordu. Başlık zaten mesajı taşıyor; etiket
        dekoratif olduğu için dar ekranda gösterilmez. */
     .hero__eyebrow { display: none; }
 
-    .hero__title { max-width: none; }
-    .hero__lead { font-size: var(--t-body); max-width: none; }
+    .hero__title { max-width: none; margin-bottom: var(--s-5); }
+    .hero__lead { font-size: var(--t-body); max-width: none; padding-top: var(--s-5); }
 
-    /* İki buton eşit ve tam genişlik — dağınık görünmüyor */
-    .hero__actions { gap: var(--s-2); }
+    .hero__actions { gap: var(--s-5); margin-top: var(--s-6); }
     .hero__actions > :global(.btn) { flex: 1 1 100%; justify-content: center; }
+    .hero__quiet { flex: 1 1 100%; justify-content: center; }
 
-    .hero__footRow { gap: var(--s-3); }
-    .hero__meta { font-size: 10px; line-height: 1.5; }
   }
 </style>

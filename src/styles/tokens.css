@@ -58,7 +58,7 @@
 
   /* Sert sıçramalı ölçek — hiyerarşi boyuttan gelir, griden değil */
   /* Grotesk serif'ten geniş: aynı 14ch'lik satır için tavan düşürüldü. */
-  --t-hero:       clamp(38px, 5.6vw, 78px);
+  --t-hero:       clamp(40px, 6.2vw, 92px);
   --t-display-xl: clamp(40px, 6.4vw, 104px);
   --t-display:    clamp(30px, 4vw, 56px);
   --t-h1:         clamp(28px, 3.2vw, 46px);

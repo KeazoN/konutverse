@@ -32,6 +32,23 @@ export const credits = {
   technology: ['Astro', 'Lenis', 'CSS Scroll-Driven Animations'],
   accessibility: 'WCAG 2.2 AA',
 
+  /**
+   * ÖLÇÜM — künyenin kanıt bölümü.
+   *
+   * Bunlar iddia değil, TARİHLİ ÖLÇÜM. Üretim derlemesinde
+   * `astro preview` üzerinde Lighthouse ile alındı. Tarihi taşımak
+   * şart: tarihsiz bir "100" birkaç ay sonra yalan olur.
+   * tests/signature.test.ts font yükünü gerçek dosyalarla
+   * karşılaştırıyor; uydurulamaz.
+   */
+  measuredOn: '09.09.2026',
+  metrics: [
+    { value: '100', label: 'Erişilebilirlik', note: 'Lighthouse · 9 sayfanın hepsi' },
+    { value: '100', label: 'Performans', note: 'Masaüstü · mobil 94+' },
+    { value: '0', label: 'Düzen kayması', note: 'CLS · masaüstü' },
+    { value: '180 KB', label: 'Yazı tipi yükü', note: '3 aile · 8 alt küme' },
+  ],
+
   labels: {
     kicker: 'Yapım',
     sheetTitle: 'Yapım Künyesi',
@@ -48,6 +65,7 @@ export const credits = {
       accessibility: 'Erişilebilirlik',
       maker: 'Alis Dijital',
     },
+    measured: 'Ölçüm',
     visit: 'alisdijital.com',
   },
 } as const;

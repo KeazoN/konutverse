@@ -162,6 +162,13 @@ describe('opaklıkla soldurma yasağı', () => {
    */
   const GRAPHIC = /(stroke[a-z-]*|fill|background)\s*:/;
   const LAYER = /(reveal|watermark|__layer|__plane|__light|__quote|\[slot=)/;
+  /**
+   * @keyframes adımları ('0%', 'from', 'to') muaf. Yasak, metni
+   * KALICI olarak opaklıkla soldurmaya karşı: orada opaklık birikimli
+   * ve çocuk ebeveyninin opaklığını aşamıyor. Bir animasyon adımı
+   * geçici ve dekoratif — hero'daki 360° nabız halkası gibi.
+   */
+  const STEP = /^\s*(from|to|\d+%)[\s,]/;
 
   const files = walk('src').filter((f) => /\.astro$/.test(f));
 
@@ -176,6 +183,7 @@ describe('opaklıkla soldurma yasağı', () => {
         if (!/opacity:\s*0?\.[0-9]+/.test(block)) continue;
         if (GRAPHIC.test(block)) continue;   // çizim öğesi
         if (LAYER.test(block)) continue;     // geçiş katmanı
+        if (STEP.test(block)) continue;      // @keyframes adımı
         offenders.push(block.replace(/\s+/g, ' ').trim().slice(0, 110));
       }
 

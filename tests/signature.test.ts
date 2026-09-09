@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { parseHTML } from 'linkedom';
 import { credits } from '../src/components/signature/credits';
 
@@ -148,6 +148,35 @@ describe('Katman 2 — künye sayfası', () => {
         : pkg.includes(`"${name.toLowerCase()}"`);
       expect(ok, `künye "${name}" diyor ama izi yok`).toBe(true);
     }
+  });
+
+  /**
+   * ÖLÇÜM bandı künyenin kanıt bölümü. Tarihsiz bir "100" birkaç ay
+   * sonra yalan olur; rakamlar hep tarihiyle birlikte çıkmalı.
+   */
+  it('ölçüm bandı tarihiyle birlikte yayınlanıyor', () => {
+    const h = html();
+    expect(h).toContain(credits.measuredOn);
+    for (const m of credits.metrics) {
+      expect(h, `${m.label} ölçümü sayfada yok`).toContain(m.label);
+    }
+  });
+
+  it('font yükü rakamı gerçek dosyalarla uyuşuyor', () => {
+    const metric = credits.metrics.find((m) => m.label.includes('Yazı tipi'));
+    expect(metric, 'font yükü ölçümü yok').toBeTruthy();
+
+    const dir = 'public/fonts';
+    const bytes = readdirSync(dir)
+      .filter((f) => f.endsWith('.woff2'))
+      .reduce((sum, f) => sum + statSync(`${dir}/${f}`).size, 0);
+    const claimed = Number(metric!.value.replace(/[^0-9]/g, ''));
+    const actual = bytes / 1024;
+
+    // İddia edilen rakam gerçek yükün altına düşemez ve %15'ten
+    // fazla şişemez: yuvarlamaya izin var, abartıya yok.
+    expect(actual, `gerçek ${actual.toFixed(0)} KB`).toBeLessThanOrEqual(claimed);
+    expect(claimed).toBeLessThanOrEqual(actual * 1.15);
   });
 
   it('semantik tanım listesi kullanır — düz metin değil', () => {
