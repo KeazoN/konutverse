@@ -48,17 +48,19 @@ describe('tokens.css', () => {
    * Mevcut sitenin problemi: --font-display / --font-serif / --font-mono
    * / --font-sans token'larının DÖRDÜ de "Inter" idi. Tipografik ses yoktu.
    *
-   * Yeni sistem: İKİ superaile, ÜÇ ses. Display ile gövde ayrımı
-   * üçüncü bir aileden değil, Archivo'nun GENİŞLİK EKSENİNDEN gelir.
+   * Yeni sistem: ÜÇ ayrı aile, ÜÇ ses. Bricolage Grotesque başlıkları,
+   * Schibsted Grotesk gövdeyi, IBM Plex Mono teknik katmanı taşır.
    */
   it('teknik katman gövdeden ayrı bir aile', () => {
     expect(declarationOf('--font-tech')).toContain('Plex Mono');
     expect(declarationOf('--font-tech')).not.toBe(declarationOf('--font-body'));
   });
 
-  it('display serif, gövde sans — üç ayrı aile', () => {
-    expect(declarationOf('--font-display')).toContain('Fraunces');
-    expect(declarationOf('--font-body')).toContain('Instrument Sans');
+  it('display, gövde ve teknik — üç ayrı aile', () => {
+    // Aile adları soyutlandı: font değişince yalnız fonts.css ve
+    // sync-fonts.mjs güncellenir, bileşenler değil.
+    expect(declarationOf('--font-display')).toContain('Display');
+    expect(declarationOf('--font-body')).toContain('Sans');
     expect(declarationOf('--font-tech')).toContain('Plex Mono');
   });
 
@@ -68,16 +70,20 @@ describe('tokens.css', () => {
     expect(new Set(fams).size).toBe(3);
   });
 
-  it('Fraunces eksenleri ciddi tonda sabitlenmiş — WONK kapalı', () => {
-    const display = declarationOf('--fraunces-display')!;
-    expect(display).toContain('"WONK" 0');
-    expect(display).toContain('"opsz" 144');
+  it('display ailesi gerçekten ayrı bir dosyadan gelir', () => {
+    const fonts = readFileSync('src/styles/fonts.css', 'utf8');
+    expect(fonts).toContain("font-family: 'Display'");
+    expect(fonts).toContain("font-family: 'Sans'");
+    expect(fonts).toContain('/fonts/display-latin.woff2');
+    expect(fonts).toContain('/fonts/sans-latin.woff2');
   });
 
   it('mevcut sitenin tek-aile problemi geri gelmemiş', () => {
-    const fams = ['--font-display', '--font-tech', '--font-body'].map((n) => declarationOf(n));
-    expect(fams.every((f) => f && f.includes('Inter'))).toBe(false);
-    expect(fams.every((f) => f && f.includes('Archivo'))).toBe(false);
+    // Canlı sitede --font-display / --font-serif / --font-mono / --font-sans
+    // token'larının DÖRDÜ de "Inter" idi; tipografik ses yoktu.
+    const fams = ['--font-display', '--font-tech', '--font-body']
+      .map((n) => declarationOf(n)!.split(',')[0].trim());
+    expect(new Set(fams).size).toBe(3);
   });
 
   it('gövde metni 15px değil 17px — mevcut sitenin çekingen ölçeği düzeltildi', () => {
@@ -86,8 +92,8 @@ describe('tokens.css', () => {
 
   it('tipografi ölçeği mevcut sitenin çekingen tavanını aşar', () => {
     // Mevcut site: --t-display tavanı 52px. Yeni ölçek belirgin biçimde iri.
-    expect(declarationOf('--t-display')).toContain('68px');
-    expect(declarationOf('--t-display-xl')).toContain('132px');
+    expect(declarationOf('--t-display')).toContain('56px');
+    expect(declarationOf('--t-display-xl')).toContain('104px');
   });
 
   it('AÇIK zemin varsayılan — koyu yüzey istisna', () => {

@@ -10,7 +10,7 @@
   --ad-muted: rgba(22, 32, 58, 0.55);
   --ad-accent: #C23616;          /* açık zeminde AA ✓ (5.16) */
   --ad-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
-  --ad-sans: "Archivo Variable", "Archivo", system-ui, -apple-system, sans-serif;
+  --ad-sans: "Schibsted Grotesk", system-ui, -apple-system, sans-serif;
   --ad-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   display: inline-flex;
@@ -73,7 +73,6 @@
 
 .ad-mark__name {
   font-family: var(--ad-sans);
-  font-stretch: 108%;
   font-size: 15px;
   font-weight: 600;
   line-height: 1.15;

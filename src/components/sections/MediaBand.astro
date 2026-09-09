@@ -1,0 +1,81 @@
+---
+/**
+ * Tam genişlik fotoğraf şeridi — uzun metin bölümleri arasında nefes.
+ *
+ * NEDEN: /features ve /about salt metindi. Mobilde ölçülen sayfa boyu
+ * 4479px ve 3573px; on numaralı madde arka arkaya, tek bir görsel
+ * çapa yok. Şerit hem ritim veriyor hem de sayfanın anlattığı şeyi —
+ * gerçek daireler — gösteriyor.
+ *
+ * Masaüstünde üç kare yan yana; dar ekranda tek kare, çünkü 137px
+ * genişliğe kırpılan yatay fotoğraf dikey bir dilime dönüşüyor.
+ * Gizlenen kareler lazy olduğu için indirilmiyor.
+ */
+import Picture from '../ui/Picture.astro';
+import { ROOMS } from '../../content/rooms';
+
+interface Props {
+  caption?: string;
+  /** Şeridi kaydırır: her sayfa farklı bir odayla başlasın diye. */
+  from?: number;
+}
+const { caption, from = 0 } = Astro.props;
+
+const i0 = ((from % ROOMS.length) + ROOMS.length) % ROOMS.length;
+const ordered = [...ROOMS.slice(i0), ...ROOMS.slice(0, i0)];
+---
+
+<aside class="band">
+  <div class="band__strip">
+    {ordered.map((room) => (
+      <div class="media band__cell">
+        <Picture
+          name={room.name}
+          alt={room.alt}
+          small={560}
+          large={1000}
+          ratio={room.ratio}
+          sizes="(max-width: 720px) 100vw, 34vw"
+        />
+      </div>
+    ))}
+  </div>
+
+  {caption && (
+    <div class="shell">
+      <p class="tech band__cap">{caption}</p>
+    </div>
+  )}
+</aside>
+
+<style>
+  .band__strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* Sabit yükseklik + cover: üç fotoğraf ortak bir ufuk çizgisinde
+       hizalanıyor, oranları birbirini tutmasa bile şerit düz duruyor. */
+    height: clamp(220px, 26vw, 360px);
+  }
+
+  .band__cell :global(img) {
+    height: 100%;
+    object-fit: cover;
+    object-position: center 58%;
+  }
+
+  .band__cap {
+    /* Alt boşluk şart: şeridin hemen ardından gelen bölüm başka bir
+       yüzeyde ve altyazı iki bloğun arasında sıkışıyordu. */
+    padding-block: var(--s-4) var(--s-8);
+    color: var(--text-3);
+  }
+
+  @media (max-width: 720px) {
+    .band__strip {
+      grid-template-columns: 1fr;
+      height: clamp(190px, 48vw, 260px);
+    }
+    /* Tek kare kalır; kalanları lazy olduğu için indirilmiyor. */
+    .band__cell:nth-child(n + 2) { display: none; }
+  }
+</style>

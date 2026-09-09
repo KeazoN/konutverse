@@ -73,6 +73,11 @@ const groups = [
 
 <style>
   .colo { padding-block: clamp(var(--s-16), 8vw, var(--s-32)); }
+  @media (max-width: 720px) {
+    /* Telefonda alt boşluk 64px + footer'ın kendi üst boşluğu = künye
+       ile footer arasında yarım ekran boşluk. Alt tarafı kısaltıyoruz. */
+    .colo { padding-block: var(--s-12) var(--s-6); }
+  }
   .colo__inner { max-width: 900px; }
 
   .colo__head {

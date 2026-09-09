@@ -123,6 +123,33 @@ describe('Katman 2 — künye sayfası', () => {
     for (const t of credits.technology) expect(h).toContain(t);
   });
 
+  /**
+   * KÜNYE YALAN SÖYLEYEMEZ.
+   *
+   * Bir süre "Archivo · IBM Plex Mono" ve "GSAP ScrollTrigger" yazdı;
+   * font değişmişti ve GSAP hiç kullanılmıyordu. İmza sisteminin
+   * tamamının değeri bu sayfanın doğru olmasına bağlı, o yüzden
+   * künye artık kaynağıyla karşılaştırılıyor.
+   */
+  it('künyedeki her font gerçekten paketleniyor', () => {
+    const sync = readFileSync('scripts/sync-fonts.mjs', 'utf8');
+    for (const name of credits.typography) {
+      const slug = name.toLowerCase().split(' ').join('-');
+      expect(sync, `künye "${name}" diyor ama o font kopyalanmıyor`).toContain(slug);
+    }
+  });
+
+  it('künyedeki her teknoloji gerçekten kullanılıyor', () => {
+    const pkg = readFileSync('package.json', 'utf8');
+    const motion = readFileSync('src/styles/motion.css', 'utf8');
+    for (const name of credits.technology) {
+      const ok = name.startsWith('CSS')
+        ? motion.includes('animation-timeline')
+        : pkg.includes(`"${name.toLowerCase()}"`);
+      expect(ok, `künye "${name}" diyor ama izi yok`).toBe(true);
+    }
+  });
+
   it('semantik tanım listesi kullanır — düz metin değil', () => {
     const d = docOf('dist/kunye/index.html');
     expect(d.querySelectorAll('dl').length).toBeGreaterThan(0);

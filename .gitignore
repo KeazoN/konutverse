@@ -7,3 +7,7 @@ public/fonts/
 public/img/*.jpg
 public/img/*.webp
 !public/img/_src/
+
+# Ölçüm çıktıları — raporlar ve ekran görüntüleri repoda durmasın
+lh/
+shots/

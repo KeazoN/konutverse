@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/sections/PageHead.astro';
+import MediaBand from '../components/sections/MediaBand.astro';
 import Cta from '../components/sections/Cta.astro';
 import { site } from '../content/site';
 
@@ -14,23 +15,39 @@ const groups = [
 <Base title={f.meta.title} description={f.meta.description} route="/features">
   <PageHead kicker={f.kicker} title={f.title} lead={f.lead} />
 
-  {groups.map((group) => (
-    <section class="sheet">
-      <div class="shell shell--railed">
-        <p class="tech eyebrow">{group.kicker}</p>
-        <h2 class="sheet__title">{group.title}</h2>
+  {groups.map((group, gi) => (
+    <>
+      {/* İki liste arasına nefes: aksi hâlde mobilde on madde
+          kesintisiz akıyor ve sayfa 4500px'lik bir metin duvarı. */}
+      {gi === 1 && <MediaBand caption={f.bandCaption} from={0} />}
 
-        <div class="sheet__grid">
-          {group.items.map((item, i) => (
-            <article class="sheet__item reveal" style={`--reveal-delay:${i * 50}ms`}>
-              <span class="tech sheet__no num">{String(i + 1).padStart(2, '0')}</span>
-              <h3 class="sheet__itemTitle">{item.title}</h3>
-              <p class="sheet__body">{item.body}</p>
-            </article>
-          ))}
+      <section class:list={['sheet', gi === 1 && 'on-sand']}>
+        <div class="shell shell--railed">
+          <div class="sheet__head">
+            <div>
+              <p class="tech eyebrow">{group.kicker}</p>
+              <h2 class="sheet__title">{group.title}</h2>
+            </div>
+            {/* Bölüm numarası: iki liste birbirinin aynı görünmesin diye
+                hiyerarşiyi boyutla kuruyoruz, griyle değil. */}
+            <span class="tech sheet__gno num" aria-hidden="true">{group.no}</span>
+          </div>
+
+          {/* Sütun sayısı madde sayısına bölünüyor: auto-fit her ikisine de
+              4 sütun veriyordu ve 6 maddelik listede son satır yarım
+              kalıp alt çizgi ekranın ortasında kesiliyordu. */}
+          <div class="sheet__grid" style={`--cols:${group.items.length % 4 === 0 ? 4 : 3}`}>
+            {group.items.map((item, i) => (
+              <article class="sheet__item reveal" style={`--reveal-delay:${i * 50}ms`}>
+                <span class="tech sheet__no num">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="sheet__itemTitle">{item.title}</h3>
+                <p class="sheet__body">{item.body}</p>
+              </article>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   ))}
 
   <Cta />
@@ -38,18 +55,42 @@ const groups = [
 
 <style>
   .sheet { padding-block: clamp(var(--s-12), 6vw, var(--s-24)); }
+
+  .sheet__head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: var(--s-6);
+    margin-bottom: var(--s-12);
+  }
   .sheet__title {
     font-size: var(--t-h1);
     letter-spacing: var(--ls-h);
-    margin-block: var(--s-6) var(--s-12);
+    margin-block: var(--s-6) 0;
     max-width: 18ch;
+  }
+  .sheet__gno {
+    font-size: clamp(40px, 6vw, 88px);
+    line-height: 0.8;
+    color: var(--ghost);
+    letter-spacing: -0.04em;
+  }
+  @media (max-width: 720px) {
+    .sheet__head { margin-bottom: var(--s-8); }
+    .sheet__gno { font-size: 34px; }
   }
 
   .sheet__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
     gap: 0;
     border-top: var(--hairline) solid var(--stone);
+  }
+  @media (max-width: 1100px) {
+    .sheet__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) {
+    .sheet__grid { grid-template-columns: 1fr; }
   }
 
   .sheet__item {

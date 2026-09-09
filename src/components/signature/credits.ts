@@ -25,8 +25,11 @@ export const credits = {
   design: 'Alis Dijital',
   development: 'Alis Dijital',
 
-  typography: ['Archivo', 'IBM Plex Mono'],
-  technology: ['Astro', 'GSAP ScrollTrigger', 'Lenis'],
+  // Künye DOĞRU olmak zorunda: imza sisteminin tamamı bu sayfanın
+  // doğruluğuna dayanıyor. tests/signature.test.ts bu iki satırı
+  // fonts.css ve package.json ile karşılaştırır.
+  typography: ['Bricolage Grotesque', 'Schibsted Grotesk', 'IBM Plex Mono'],
+  technology: ['Astro', 'Lenis', 'CSS Scroll-Driven Animations'],
   accessibility: 'WCAG 2.2 AA',
 
   labels: {

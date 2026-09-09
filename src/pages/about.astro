@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import MediaBand from '../components/sections/MediaBand.astro';
 import Cta from '../components/sections/Cta.astro';
 import { site } from '../content/site';
 
@@ -28,7 +29,11 @@ const a = site.about;
     </div>
   </section>
 
-  <section class="promises">
+  {/* Metin bloguyla taahhut listesi arasina nefes; ayni zamanda
+      sayfanin tek gorsel capasi. */}
+  <MediaBand caption={a.bandCaption} from={1} />
+
+  <section class="promises on-sand">
     <div class="shell shell--railed">
       <p class="tech eyebrow">{a.promises.kicker}</p>
       <h2 class="promises__title">{a.promises.title}</h2>

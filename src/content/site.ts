@@ -121,6 +121,9 @@ export const site = {
     title: 'Alıcı daireyi, gelmeden önce geziyor',
     lead: 'Sanal daire turunu firmanız panelden kurar; alıcı bağlantıya dokunur, dairenin içinde gezer. Yerinde gösterime yalnız daireyi baştan aşağı görmüş alıcı gelir.',
 
+    /** Fotoğraf şeridinin altındaki teknik satır. */
+    bandCaption: 'Turdan kareler · gerçek proje daireleri',
+
     buyer: {
       kicker: 'Alıcı tarafı',
       title: 'Alıcı turda ne yapıyor',
@@ -281,6 +284,9 @@ export const site = {
     },
     kicker: 'Hakkımızda',
     title: 'Alıcı daireyi, gelmeden önce geziyor',
+
+    /** Fotoğraf şeridinin altındaki teknik satır. */
+    bandCaption: 'Anlattığımız şey bu · turdan kareler',
 
     /** Sanat yönünün dayandığı cümle. Tipografik an olarak kurulur. */
     keyline: 'Kat planı ve düz fotoğraf bir daireyi anlatmıyor.',

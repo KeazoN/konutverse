@@ -28,8 +28,7 @@ body {
 
 h1, h2, h3, .display {
   font-family: var(--font-display);
-  font-variation-settings: var(--fraunces-display);
-  font-weight: 600;
+  font-weight: 700;
   line-height: var(--lh-display);
   color: var(--ink);
   margin: 0;
@@ -41,8 +40,7 @@ h2 { font-size: var(--t-h2); letter-spacing: var(--ls-h); line-height: var(--lh-
 h3 {
   font-size: var(--t-h3);
   letter-spacing: var(--ls-h3);
-  /* Küçük başlıkta optik boy düşürülür: ince tırnaklar kaybolmasın */
-  font-variation-settings: var(--fraunces-text);
+  font-weight: 600;
   line-height: var(--lh-tight);
 }
 

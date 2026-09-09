@@ -80,16 +80,23 @@ describe('tipografi yüklemesi', () => {
   it('display fontu değişken eksenlerle yüklenir', () => {
     const css = bundledCss();
     expect(css).toContain('woff2-variations');
-    // Minify boşlukları siler; karşılaştırmadan önce normalize et
+    // Minify boşlukları siler; karşılaştırmadan önce normalize et.
+    // Değişken ağırlık aralığı = tek bir dosyadan tüm kalınlıklar.
     const flat = css.replace(/\s+/g, '');
-    expect(flat).toContain('font-weight:100900');
+    expect(flat).toMatch(/font-weight:\d{3}\d{3}/);
   });
 
-  it('üç ses de yüklenir — display serif, gövde sans, teknik mono', () => {
+  it('üç ses de yüklenir — display, gövde, teknik', () => {
     const css = bundledCss();
-    expect(css).toContain('Fraunces');
-    expect(css).toContain('Instrument Sans');
+    expect(css).toContain('Display');
+    expect(css).toContain('Sans');
     expect(css).toContain('IBM Plex Mono');
+  });
+
+  it('display ve gövde AYRI dosyalardan gelir — aynı aile değil', () => {
+    const css = bundledCss().replace(/\s+/g, '');
+    expect(css).toContain('/fonts/display-latin.woff2');
+    expect(css).toContain('/fonts/sans-latin.woff2');
   });
 
   /**
@@ -210,22 +217,25 @@ describe('JS bütçesi (spec §9)', () => {
   });
 
   /**
-   * GSAP artık ilk yükte HİÇ gelmiyor: kesit sahnesi ekranın altında
-   * olduğu için IntersectionObserver yaklaşınca dinamik import ediyor.
-   * Bu yüzden ana sayfanın ilk JS'i de küçük olmalı.
+   * Ana sayfanın ilk JS'i küçük kalmalı: hareket CSS'te, yalnız
+   * yumuşak kaydırma ve imza konsolu JS getiriyor.
    */
   it('ağır hareket ilk yükte gelmiyor — tembel yükleniyor', () => {
     const bytes = jsBytesOf('index');
     expect(bytes, `ana sayfa ilk JS ${(bytes / 1024).toFixed(1)} KB`).toBeLessThan(15 * 1024);
   });
 
-  it('GSAP ayrı bir parçaya bölünmüş ve ilk yükte referans edilmiyor', () => {
+  /**
+   * Hareket katmanı CSS kaydırma zaman çizelgesiyle çalışıyor; ağır bir
+   * animasyon kütüphanesi HİÇ yüklenmiyor. Künye de öyle diyor.
+   */
+  it('ağır animasyon kütüphanesi pakete hiç girmiyor', () => {
     const { document } = parseHTML(readFileSync(pathFor('index'), 'utf8'));
     const eager = [...document.querySelectorAll('script[src]')]
       .map((s) => readFileSync(`${DIST}${s.getAttribute('src')}`, 'utf8'))
       .join('');
-    // Kütüphanenin kendisi ilk yüklenen dosyalarda bulunmamalı
-    expect(eager).not.toContain('ScrollTrigger.create');
+    expect(eager).not.toContain('ScrollTrigger');
+    expect(eager).not.toContain('gsap');
   });
 });
 

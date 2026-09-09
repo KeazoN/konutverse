@@ -14,12 +14,12 @@ const OUT = 'public/fonts';
 mkdirSync(OUT, { recursive: true });
 
 const FILES = [
-  // Display — Fraunces (opsz + SOFT + WONK + wght eksenleri)
-  ['@fontsource-variable/fraunces/files/fraunces-latin-standard-normal.woff2', 'fraunces-latin.woff2'],
-  ['@fontsource-variable/fraunces/files/fraunces-latin-ext-standard-normal.woff2', 'fraunces-latin-ext.woff2'],
-  // Gövde / arayüz — Instrument Sans (wght ekseni)
-  ['@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2', 'sans-latin.woff2'],
-  ['@fontsource-variable/instrument-sans/files/instrument-sans-latin-ext-wght-normal.woff2', 'sans-latin-ext.woff2'],
+  // Display — Bricolage Grotesque (wght ekseni; iri boyutta karakterli)
+  ['@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2', 'display-latin.woff2'],
+  ['@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-ext-wght-normal.woff2', 'display-latin-ext.woff2'],
+  // Gövde / arayüz — Schibsted Grotesk (metin boyutunda editoryal ve okunur)
+  ['@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2', 'sans-latin.woff2'],
+  ['@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-ext-wght-normal.woff2', 'sans-latin-ext.woff2'],
   // Teknik katman — IBM Plex Mono
   ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2', 'mono-400-latin.woff2'],
   ['@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-ext-400-normal.woff2', 'mono-400-latin-ext.woff2'],

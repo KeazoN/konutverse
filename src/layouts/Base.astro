@@ -2,12 +2,9 @@
 // Fontlar self-host (Fontsource). Üçüncü taraf CDN yok.
 //
 // ÜÇ SES, üç ayrı aile:
-//   Fraunces        -> display (yüksek kontrastlı editoryal serif)
-//   Instrument Sans -> gövde ve arayüz
-//   IBM Plex Mono   -> teknik katman
-//
-// Önceki kurulum başlık ve gövdede aynı aileyi (Archivo) kullanıyordu;
-// bu bir tasarım kararı değil performans taviziydi ve düz görünüyordu.
+//   Bricolage Grotesque -> display (iri boyutta karakterli)
+//   Schibsted Grotesk   -> gövde ve arayüz
+//   IBM Plex Mono       -> teknik katman
 import '../styles/fonts.css';
 
 import '../styles/tokens.css';
@@ -86,15 +83,15 @@ const jsonLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content={THEME_COLOR} />
 
-    <!-- İki Fraunces alt kümesi de ön yüklenir.
+    <!-- İki display alt kümesi de ön yüklenir.
          Preload olmadan font ilk boyamadan sonra geliyor, metin yeniden
          sarıyor ve hero butonları zıplıyor (ölçülen CLS 0.108).
          latin-ext ŞART: Türkçe ş/ğ/İ harfleri orada; yalnız latin
          preload edildiğinde CLS 0.104'e geri dönüyor (ölçüldü). -->
     <link rel="preload" as="font" type="font/woff2" crossorigin
-          href="/fonts/fraunces-latin.woff2" />
+          href="/fonts/display-latin.woff2" />
     <link rel="preload" as="font" type="font/woff2" crossorigin
-          href="/fonts/fraunces-latin-ext.woff2" />
+          href="/fonts/display-latin-ext.woff2" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="mask-icon" href="/favicon.svg" color={THEME_COLOR} />

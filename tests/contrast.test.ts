@@ -65,3 +65,23 @@ describe('brick iki tonlu kural — her iki zeminde de bir güvenli ton var', ()
     expect(contrastRatio('#ED5A34', '#F7F8FA')).toBeLessThan(4.5);
   });
 });
+
+/**
+ * Bölüm numarası (/features'taki iri 02 · 03) aria-hidden ama yine de
+ * METİN düğümü: Lighthouse onu da ölçüyor ve --stone ile 95 puana
+ * düştük. İri metin eşiği 3:1; hem paper hem sand üstünde geçmeli.
+ */
+describe('iri ikincil işaretler — 3:1 iri metin eşiği', () => {
+  const GHOST = '#8F836F';
+  const SURFACES = { paper: '#FCFBF9', sand: '#F2EDE6' };
+
+  for (const [name, bg] of Object.entries(SURFACES)) {
+    it(`ghost tonu ${name} üstünde iri metin eşiğini geçer`, () => {
+      expect(contrastRatio(GHOST, bg)).toBeGreaterThanOrEqual(3.0);
+    });
+  }
+
+  it('eski --stone tonu geçmiyordu — gerileme koruması', () => {
+    expect(contrastRatio('#DED6CA', SURFACES.paper)).toBeLessThan(3.0);
+  });
+});
