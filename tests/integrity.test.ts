@@ -191,3 +191,79 @@ describe('hareket erişilebilirliği', () => {
     }
   });
 });
+
+
+/**
+ * VARLIK BÜTÜNLÜĞÜ — canlıda yaşanan gerçek bir hatayı kilitler.
+ *
+ * Görselleri üreten script Python'du (Pillow). Vercel build'i Node
+ * ile koştuğu için o script HİÇ çalışmadı; üretilen dosyalar da
+ * .gitignore'da olduğundan canlıda bütün görseller 404 verdi.
+ * Yerelde her şey çalışıyordu, çünkü dosyalar diskte duruyordu.
+ *
+ * Bu test, HTML'in ve gömülü CSS'in işaret ettiği HER yerel dosyanın
+ * dist içinde GERÇEKTEN bulunmasını şart koşar. Üretim adımı
+ * bozulursa build'de değil burada patlar.
+ */
+describe('varlık bütünlüğü — referans edilen her dosya yayınlanıyor', () => {
+  const shipped = new Set(walk(DIST).map((f) => f.replace(`${DIST}`, '')));
+
+  /** Bir HTML dosyasının işaret ettiği tüm kök-göreli yerel yollar. */
+  function referencesOf(file: string): string[] {
+    const html = readFileSync(file, 'utf8');
+    const { document } = parseHTML(html);
+    const out: string[] = [];
+
+    const push = (v: string | null) => {
+      if (!v) return;
+      // srcset "yol 900w, yol 1600w" biçiminde; deskriptörü at.
+      for (const part of v.split(',')) {
+        const url = part.trim().split(/\s+/)[0];
+        if (url.startsWith('/') && !url.startsWith('//')) out.push(url.split('?')[0]);
+      }
+    };
+
+    for (const el of document.querySelectorAll('img, source, script, link')) {
+      push(el.getAttribute('src'));
+      push(el.getAttribute('srcset'));
+      const rel = el.getAttribute('rel');
+      // canonical / author gibi rel'ler dış URL; yalnız varlıklar.
+      if (!rel || ['stylesheet', 'preload', 'icon', 'mask-icon'].includes(rel)) {
+        push(el.getAttribute('href'));
+      }
+    }
+
+    // Gömülü CSS içindeki url(...) — fontlar buradan geliyor.
+    for (const style of document.querySelectorAll('style')) {
+      const css = style.textContent ?? '';
+      for (const m of css.matchAll(/url\(['"]?(\/[^'")]+)['"]?\)/g)) {
+        out.push(m[1].split('?')[0]);
+      }
+    }
+
+    return [...new Set(out)];
+  }
+
+  for (const page of pages) {
+    it(`${routeOf(page)} — işaret ettiği dosyaların hepsi var`, () => {
+      const missing = referencesOf(page).filter((u) => !shipped.has(u));
+      const NL = String.fromCharCode(10);
+      expect(missing, `yayınlanmamış dosyalar:${NL}${missing.join(NL)}`).toEqual([]);
+    });
+  }
+
+  it("her JPEG'in WebP eşi yayınlanır — srcset yarım kalmıyor", () => {
+    const imgs = [...shipped].filter((f) => f.startsWith('/img/') && !f.includes('/_src/'));
+    const jpgs = imgs.filter((f) => f.endsWith('.jpg'));
+    expect(jpgs.length, 'hiç görsel üretilmemiş').toBeGreaterThan(0);
+    for (const jpg of jpgs) {
+      const webp = jpg.slice(0, -4) + '.webp';
+      expect(shipped.has(webp), `${webp} eksik`).toBe(true);
+    }
+  });
+
+  it('yazı tipi alt kümeleri yayınlanır', () => {
+    const fonts = [...shipped].filter((f) => f.endsWith('.woff2'));
+    expect(fonts.length, 'woff2 sayısı').toBe(8);
+  });
+});
